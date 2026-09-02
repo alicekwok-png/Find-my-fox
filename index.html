@@ -282,7 +282,9 @@
   #level-sign-btn:active{ transform:scale(.96); }
   #level-sign-btn img{ width:100%; height:auto; display:block; }
   #level-sign-text{
-    position:absolute; left:8%; right:8%; top:57%; height:17%;
+    /* 木牌內側嘅淺色版面實際係圖片51.5%–68%高度（用PIL逐行掃描透明度/顏色量出，
+       唔係肉眼估），對正返先至喺牌正中央，唔會睇落沉咗去牌底 */
+    position:absolute; left:8%; right:8%; top:51.5%; height:16.5%;
     display:flex; align-items:center; justify-content:center;
     font-size:clamp(17px, 5.4vw, 25px); font-weight:800; color:#5a3410;
     text-shadow:0 1px 0 rgba(255,255,255,.35);
