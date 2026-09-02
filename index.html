@@ -270,7 +270,7 @@
   <button id="settings-btn" title="設定"><img src="icon_2.png" alt=""></button>
   <div id="settings-panel">
     <label><input type="checkbox" id="mute-toggle"> 靜音音效</label>
-    <div class="note">⚠️ 待確認項目：提示次數規則、Shuffle按鈕實際定義（見技術方案第12節）。本MVP之提示＝無限次＋鏡頭自動移動；Shuffle＝重新打亂未揾到目標嘅位置。插頁廣告已拍板為每關完成後強制一次；本MVP用placeholder卡片模擬，真實Ad SDK／fill-rate fallback／skip秒數都待IT揀。</div>
+    <div class="note">⚠️ 待確認項目：提示次數規則（見技術方案第12節）。本MVP之提示＝無限次＋鏡頭自動移動。插頁廣告已拍板為每關完成後強制一次；本MVP用placeholder卡片模擬，真實Ad SDK／fill-rate fallback／skip秒數都待IT揀。</div>
 
     <div class="divider"></div>
     <button class="panel-btn" id="install-btn" hidden>📲 加入主畫面</button>
@@ -292,7 +292,6 @@
 
   <div id="action-buttons">
     <button class="round-btn" id="hint-btn" title="提示"><img src="icon_4.png" alt=""><span class="label">提示</span></button>
-    <button class="round-btn" id="shuffle-btn" title="重新排列"><img src="icon_3.png" alt=""><span class="label">Shuffle</span></button>
   </div>
 </div>
 
@@ -872,21 +871,6 @@
     trackEvent("hint_used", { remaining: manifest.target_count_total - foundCount, elapsed_s: elapsedSeconds() });
   }
 
-  function doShuffle(){
-    var margin = 90;
-    manifest.targets.forEach(function(t){
-      if (foundIds[t.id]) return;
-      t.position.x = margin + Math.random() * (manifest.background_size.width - margin * 2);
-      t.position.y = margin + Math.random() * (manifest.background_size.height - margin * 2);
-      var el = worldEl.querySelector('[data-id="' + t.id + '"]');
-      if (el){
-        el.style.left = t.position.x + "px";
-        el.style.top = t.position.y + "px";
-      }
-    });
-    showToast("🔀 未揾到嘅目標位置已重新打亂（Shuffle 定義待PM確認，見設定面板）");
-  }
-
   var toastTimer = null;
   function showToast(msg){
     hintToast.textContent = msg;
@@ -1121,7 +1105,6 @@
 
   /* ---- UI wiring ---- */
   document.getElementById("hint-btn").addEventListener("click", doHint);
-  document.getElementById("shuffle-btn").addEventListener("click", doShuffle);
   document.getElementById("continue-btn").addEventListener("click", continueAfterLevel);
   document.getElementById("settings-btn").addEventListener("click", function(){
     document.getElementById("settings-panel").classList.toggle("open");
