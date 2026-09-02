@@ -1,0 +1,41 @@
+{
+  "level_id": "desert_oasis_03",
+  "theme": "fennec_desert_starry_oasis",
+  "background_asset": "level3_desert_oasis_background.png",
+  "background_size_generated": {"width": 2560, "height": 1440},
+  "background_aspect_ratio": 1.7778,
+  "target_count_total": 31,
+  "tier_a": {
+    "count": 15,
+    "status": "not_generated",
+    "note": "The supplied v3 supplement explicitly says Tier A is inherited from the omitted v2 prompt file."
+  },
+  "targets": [
+    {"id":"obj_o01","target_type":"fox_object","species":"fennec_fox","sprite_asset":"o01_fennec_face_mug.png","zone":"zone_1_camp","difficulty_tier":"exposed","placement_class":"ground_only"},
+    {"id":"obj_o02","target_type":"fox_object","species":"fennec_fox","sprite_asset":"o02_fennec_fox_cookie.png","zone":"zone_1_camp","difficulty_tier":"exposed","placement_class":"ground_only"},
+    {"id":"obj_o03","target_type":"fox_object","species":"fennec_fox","sprite_asset":"o03_fox_tail_keychain.png","zone":"zone_1_camp","difficulty_tier":"partial","placement_class":"elevated_ok"},
+    {"id":"obj_o04","target_type":"fox_object","species":"fennec_fox","sprite_asset":"o04_fennec_knitted_plush.png","zone":"zone_2_oasis","difficulty_tier":"exposed","placement_class":"ground_only"},
+    {"id":"obj_o05","target_type":"fox_object","species":"fennec_fox","sprite_asset":"o05_fennec_pattern_thermos.png","zone":"zone_2_oasis","difficulty_tier":"exposed","placement_class":"ground_only"},
+    {"id":"obj_o06","target_type":"fox_object","species":"fennec_fox","sprite_asset":"o06_fennec_salt_pepper_shakers.png","zone":"zone_2_oasis","difficulty_tier":"partial","placement_class":"ground_only"},
+    {"id":"obj_o07","target_type":"fox_object","species":"fennec_fox","sprite_asset":"o07_fennec_pattern_scarf.png","zone":"zone_3_campsite","difficulty_tier":"partial","placement_class":"ground_only"},
+    {"id":"obj_o08","target_type":"fox_object","species":"fennec_fox","sprite_asset":"o08_fennec_wind_chime.png","zone":"zone_3_campsite","difficulty_tier":"exposed","placement_class":"elevated_ok"},
+    {"id":"obj_o09","target_type":"fox_object","species":"fennec_fox","sprite_asset":"o09_fennec_field_guide_book.png","zone":"zone_3_campsite","difficulty_tier":"partial","placement_class":"ground_only"},
+    {"id":"obj_n01","target_type":"fox_object","species":"fennec_fox","sprite_asset":"n01_brass_astrolabe_pendant.png","zone":"zone_2_oasis","difficulty_tier":"partial","placement_class":"elevated_ok"},
+    {"id":"obj_n02","target_type":"fox_object","species":"fennec_fox","sprite_asset":"n02_camel_bell.png","zone":"zone_1_camp","difficulty_tier":"exposed","placement_class":"ground_only"},
+    {"id":"obj_n03","target_type":"fox_object","species":"fennec_fox","sprite_asset":"n03_bedouin_rug_fox_pattern.png","zone":"zone_3_campsite","difficulty_tier":"partial","placement_class":"ground_only"},
+    {"id":"obj_n04","target_type":"fox_object","species":"fennec_fox","sprite_asset":"n04_fox_silhouette_sand_timer.png","zone":"zone_1_camp","difficulty_tier":"hidden","placement_class":"ground_only"},
+    {"id":"clue_c01","target_type":"partial_clue","species":"fennec_fox","sprite_asset":"c01_fox_pawprints_sand.png","zone":"zone_1_camp","difficulty_tier":"hidden","placement_class":"ground_only"},
+    {"id":"clue_c02","target_type":"partial_clue","species":"fennec_fox","sprite_asset":"c02_fennec_ear_tips_clue.png","zone":"zone_2_oasis","difficulty_tier":"hidden","placement_class":"elevated_ok"},
+    {"id":"clue_c03","target_type":"partial_clue","species":"fennec_fox","sprite_asset":"c03_fox_tail_tip_clue.png","zone":"zone_3_campsite","difficulty_tier":"hidden","placement_class":"elevated_ok"}
+  ],
+  "placement_status": "coordinates_pending",
+  "hitbox_default": "rectangle",
+  "notes": [
+    "Do not place targets over the face/head bounding boxes of background people or animals.",
+    "Every ground_only target must have a real supporting surface in the panorama.",
+    "Use anchor_ref after compositing each target into a specific camp, oasis, camel, Saluki, rug, lantern, or other background station.",
+    "Background people and animals are decoration only and have no independent hitboxes."
+  ]
+}
+
+QA status: generated background and 16 transparent sprite files; Tier A 15 inherited sprites and target coordinates still require the omitted v2 source prompt / placement pass.

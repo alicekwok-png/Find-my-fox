@@ -3,5 +3,17 @@
 # is tracked: index.html now loads Level 2 from it.)
 *.zip
 
+# Level 3's raw sprite exports had a checkerboard baked into the pixels
+# instead of real alpha (see index.html's LEVEL_3 comment) — superseded
+# by level3_desert_fox_assets/clean/, which index.html actually loads.
+# Kept out of git: same filenames as clean/, pure dead weight (~107MB),
+# and re-using them would silently reintroduce the checkerboard bug.
+level3_desert_fox_assets/level3_fennec_*.png
+level3_desert_fox_assets/level3_corsac_*.png
+level3_desert_fox_assets/level3_arctic_15.png
+level3_desert_fox_assets/o0*.png
+level3_desert_fox_assets/n0*.png
+level3_desert_fox_assets/c0*.png
+
 # Local Claude Code dev-server config, not needed by the deployed site.
 .claude/
