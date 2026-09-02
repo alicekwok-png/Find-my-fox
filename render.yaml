@@ -1,0 +1,6 @@
+services:
+  - name: find-the-fox-mvp
+    type: web
+    runtime: static
+    buildCommand: echo "static site, no build needed"
+    staticPublishPath: .

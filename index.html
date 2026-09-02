@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Find The Fox — MVP</title>
+<style>
+  :root{
+    --ui-bg: rgba(30, 20, 10, 0.72);
+    --ui-fg: #fff5e6;
+    --accent: #ff8a3d;
+    --accent-2: #ffd166;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0; padding:0; width:100%; height:100%;
+    overflow:hidden; background:#1a1410;
+    font-family:"Segoe UI","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    touch-action:none; user-select:none;
+  }
+
+  /* ---------- Camera / Viewport ---------- */
+  #viewport{
+    position:fixed; inset:0; overflow:hidden; cursor:grab;
+  }
+  #viewport.dragging{cursor:grabbing;}
+  #world{
+    position:absolute; top:0; left:0; transform-origin:top left;
+    /* width/height/transform set by JS from manifest.background_size */
+  }
+  #bg-img{
+    position:absolute; top:0; left:0; display:block;
+    width:100%; height:100%; pointer-events:none; user-select:none;
+    -webkit-user-drag:none;
+  }
+
+  /* ---------- Targets ---------- */
+  .target{
+    position:absolute; transform:translate(-50%,-50%);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; will-change:transform, opacity;
+    filter:drop-shadow(0 4px 6px rgba(0,0,0,.35));
+  }
+  .target img{
+    width:100%; height:100%; object-fit:contain; pointer-events:none;
+    -webkit-user-drag:none;
+  }
+  .target.tier-exposed{ opacity:1; }
+  .target.tier-partial{ opacity:.93; filter:saturate(.85) contrast(.96) drop-shadow(0 4px 6px rgba(0,0,0,.35)); }
+  .target.tier-hidden{ opacity:.82; filter:saturate(.6) brightness(.94) drop-shadow(0 4px 6px rgba(0,0,0,.35)); transform:translate(-50%,-50%) scale(.88); }
+  .target.found{ pointer-events:none; }
+
+  /* §1.2 (已拍板): found feedback = gold glow + star burst (~0.3-0.5s),
+     then the whole sprite fades out and disappears — not a static
+     checkmark toggle. */
+  @keyframes foundGlow{
+    0%{ filter:drop-shadow(0 4px 6px rgba(0,0,0,.35)) brightness(1) drop-shadow(0 0 0 rgba(255,209,102,0)); }
+    40%{ filter:drop-shadow(0 4px 6px rgba(0,0,0,.35)) brightness(1.6) drop-shadow(0 0 18px rgba(255,209,102,.95)); }
+    100%{ filter:drop-shadow(0 4px 6px rgba(0,0,0,.35)) brightness(1) drop-shadow(0 0 0 rgba(255,209,102,0)); }
+  }
+  .target.found-glow{ animation:foundGlow .4s ease-out; }
+
+  .target.found-fade{
+    transition:opacity .3s ease, transform .3s ease;
+    opacity:0; transform:translate(-50%,-50%) scale(1.15);
+  }
+
+  .star-particle{
+    position:absolute; left:50%; top:50%; font-size:14px; color:#ffd166;
+    transform:translate(-50%,-50%); pointer-events:none;
+    animation:starBurst .5s ease-out forwards;
+  }
+  @keyframes starBurst{
+    0%{ opacity:1; transform:translate(-50%,-50%) translate(0,0) scale(.4) rotate(0deg); }
+    100%{ opacity:0; transform:translate(-50%,-50%) translate(var(--sx), var(--sy)) scale(1.1) rotate(180deg); }
+  }
+
+  @keyframes hintPulse{
+    0%,100%{ box-shadow:0 0 0 0 rgba(255,209,102,.85); }
+    50%{ box-shadow:0 0 0 22px rgba(255,209,102,0); }
+  }
+  .target.hint-active{ border-radius:50%; animation:hintPulse 1s ease-out 2; z-index:5; }
+
+  /* ---------- UI overlay ---------- */
+  #ui{
+    position:fixed; inset:0; pointer-events:none; z-index:20;
+    font-variant-numeric:tabular-nums;
+  }
+  /* Real UI icons (icon_1-4.png) replace the emoji placeholders — see index
+     root. icon_1 bakes in a "0" as its sample digit; the live count is drawn
+     as a text overlay positioned over that same numeral slot. */
+  #counter{
+    position:absolute; top:max(14px, env(safe-area-inset-top)); left:14px;
+    pointer-events:auto; width:132px; height:68px;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));
+  }
+  #counter img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; }
+  #counter .count-text{
+    position:absolute; left:48%; right:8%; top:18%; bottom:18%;
+    background:#fce5c1; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; letter-spacing:.2px; color:#3d2410;
+  }
+
+  #settings-btn{
+    position:absolute; top:max(14px, env(safe-area-inset-top)); right:14px;
+    pointer-events:auto; width:48px; height:48px; border-radius:50%;
+    background:transparent; border:none; padding:0; cursor:pointer;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));
+  }
+  #settings-btn img{ width:100%; height:100%; object-fit:contain; }
+
+  #settings-panel{
+    position:absolute; top:66px; right:14px; pointer-events:auto;
+    background:var(--ui-bg); color:var(--ui-fg); border-radius:14px; padding:14px 16px;
+    box-shadow:0 4px 14px rgba(0,0,0,.35); display:none; min-width:180px;
+    backdrop-filter:blur(4px);
+  }
+  #settings-panel.open{ display:block; }
+  #settings-panel label{ display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; }
+  #settings-panel .note{ margin-top:8px; font-size:11px; opacity:.65; line-height:1.4; }
+
+  #action-buttons{
+    position:absolute; bottom:max(20px, env(safe-area-inset-bottom)); right:16px;
+    pointer-events:auto; display:flex; flex-direction:column; gap:12px; align-items:center;
+  }
+  .round-btn{
+    width:62px; height:62px; border-radius:50%; border:none;
+    background:transparent; padding:0; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; position:relative;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));
+  }
+  .round-btn img{ width:100%; height:100%; object-fit:contain; }
+  .round-btn:active{ transform:scale(.92); }
+  .round-btn .label{
+    position:absolute; right:64px; top:50%; transform:translateY(-50%);
+    background:var(--ui-bg); color:var(--ui-fg); font-size:11px; padding:3px 8px;
+    border-radius:6px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .15s;
+  }
+
+  #hint-toast{
+    position:absolute; left:50%; top:max(70px, env(safe-area-inset-top) + 60px);
+    transform:translateX(-50%) translateY(-10px);
+    background:var(--ui-bg); color:var(--ui-fg); padding:8px 16px; border-radius:999px;
+    font-size:13px; opacity:0; transition:opacity .25s, transform .25s; pointer-events:none;
+  }
+  #hint-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ---------- Complete modal ---------- */
+  #complete-screen{
+    position:fixed; inset:0; z-index:30; display:none;
+    align-items:center; justify-content:center;
+    background:radial-gradient(circle at 50% 40%, rgba(60,30,10,.55), rgba(10,6,3,.88));
+    backdrop-filter:blur(2px);
+  }
+  #complete-screen.show{ display:flex; }
+  .complete-card{
+    background:linear-gradient(160deg,#fff8ec,#ffe6c2);
+    border-radius:24px; padding:36px 32px; text-align:center;
+    width:min(86vw, 380px); box-shadow:0 20px 50px rgba(0,0,0,.5);
+    animation:cardIn .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes cardIn{ from{ transform:scale(.7); opacity:0;} to{ transform:scale(1); opacity:1;} }
+  .complete-card h1{ margin:0 0 6px; font-size:30px; color:#7a3b12; }
+  .complete-card p{ margin:4px 0 20px; color:#8a5a30; font-size:14px; }
+  .complete-card .stat{ font-size:15px; color:#5a3618; margin-bottom:4px; }
+  .complete-card button{
+    margin-top:10px; padding:12px 28px; border:none; border-radius:999px;
+    background:linear-gradient(160deg, var(--accent), #e8641a); color:#fff;
+    font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 6px 16px rgba(232,100,26,.45);
+  }
+
+  #loading{
+    position:fixed; inset:0; z-index:40; background:#1a1410; color:#ffd166;
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+  }
+
+  /* ---------- Interstitial ad (simulated) ---------- */
+  /* §1.5 / §7 (已拍板): forced interstitial after every level completion,
+     before the player can continue. This is a placeholder ad unit — swap
+     requestInterstitialAd() for a real ad SDK call, the UI contract (shown /
+     skippable-after-N-seconds / fallback-through-on-failure) stays the same. */
+  #interstitial{
+    position:fixed; inset:0; z-index:50; display:none;
+    align-items:center; justify-content:center; background:#000;
+  }
+  #interstitial.show{ display:flex; }
+  .ad-card{
+    width:min(92vw, 420px); height:min(80vh, 640px); border-radius:18px;
+    background:linear-gradient(160deg,#2b2118,#171310); color:#fff5e6;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px; text-align:center; padding:24px; position:relative;
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .ad-card .ad-badge{
+    position:absolute; top:12px; left:12px; font-size:10px; letter-spacing:.06em;
+    background:rgba(255,255,255,.12); padding:3px 8px; border-radius:4px; opacity:.8;
+  }
+  .ad-card .ad-emoji{ font-size:56px; }
+  .ad-card h2{ margin:4px 0 0; font-size:20px; }
+  .ad-card p{ margin:0; font-size:12px; opacity:.65; max-width:280px; }
+  #ad-close{
+    position:absolute; top:12px; right:12px; width:34px; height:34px; border-radius:50%;
+    border:none; background:rgba(255,255,255,.14); color:#fff; font-size:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  #ad-close:disabled{ opacity:.35; cursor:default; }
+  #ad-close .count{ position:absolute; inset:-3px; }
+</style>
+</head>
+<body>
+
+<div id="loading">🦊 載入緊 Find The Fox…</div>
+
+<div id="viewport">
+  <div id="world"></div>
+</div>
+
+<div id="ui">
+  <div id="counter">
+    <img src="icon_1.png" alt="">
+    <span class="count-text"><span class="found-count">0</span>/<span class="total-count">0</span></span>
+  </div>
+
+  <button id="settings-btn" title="設定"><img src="icon_2.png" alt=""></button>
+  <div id="settings-panel">
+    <label><input type="checkbox" id="mute-toggle"> 靜音音效</label>
+    <div class="note">⚠️ 待確認項目：提示次數規則、Shuffle按鈕實際定義（見技術方案第12節）。本MVP之提示＝無限次＋鏡頭自動移動；Shuffle＝重新打亂未揾到目標嘅位置。插頁廣告已拍板為每關完成後強制一次；本MVP用placeholder卡片模擬，真實Ad SDK／fill-rate fallback／skip秒數都待IT揀。</div>
+  </div>
+
+  <div id="hint-toast"></div>
+
+  <div id="action-buttons">
+    <button class="round-btn" id="hint-btn" title="提示"><img src="icon_4.png" alt=""><span class="label">提示</span></button>
+    <button class="round-btn" id="shuffle-btn" title="重新排列"><img src="icon_3.png" alt=""><span class="label">Shuffle</span></button>
+  </div>
+</div>
+
+<div id="complete-screen">
+  <div class="complete-card">
+    <h1>🎉 恭喜！</h1>
+    <p>你揾晒 The Fox Den 入面所有狐狸喇！</p>
+    <div class="stat">⏱️ 用時：<span id="complete-time">0</span> 秒</div>
+    <div class="stat">💡 用咗 <span id="complete-hints">0</span> 次提示</div>
+    <button id="continue-btn">下一關 ▶</button>
+  </div>
+</div>
+
+<div id="interstitial">
+  <div class="ad-card">
+    <button id="ad-close" title="關閉廣告">✕</button>
+    <div class="ad-badge">廣告 · AD</div>
+    <div class="ad-emoji">📺</div>
+    <h2>模擬插頁廣告</h2>
+    <p>技術方案第7節已拍板：每關完成後強制展示一次interstitial。呢度只係placeholder，正式版本要換返真實Ad SDK（見設定面板）。</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     Level manifest — matches the JSON schema in the tech plan
+     (level_id / background_size / target_count_total / targets[])
+     Real production art from find-the-fox-level1-assets(1)/.
+     Positions are first-pass placements against the actual
+     background painting; treat as a draft for art/QA sign-off,
+     not final coordinates.
+     ========================================================= */
+  var ASSET_DIR = "find-the-fox-level1-assets (1)/";
+
+  var LEVEL_1 = {
+    level_id: "fox_den_01",
+    theme: "red_fox_autumn",
+    background_asset: ASSET_DIR + "ChatGPT Image 2026年9月2日 上午02_09_09.png",
+    // §2.4 QA gate: measured directly off the source PNG via PIL (im.size),
+    // not eyeballed off a screenshot — 1672/941 = 1.78, inside the required
+    // ~1.7:1–2:1 panorama ratio, so no outpaint was needed for this asset.
+    background_size: { width: 1672, height: 941 },
+    initial_camera_position: { x: 0, y: 0 },
+    target_count_total: 21, // 16 Tier A (fox_12 back as a filler at the fallen-log/cat spot, per §2.6 candidate-map style reuse — not next to fox_02 this time) + 5 Tier B
+    targets: [
+      // ---- Tier A: hero_fox / cameo_fox (15) ----
+      // placement_class per §2.3: ground_only sprites are only ever placed on a
+      // real support visible in the background (leaf litter, table, log, cart bed —
+      // never mid-canopy/sky); elevated_ok sprites carry their own hollow/hook/roof
+      // structure; airborne_action sprites are genuine jump/pounce poses, free to
+      // sit in open sky. Each row below was checked against the real art, not guessed.
+      { id:"fox_01", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_43 (1).png", position:{x:120,y:900}, hitbox:{width:118,height:118}, difficulty_tier:"partial", placement_class:"ground_only" }, // peeking over a pumpkin — must sit on ground
+      { id:"fox_02", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_44 (2).png", position:{x:1560,y:880}, hitbox:{width:112,height:112}, difficulty_tier:"partial", placement_class:"ground_only" }, // lying in mushroom cluster — on the real mushroom patch, bottom-right
+      { id:"fox_03", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_44 (3).png", position:{x:650,y:70}, hitbox:{width:110,height:110}, difficulty_tier:"exposed", placement_class:"airborne_action" }, // mid-leap pouncing a falling leaf
+      { id:"fox_04", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_45 (4).png", position:{x:980,y:870}, hitbox:{width:108,height:108}, difficulty_tier:"partial", placement_class:"ground_only" }, // sleeping in a leaf pile
+      { id:"fox_05", target_type:"cameo_fox", species:"gray_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_45 (5).png", position:{x:1585,y:415}, hitbox:{width:96,height:96}, difficulty_tier:"hidden", placement_class:"ground_only" }, // grey-fox cameo, moved to sit in the shadow of the shed's potted-plant shelf for better concealment
+      { id:"fox_06", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_17 (1).png", position:{x:870,y:390}, hitbox:{width:100,height:100}, difficulty_tier:"hidden", placement_class:"elevated_ok" }, // curled asleep inside the tree hollow — matches the real hollow/door on the trunk
+      { id:"fox_07", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_18 (2).png", position:{x:1150,y:60}, hitbox:{width:110,height:110}, difficulty_tier:"exposed", placement_class:"airborne_action" }, // reaching up mid-jump
+      { id:"fox_08", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_18 (3).png", position:{x:720,y:705}, hitbox:{width:118,height:118}, difficulty_tier:"hidden", placement_class:"ground_only" }, // moved off the log down onto the leaf-covered ground beside the picnic basket, dappled fur blends into the maple leaves
+      { id:"fox_09", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_18 (4).png", position:{x:1080,y:910}, hitbox:{width:106,height:106}, difficulty_tier:"exposed", placement_class:"ground_only" }, // §2.6: nudged off the table cluster into the chicken/ground-litter area — same texture quality, previously unused
+      { id:"fox_10", target_type:"cameo_fox", species:"gray_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_19 (5).png", position:{x:330,y:220}, hitbox:{width:96,height:120}, difficulty_tier:"partial", placement_class:"elevated_ok" }, // grey-fox cameo peeking behind the real hanging lantern
+      { id:"fox_11", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_01 (1).png", position:{x:90,y:680}, hitbox:{width:110,height:110}, difficulty_tier:"hidden", placement_class:"ground_only" }, // §2.6: relocated off the table cluster to the woodpile's log-end texture — the whole pumpkin is baked into this sprite so it doesn't need a real background pumpkin nearby, just ground
+      { id:"fox_12", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_02 (2).png", position:{x:620,y:415}, hitbox:{width:106,height:106}, difficulty_tier:"partial", placement_class:"ground_only" }, // filler prop, kept per instruction — placed at the fallen-log/cat spot (unused ground texture) instead of back beside fox_02, so it no longer reads as a duplicate
+      { id:"fox_13", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_02 (3).png", position:{x:850,y:35}, hitbox:{width:96,height:96}, difficulty_tier:"hidden", placement_class:"airborne_action" }, // §2.6: moved again — had landed right beside fox_07's canopy gap, re-clustering; now a separate leaf-canopy opening away from both the shed roofline and fox_07
+      { id:"fox_14", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_03 (4).png", position:{x:300,y:900}, hitbox:{width:120,height:100}, difficulty_tier:"hidden", placement_class:"ground_only" }, // almost fully buried in a leaf pile, only an ear visible
+      { id:"fox_15", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "12_蘑菇叢仰躺小狐狸_透明.png", position:{x:500,y:595}, hitbox:{width:96,height:80}, difficulty_tier:"partial", placement_class:"ground_only" }, // §2.6: relocated beside the second sleeping dog near the cart — that fur/ground texture had no target on it at all
+
+      // ---- Tier B: fox_object (5) ----
+      { id:"obj_01", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o12_fox_weathervane.png", position:{x:955,y:96}, hitbox:{width:90,height:90}, difficulty_tier:"exposed", placement_class:"elevated_ok" }, // mounted on the treehouse roof peak
+      { id:"obj_02", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o18_fox_face_pumpkin.png", position:{x:1300,y:760}, hitbox:{width:96,height:96}, difficulty_tier:"partial", placement_class:"ground_only" }, // sitting on the table among the real pumpkins
+      { id:"obj_03", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o06_fox_shaker_set.png", position:{x:1382,y:702}, hitbox:{width:90,height:90}, difficulty_tier:"partial", placement_class:"ground_only" }, // on the table beside the jars
+      { id:"obj_04", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o09_knitted_plush_fox.png", position:{x:868,y:642}, hitbox:{width:92,height:92}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"picnic basket/blanket in mother & daughter's lap" },
+      { id:"obj_05", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o22_fox_pattern_scarf.png", position:{x:330,y:460}, hitbox:{width:88,height:88}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"rolled blankets on the wooden cart bed" },
+
+      // §2.5: the background prompt drew father an open canvas tool satchel
+      // specifically as a hiding surface — placement had never actually used
+      // it until this pass. Re-using the spare grey-fox-with-scarf variant
+      // (same cameo species as fox_05, different scarf colour) rather than
+      // requesting new art for one slot.
+      { id:"fox_16", target_type:"cameo_fox", species:"gray_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_03 (5).png", position:{x:405,y:865}, hitbox:{width:100,height:100}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"father's open canvas tool satchel by the campfire" }
+    ]
+  };
+
+  /* ================= Engine ================= */
+  var viewportEl = document.getElementById("viewport");
+  var worldEl = document.getElementById("world");
+  var loadingEl = document.getElementById("loading");
+  var foundCountEl = document.querySelector("#counter .found-count");
+  var totalCountEl = document.querySelector("#counter .total-count");
+  var completeScreen = document.getElementById("complete-screen");
+  var hintToast = document.getElementById("hint-toast");
+
+  var manifest = LEVEL_1;
+  var scale = 1;
+  var camX = 0, camY = 0;
+  var minCamX = 0, maxCamX = 0;
+  var foundIds = {};
+  var foundCount = 0;
+  var hintsUsed = 0;
+  var startTime = null;
+  var muted = false;
+
+  var DRAG_THRESHOLD = 8; // px — below this, a pointer-up is treated as a tap, not a pan
+
+  /* ---- Analytics (§8) ----
+     No real SDK wired up for a static MVP — this just logs to console so the
+     event names/payloads match the spec and are easy to grep for when a real
+     analytics call gets dropped in later. */
+  function trackEvent(name, payload){
+    console.log("[analytics]", name, payload || {});
+  }
+
+  function elapsedSeconds(){
+    return startTime ? Math.round((Date.now() - startTime) / 1000) : 0;
+  }
+
+  function loadImage(src){
+    return new Promise(function(resolve){
+      var img = new Image();
+      img.onload = function(){ resolve(true); };
+      img.onerror = function(){ resolve(false); };
+      img.src = src;
+    });
+  }
+
+  function buildWorld(){
+    worldEl.style.width = manifest.background_size.width + "px";
+    worldEl.style.height = manifest.background_size.height + "px";
+
+    var bg = document.createElement("img");
+    bg.id = "bg-img";
+    bg.src = manifest.background_asset;
+    bg.alt = "";
+    worldEl.appendChild(bg);
+
+    manifest.targets.forEach(function(t){
+      var el = document.createElement("div");
+      el.className = "target tier-" + t.difficulty_tier;
+      el.dataset.id = t.id;
+      el.style.left = t.position.x + "px";
+      el.style.top = t.position.y + "px";
+      el.style.width = t.hitbox.width + "px";
+      el.style.height = t.hitbox.height + "px";
+
+      var img = document.createElement("img");
+      img.src = t.sprite_asset;
+      img.alt = t.target_type;
+      el.appendChild(img);
+
+      el.addEventListener("click", function(){ onTargetTap(t.id, el); });
+      worldEl.appendChild(el);
+    });
+
+    totalCountEl.textContent = manifest.target_count_total;
+  }
+
+  function fitCamera(){
+    var vw = viewportEl.clientWidth, vh = viewportEl.clientHeight;
+    scale = vh / manifest.background_size.height;
+    var scaledW = manifest.background_size.width * scale;
+    worldEl.style.transform = "scale(" + scale + ")";
+    minCamX = Math.min(0, vw - scaledW);
+    maxCamX = 0;
+    camX = clamp(camX, minCamX, maxCamX);
+    camY = 0;
+    applyCamera();
+  }
+
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+
+  function applyCamera(){
+    viewportEl.scrollLeft; // no-op, we drive via transform on an inner wrapper below
+  }
+
+  // We pan by translating #world's *container offset* rather than the scaled
+  // element itself, so drag math stays in screen pixels regardless of scale.
+  function setWorldOffset(x){
+    worldEl.style.transformOrigin = "top left";
+    worldEl.style.transform = "translate(" + x + "px,0px) scale(" + scale + ")";
+  }
+
+  function panTo(x, animate){
+    camX = clamp(x, minCamX, maxCamX);
+    worldEl.style.transition = animate ? "transform .5s ease" : "none";
+    setWorldOffset(camX);
+    if (animate){
+      window.setTimeout(function(){ worldEl.style.transition = "none"; }, 520);
+    }
+  }
+
+  /* ---- Drag / tap handling ---- */
+  var dragging = false, dragStartX = 0, dragStartCamX = 0, moved = false;
+
+  function pointerDown(e){
+    dragging = true; moved = false;
+    dragStartX = getX(e);
+    dragStartCamX = camX;
+    viewportEl.classList.add("dragging");
+  }
+  function pointerMove(e){
+    if (!dragging) return;
+    var dx = getX(e) - dragStartX;
+    if (Math.abs(dx) > DRAG_THRESHOLD) moved = true;
+    panTo(dragStartCamX + dx, false);
+  }
+  function pointerUp(){
+    dragging = false;
+    viewportEl.classList.remove("dragging");
+  }
+  function getX(e){
+    if (e.touches && e.touches.length) return e.touches[0].clientX;
+    if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientX;
+    return e.clientX;
+  }
+
+  viewportEl.addEventListener("mousedown", pointerDown);
+  window.addEventListener("mousemove", pointerMove);
+  window.addEventListener("mouseup", pointerUp);
+  viewportEl.addEventListener("touchstart", pointerDown, {passive:true});
+  viewportEl.addEventListener("touchmove", pointerMove, {passive:true});
+  viewportEl.addEventListener("touchend", pointerUp);
+
+  // Suppress the tap-to-find click that immediately follows a real drag.
+  worldEl.addEventListener("click", function(e){
+    if (moved){ e.stopPropagation(); e.preventDefault(); }
+  }, true);
+
+  /* ---- Gameplay ---- */
+  var FOUND_GLOW_MS = 400;   // matches the .found-glow CSS animation length
+  var FOUND_FADE_MS = 300;   // matches the .found-fade CSS transition length
+
+  function spawnStarBurst(el){
+    var count = 6;
+    for (var i = 0; i < count; i++){
+      var star = document.createElement("span");
+      star.className = "star-particle";
+      star.textContent = "✨";
+      var angle = (Math.PI * 2 * i) / count + (Math.random() * 0.4 - 0.2);
+      var dist = 26 + Math.random() * 14;
+      star.style.setProperty("--sx", Math.cos(angle) * dist + "px");
+      star.style.setProperty("--sy", Math.sin(angle) * dist + "px");
+      star.style.animationDelay = (Math.random() * 60) + "ms";
+      el.appendChild(star);
+      window.setTimeout(function(s){ s.remove(); }.bind(null, star), 650);
+    }
+  }
+
+  function onTargetTap(id, el){
+    if (moved) return;
+    if (foundIds[id]) return;
+    foundIds[id] = true;
+    foundCount++;
+    foundCountEl.textContent = foundCount;
+    playFoxSound();
+
+    // §1.2 (已拍板): gold glow + star particles, then the sprite fades out
+    // and disappears entirely — no lingering checkmark.
+    el.classList.add("found");
+    el.classList.add("found-glow");
+    spawnStarBurst(el);
+    window.setTimeout(function(){
+      el.classList.remove("found-glow");
+      el.classList.add("found-fade");
+    }, FOUND_GLOW_MS);
+
+    var t = manifest.targets.filter(function(x){ return x.id === id; })[0];
+    trackEvent("target_found", { target_id:id, difficulty_tier: t && t.difficulty_tier, elapsed_s: elapsedSeconds() });
+    if (foundCount >= manifest.target_count_total){
+      window.setTimeout(showComplete, FOUND_GLOW_MS + FOUND_FADE_MS + 150);
+    }
+  }
+
+  function findNextUnfound(){
+    for (var i = 0; i < manifest.targets.length; i++){
+      var t = manifest.targets[i];
+      if (!foundIds[t.id]) return t;
+    }
+    return null;
+  }
+
+  function doHint(){
+    var t = findNextUnfound();
+    if (!t){ return; }
+    hintsUsed++;
+    var vw = viewportEl.clientWidth;
+    var targetScreenX = t.position.x * scale;
+    panTo(vw / 2 - targetScreenX, true);
+    var el = worldEl.querySelector('[data-id="' + t.id + '"]');
+    if (el){
+      el.classList.add("hint-active");
+      window.setTimeout(function(){ el.classList.remove("hint-active"); }, 2000);
+    }
+    showToast("🔍 提示已指向未揾到嘅目標（本 MVP 假設無限次）");
+    trackEvent("hint_used", { remaining: manifest.target_count_total - foundCount, elapsed_s: elapsedSeconds() });
+  }
+
+  function doShuffle(){
+    var margin = 90;
+    manifest.targets.forEach(function(t){
+      if (foundIds[t.id]) return;
+      t.position.x = margin + Math.random() * (manifest.background_size.width - margin * 2);
+      t.position.y = margin + Math.random() * (manifest.background_size.height - margin * 2);
+      var el = worldEl.querySelector('[data-id="' + t.id + '"]');
+      if (el){
+        el.style.left = t.position.x + "px";
+        el.style.top = t.position.y + "px";
+      }
+    });
+    showToast("🔀 未揾到嘅目標位置已重新打亂（Shuffle 定義待PM確認，見設定面板）");
+  }
+
+  var toastTimer = null;
+  function showToast(msg){
+    hintToast.textContent = msg;
+    hintToast.classList.add("show");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function(){ hintToast.classList.remove("show"); }, 2400);
+  }
+
+  function showComplete(){
+    var elapsed = elapsedSeconds();
+    document.getElementById("complete-time").textContent = elapsed;
+    document.getElementById("complete-hints").textContent = hintsUsed;
+    completeScreen.classList.add("show");
+    trackEvent("level_complete", { level_id: manifest.level_id, elapsed_s: elapsed, hints_used: hintsUsed });
+  }
+
+  /* ---- Interstitial ad (§1.5 / §7, 已拍板) ----
+     Contract: request → (shown | failed). On failure the spec's suggested
+     default is "let the player through anyway" (未拍板 as a hard rule, but
+     called out as the recommended fallback) — this MVP always resolves
+     shown:true since there's no real ad SDK, but continueAfterLevel() below
+     still branches on the result so a real SDK is a drop-in swap. */
+  var interstitialEl = document.getElementById("interstitial");
+  var adCloseBtn = document.getElementById("ad-close");
+  var AD_SKIP_AFTER_MS = 3000; // ⚠️待確認: 實際skip秒數／是否可skip，由IT/PM揀ad network後拍板
+
+  function requestInterstitialAd(){
+    trackEvent("interstitial_ad_requested", { level_id: manifest.level_id });
+    return new Promise(function(resolve){
+      window.setTimeout(function(){
+        trackEvent("interstitial_ad_shown", { level_id: manifest.level_id });
+        resolve({ shown: true });
+      }, 250); // simulated network/load latency
+    });
+  }
+
+  function showInterstitial(){
+    return new Promise(function(resolve){
+      requestInterstitialAd().then(function(result){
+        if (!result.shown){
+          trackEvent("interstitial_ad_failed", { level_id: manifest.level_id });
+          resolve(); // fallback: ad unavailable → let the player through, don't block
+          return;
+        }
+        interstitialEl.classList.add("show");
+        adCloseBtn.disabled = true;
+        var remaining = Math.ceil(AD_SKIP_AFTER_MS / 1000);
+        adCloseBtn.textContent = remaining;
+        var iv = window.setInterval(function(){
+          remaining--;
+          if (remaining <= 0){
+            window.clearInterval(iv);
+            adCloseBtn.disabled = false;
+            adCloseBtn.textContent = "✕";
+          } else {
+            adCloseBtn.textContent = remaining;
+          }
+        }, 1000);
+        adCloseBtn.onclick = function(){
+          if (adCloseBtn.disabled) return;
+          interstitialEl.classList.remove("show");
+          resolve();
+        };
+      });
+    });
+  }
+
+  function continueAfterLevel(){
+    completeScreen.classList.remove("show");
+    showInterstitial().then(function(){
+      // MVP only ships Level 1 — a real build would load the next level's
+      // manifest here instead of resetting the same one.
+      resetGame();
+    });
+  }
+
+  function resetGame(){
+    foundIds = {};
+    foundCount = 0;
+    hintsUsed = 0;
+    foundCountEl.textContent = "0";
+    worldEl.querySelectorAll(".target").forEach(function(el){
+      el.classList.remove("found", "found-glow", "found-fade", "hint-active");
+      el.querySelectorAll(".star-particle").forEach(function(s){ s.remove(); });
+    });
+    completeScreen.classList.remove("show");
+    camX = 0;
+    fitCamera();
+    startTime = Date.now();
+    trackEvent("level_start", { level_id: manifest.level_id });
+  }
+
+  /* ---- Audio (§1.2, 已拍板: 5 stylized/cartoon fox-call variants, random
+     each find). These are the real clips supplied for this — short (~0.4-0.6s)
+     mp4 containers (AAC audio + a throwaway video track); <audio> plays just
+     the audio track fine regardless of the video codec. */
+  var FOX_CALL_FILES = ["song 1.mp4", "song  2.mp4", "song3.mp4", "song 4.mp4", "song 5.mp4"];
+  var foxCallAudio = FOX_CALL_FILES.map(function(f){
+    var a = new Audio(f);
+    a.preload = "auto";
+    return a;
+  });
+  function playFoxSound(){
+    if (muted) return;
+    var a = foxCallAudio[Math.floor(Math.random() * foxCallAudio.length)];
+    try{
+      a.currentTime = 0;
+      a.play().catch(function(){ /* blocked until first user gesture; next tap retries */ });
+    }catch(err){ /* audio not available; silently skip */ }
+  }
+
+  /* ---- UI wiring ---- */
+  document.getElementById("hint-btn").addEventListener("click", doHint);
+  document.getElementById("shuffle-btn").addEventListener("click", doShuffle);
+  document.getElementById("continue-btn").addEventListener("click", continueAfterLevel);
+  document.getElementById("settings-btn").addEventListener("click", function(){
+    document.getElementById("settings-panel").classList.toggle("open");
+  });
+  document.getElementById("mute-toggle").addEventListener("change", function(e){
+    muted = e.target.checked;
+  });
+  window.addEventListener("resize", fitCamera);
+
+  /* ---- Boot ---- */
+  var allSprites = [manifest.background_asset].concat(manifest.targets.map(function(t){ return t.sprite_asset; }));
+  Promise.all(allSprites.map(loadImage)).then(function(results){
+    var failed = results.filter(function(ok){ return !ok; }).length;
+    buildWorld();
+    fitCamera();
+    loadingEl.style.display = "none";
+    startTime = Date.now();
+    trackEvent("level_start", { level_id: manifest.level_id });
+    if (failed > 0){
+      showToast("⚠️ 有 " + failed + " 個素材載入失敗，請確認 index.html 同 find-the-fox-level1-assets 資料夾喺同一層");
+    }
+  });
+})();
+</script>
+</body>
+</html>

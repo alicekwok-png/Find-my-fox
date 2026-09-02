@@ -1,0 +1,7 @@
+# Other levels' raw asset archives / folders — not used by the Level 1 MVP,
+# and too large to be worth tracking here.
+*.zip
+find-the-fox-level2-assets/
+
+# Local Claude Code dev-server config, not needed by the deployed site.
+.claude/
