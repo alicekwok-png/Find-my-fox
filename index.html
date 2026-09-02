@@ -561,6 +561,101 @@
     ]
   };
 
+  /* =========================================================
+     Level 4 — "藏地經幡雲霧" (Tibetan Sand Fox / Prayer-Flag Highlands).
+     Background is a three-station highland panorama: a herder father
+     brewing tea beside a resting yak under boulder-strung prayer
+     flags; a mother and child washing bowls at a mountain stream
+     beside a mani-stone cairn and a goat; a girl with a kid goat by a
+     stone hut hung with prayer flags and a rolled blanket.
+
+     §2.4 QA gate: background measured directly off the source PNG via
+     PIL (im.size) — 2688x1152 = 2.33. This is OUTSIDE the plan's
+     ~1.7:1–2:1 target range (documented honestly rather than silently
+     accepted or cropped) — cropping a purpose-composed 3-station
+     panorama risked losing one of the three real hiding stations, so
+     the full width was kept; the camera/viewport system already reads
+     background_size from the manifest rather than assuming a fixed
+     ratio, so nothing downstream breaks.
+
+     Asset provenance: same issue as Level 3 — the 15 Tier A character
+     sprites (fox-01..15) were flat RGB with a checkerboard-as-pixels
+     "fake transparency" background, cleaned with the same color-class
+     border flood fill into find-the-fox-level4-assets (1)/clean/. The
+     19 Tier B/C sprites (O1-O10, N1-N5, C1-C4) arrived as genuine
+     RGBA this time (verified via alpha-channel extrema before trusting
+     that, not assumed) and are used straight from the source folder.
+
+     Placement (§2.3-§2.9): reference heights measured directly off
+     this background (kneeling father ≈340px, yak back-to-chin ≈250px,
+     standing girl ≈410px) — noticeably bigger than Level 2/3's own
+     reference figures since this canvas is bigger too, so Tier A
+     hitboxes run larger here (~170-190px) rather than reusing an
+     earlier level's numbers unscaled. Built via the same
+     composite-render → auto-separate → re-render → full-checklist
+     review loop as Levels 2-3; every one of the 34 targets was walked
+     against the checklist, not just ones that looked wrong at a
+     glance.
+     ========================================================= */
+  var ASSET_DIR4 = "find-the-fox-level4-assets (1)/";
+  var ASSET_DIR4_CLEAN = ASSET_DIR4 + "clean/";
+
+  var LEVEL_4 = {
+    level_id: "prayer_flag_highlands_04",
+    level_name: "藏地經幡雲霧",
+    theme: "tibetan_sand_fox_highlands",
+    background_asset: ASSET_DIR4 + "level4_background_panorama.png",
+    background_size: { width: 2688, height: 1152 },
+    viewport_size: { width: 1080, height: 1920 },
+    initial_camera_position: { x: 0, y: 0 },
+    target_count_total: 34, // 15 Tier A (11 hero Tibetan sand fox + 3 Blanford's-fox cameo + 1 corsac-fox cameo) + 15 Tier B + 4 Tier C
+    targets: [
+      // ---- Tier A: hero_fox tibetan_sand_fox (11) ----
+      { id:"fox_01", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-01-tibetan-pale-sitting.png", position:{x:280,y:854}, hitbox:{width:180,height:180}, difficulty_tier:"exposed", placement_class:"ground_only" }, // sitting on a rock near the camp's baskets
+      { id:"fox_02", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-02-tibetan-dark-peeking.png", position:{x:1309,y:1021}, hitbox:{width:170,height:170}, difficulty_tier:"partial", placement_class:"ground_only" }, // peeking from behind its own streamside rock
+      { id:"fox_03", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-03-tibetan-white-chest-curled.png", position:{x:630,y:958}, hitbox:{width:170,height:170}, difficulty_tier:"partial", placement_class:"ground_only" }, // curled up on open ground between camp and stream
+      { id:"fox_04", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-04-tibetan-notched-ear-drinking.png", position:{x:1350,y:830}, hitbox:{width:180,height:180}, difficulty_tier:"exposed", placement_class:"ground_only" }, // drinking from the real mountain stream, own reflection baked into the sprite
+      { id:"fox_05", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-05-tibetan-juvenile-peeking.png", position:{x:2020,y:650}, hitbox:{width:180,height:180}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"cradled in the girl's arms beside the stone hut" }, // its own wall/thatch edge lines up with the real hut wall; hitbox checked clear of the girl's face per §2.7
+      { id:"fox_06", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-06-tibetan-older-hidden.png", position:{x:461,y:980}, hitbox:{width:170,height:170}, difficulty_tier:"hidden", placement_class:"ground_only" }, // almost fully buried in its own rock mound, only eyes visible
+      { id:"fox_07", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-07-tibetan-bushy-tail-climbing.png", position:{x:1730,y:950}, hitbox:{width:180,height:180}, difficulty_tier:"exposed", placement_class:"ground_only" }, // climbing over its own boulder, open ground near the hut path
+      { id:"fox_08", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-08-tibetan-ribbon-guardian.png", position:{x:2244,y:950}, hitbox:{width:180,height:180}, difficulty_tier:"exposed", placement_class:"ground_only" }, // sitting with a prayer-flag-coloured ribbon, echoing the hut's real flags
+      { id:"fox_09", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-09-tibetan-stripe-sleeping-blanket.png", position:{x:95,y:1000}, hitbox:{width:180,height:180}, difficulty_tier:"partial", placement_class:"ground_only" }, // asleep wrapped in its own blanket, camp-side open ground
+      { id:"fox_10", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-10-tibetan-reddish-scrub.png", position:{x:1541,y:1003}, hitbox:{width:170,height:170}, difficulty_tier:"partial", placement_class:"ground_only" }, // peeking from behind its own scrub bush, streamside
+      { id:"fox_11", target_type:"hero_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-11-tibetan-alert-rolling.png", position:{x:1102,y:1057}, hitbox:{width:180,height:180}, difficulty_tier:"exposed", placement_class:"ground_only" }, // rolling in the shallows near the stream bank
+
+      // ---- Tier A: cameo_fox blanford_fox (3) ----
+      { id:"fox_12", target_type:"cameo_fox", species:"blanford_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-12-blanford-dark-ledge.png", position:{x:2425,y:1000}, hitbox:{width:170,height:170}, difficulty_tier:"exposed", placement_class:"ground_only" }, // sitting on its own rock ledge near the hut
+      { id:"fox_13", target_type:"cameo_fox", species:"blanford_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-13-blanford-throat-patch-crevice.png", position:{x:2603,y:996}, hitbox:{width:170,height:190}, difficulty_tier:"hidden", placement_class:"ground_only" }, // peeking from its own narrow rock crevice
+      { id:"fox_14", target_type:"cameo_fox", species:"blanford_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-14-blanford-pale-tail-hidden.png", position:{x:2060,y:1000}, hitbox:{width:170,height:140}, difficulty_tier:"hidden", placement_class:"ground_only" }, // only its pale tail tip visible among rocks
+
+      // ---- Tier A: cameo_fox corsac_fox (1) ----
+      { id:"fox_15", target_type:"cameo_fox", species:"corsac_fox", sprite_asset: ASSET_DIR4_CLEAN + "fox-15-corsac-curious-visiting.png", position:{x:278,y:1050}, hitbox:{width:180,height:180}, difficulty_tier:"partial", placement_class:"ground_only" }, // a curious visitor sitting at the edge of camp
+
+      // ---- Tier B: fox_object, all tibetan_sand_fox pattern (15) ----
+      { id:"obj_O1", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O1_fox_face_mug.png", position:{x:450,y:850}, hitbox:{width:95,height:95}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"set down near father's campfire" },
+      { id:"obj_O2", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O2_fox_pattern_blanket.png", position:{x:1898,y:1000}, hitbox:{width:120,height:120}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"folded on the ground near the hut path" },
+      { id:"obj_O3", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O3_fox_cookie.png", position:{x:1180,y:760}, hitbox:{width:90,height:90}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"beside mother and child at the stream" },
+      { id:"obj_O4", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O4_fox_tail_keychain.png", position:{x:1900,y:814}, hitbox:{width:95,height:115}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"clipped onto the goat's collar near the hut" },
+      { id:"obj_O5", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O5_knitted_fox_plush.png", position:{x:1180,y:930}, hitbox:{width:110,height:110}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"handed between mother and child at the stream" },
+      { id:"obj_O6", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O6_fox_pattern_thermos.png", position:{x:1090,y:860}, hitbox:{width:100,height:120}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"set beside mother and child at the stream" },
+      { id:"obj_O7", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O7_fox_ear_hat.png", position:{x:2489,y:826}, hitbox:{width:110,height:110}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"left on a rock by the hut door" },
+      { id:"obj_O8", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O8_fox_wind_chime.png", position:{x:2140,y:330}, hitbox:{width:150,height:200}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"hanging from the hut's thatched roof edge" },
+      { id:"obj_O9", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O9_fox_field_guide_book.png", position:{x:2611,y:834}, hitbox:{width:100,height:100}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"left on the ground by the hut's rolled blanket" },
+      { id:"obj_O10", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "O10_hidden_fox_pincushion.png", position:{x:95,y:800}, hitbox:{width:115,height:115}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"tucked inside father's woven mending bag" },
+      { id:"obj_N1", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "N1_fox_prayer_flag.png", position:{x:430,y:395}, hitbox:{width:190,height:170}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"strung on the boulder's real prayer-flag rope" },
+      { id:"obj_N2", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "N2_yak_wool_fox_wrap.png", position:{x:2590,y:660}, hitbox:{width:190,height:190}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"rolled up beside the hut's real hanging blanket" },
+      { id:"obj_N3", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "N3_goat_bell_fox_charm.png", position:{x:1560,y:650}, hitbox:{width:110,height:130}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"hanging from the real goat's neck strap" },
+      { id:"obj_N4", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "N4_mani_stone_fox_paw.png", position:{x:1430,y:520}, hitbox:{width:160,height:160}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"stacked onto the real mani-stone cairn" },
+      { id:"obj_N5", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "N5_herder_teapot_fox_pattern.png", position:{x:560,y:740}, hitbox:{width:150,height:150}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"set beside father's real kettle at the campfire" },
+
+      // ---- Tier C: partial_clue, all tibetan_sand_fox (4) ----
+      { id:"clue_C1", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C1_fox_paw_footprints.png", position:{x:861,y:900}, hitbox:{width:260,height:260}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"trail winding across the open ground between camp and stream" },
+      { id:"clue_C2", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C2_fox_tail_tip_flags.png", position:{x:2500,y:290}, hitbox:{width:170,height:170}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"poking out from behind the hut roof's real prayer flags" },
+      { id:"clue_C3", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C3_fox_shadow_hut_wall.png", position:{x:2280,y:590}, hitbox:{width:220,height:220}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"cast on the hut's real stone wall" },
+      { id:"clue_C4", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C4_fox_ears_fog.png", position:{x:1554,y:827}, hitbox:{width:150,height:150}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"peeking above a misty rock in the stream" }
+    ]
+  };
+
   /* ================= Engine ================= */
   var viewportEl = document.getElementById("viewport");
   var worldEl = document.getElementById("world");
@@ -570,7 +665,7 @@
   var completeScreen = document.getElementById("complete-screen");
   var hintToast = document.getElementById("hint-toast");
 
-  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3];
+  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4];
   var currentLevelIndex = 0;
   var manifest = LEVELS[currentLevelIndex];
   var scale = 1;

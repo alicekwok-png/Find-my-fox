@@ -15,5 +15,12 @@ level3_desert_fox_assets/o0*.png
 level3_desert_fox_assets/n0*.png
 level3_desert_fox_assets/c0*.png
 
+# Level 4's raw Tier A sprites (fox-01..15) have the same baked-in
+# checkerboard problem as Level 3 — superseded by
+# "find-the-fox-level4-assets (1)/clean/", which index.html actually
+# loads. The Tier B/C sprites (O*/N*/C*) arrived as real transparent
+# PNGs this time and are used straight from the source folder.
+find-the-fox-level4-assets (1)/fox-*.png
+
 # Local Claude Code dev-server config, not needed by the deployed site.
 .claude/
