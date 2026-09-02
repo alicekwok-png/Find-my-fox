@@ -1,0 +1,19 @@
+{
+  "name": "Find The Fox",
+  "short_name": "Find The Fox",
+  "description": "喺畫滿細節嘅全景圖度揾出藏起嚟嘅狐狸 — a hidden-object game about finding foxes.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1410",
+  "theme_color": "#1a1410",
+  "icons": [
+    {
+      "src": "game icon.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

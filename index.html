@@ -3,9 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Find The Fox — MVP</title>
+<title>Find The Fox</title>
 <link rel="icon" type="image/png" href="game icon.png">
 <link rel="apple-touch-icon" href="game icon.png">
+<!-- §12 (已拍板 2026-09-02): 第一階段行Web App/PWA路線，唔上架Store。
+     manifest.json + 呢幾個meta係「加入主畫面」流程嘅基本要求。 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1410">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Find The Fox">
 <style>
   :root{
     --ui-bg: rgba(30, 20, 10, 0.72);
@@ -121,6 +129,41 @@
   #settings-panel.open{ display:block; }
   #settings-panel label{ display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; }
   #settings-panel .note{ margin-top:8px; font-size:11px; opacity:.65; line-height:1.4; }
+  #settings-panel .divider{ height:1px; background:rgba(255,255,255,.15); margin:10px 0; }
+  #settings-panel .panel-btn{
+    width:100%; text-align:left; padding:8px 10px; margin-top:6px; border:none; border-radius:8px;
+    background:rgba(255,255,255,.1); color:var(--ui-fg); font-size:13px; cursor:pointer;
+  }
+  #settings-panel .panel-btn:active{ background:rgba(255,255,255,.18); }
+
+  /* ---------- §12 (已拍板): PWA 加入主畫面 ---------- */
+  #ios-install-modal{
+    position:fixed; inset:0; z-index:60; display:none;
+    align-items:flex-end; justify-content:center; background:rgba(0,0,0,.55);
+  }
+  #ios-install-modal.show{ display:flex; }
+  .ios-install-card{
+    width:100%; max-width:420px; background:linear-gradient(160deg,#fff8ec,#ffe6c2);
+    border-radius:20px 20px 0 0; padding:22px 24px max(22px, env(safe-area-inset-bottom));
+    box-shadow:0 -8px 30px rgba(0,0,0,.4); color:#5a3618;
+    animation:cardIn .3s ease-out;
+  }
+  .ios-install-card h3{ margin:0 0 10px; font-size:18px; color:#7a3b12; }
+  .ios-install-card ol{ margin:0 0 14px; padding-left:20px; font-size:14px; line-height:1.7; }
+  .ios-install-card button{
+    width:100%; padding:11px; border:none; border-radius:999px;
+    background:linear-gradient(160deg, var(--accent), #e8641a); color:#fff;
+    font-size:15px; font-weight:700; cursor:pointer;
+  }
+
+  /* ---------- §14 (MVP必做，UI骨架): 錢包連結 ---------- */
+  #wallet-block{ margin-top:6px; font-size:13px; }
+  #wallet-address{ font-variant-numeric:tabular-nums; }
+  #wallet-connected-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  #wallet-disconnect-btn{
+    border:none; background:transparent; color:var(--ui-fg); opacity:.7; font-size:12px;
+    text-decoration:underline; cursor:pointer; padding:0;
+  }
 
   #action-buttons{
     position:absolute; bottom:max(20px, env(safe-area-inset-bottom)); right:16px;
@@ -228,6 +271,21 @@
   <div id="settings-panel">
     <label><input type="checkbox" id="mute-toggle"> 靜音音效</label>
     <div class="note">⚠️ 待確認項目：提示次數規則、Shuffle按鈕實際定義（見技術方案第12節）。本MVP之提示＝無限次＋鏡頭自動移動；Shuffle＝重新打亂未揾到目標嘅位置。插頁廣告已拍板為每關完成後強制一次；本MVP用placeholder卡片模擬，真實Ad SDK／fill-rate fallback／skip秒數都待IT揀。</div>
+
+    <div class="divider"></div>
+    <button class="panel-btn" id="install-btn" hidden>📲 加入主畫面</button>
+
+    <div class="divider"></div>
+    <div id="wallet-block">
+      <div id="wallet-disconnected-row">
+        <button class="panel-btn" id="wallet-connect-btn">🔗 連結錢包</button>
+      </div>
+      <div id="wallet-connected-row" style="display:none">
+        <span>🔗 <span id="wallet-address"></span></span>
+        <button id="wallet-disconnect-btn">斷開</button>
+      </div>
+      <div class="note">⚠️ §14（MVP必做，但開工前建議搵Web3合規律師覆核）：睇廣告賺DxSxT token／NFT加成未上線——mint address、獎勵量、NFT collection呢啲關鍵參數仲未有，呢度暫時得返「連結錢包」呢個UI骨架，冇任何token發放／NFT查詢邏輯。</div>
+    </div>
   </div>
 
   <div id="hint-toast"></div>
@@ -245,6 +303,18 @@
     <div class="stat">⏱️ 用時：<span id="complete-time">0</span> 秒</div>
     <div class="stat">💡 用咗 <span id="complete-hints">0</span> 次提示</div>
     <button id="continue-btn">下一關 ▶</button>
+  </div>
+</div>
+
+<div id="ios-install-modal">
+  <div class="ios-install-card">
+    <h3>🦊 加入主畫面</h3>
+    <ol>
+      <li>撳低瀏覽器最底／最頂嘅分享掣 <strong>⬆️ 分享</strong></li>
+      <li>向下揀 <strong>「加入主畫面」Add to Home Screen</strong></li>
+      <li>撳右上角 <strong>「加入」</strong> 就完成</li>
+    </ol>
+    <button id="ios-install-close">知道喇</button>
   </div>
 </div>
 
@@ -847,6 +917,111 @@
       a.currentTime = 0;
       a.play().catch(function(){ /* blocked until first user gesture; next tap retries */ });
     }catch(err){ /* audio not available; silently skip */ }
+  }
+
+  /* ---- §12 (已拍板): PWA 加入主畫面 ----
+     iOS Safari 冇任何API可以自己觸發呢個動作，一定要教用戶自己揭分享選單；
+     Android Chrome 就支援 beforeinstallprompt，可以自己整掣觸發原生安裝框。
+     Timing（幾時show呢個掣/教學）技術方案標咗⚠️未拍板——本MVP做法：淨係擺喺
+     設定面板入面俾用戶自己揾，唔會一入嚟就彈，減低對「淨係想試玩」用戶嘅騷擾。 */
+  var deferredInstallPrompt = null;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  var isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  var installBtn = document.getElementById("install-btn");
+
+  function updateInstallUI(){
+    if (isStandalone){ installBtn.hidden = true; return; }
+    if (deferredInstallPrompt || isIOS){ installBtn.hidden = false; }
+  }
+
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    updateInstallUI();
+  });
+
+  installBtn.addEventListener("click", function(){
+    if (deferredInstallPrompt){
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(function(choice){
+        trackEvent("pwa_install_prompt_result", { outcome: choice.outcome });
+        deferredInstallPrompt = null;
+        updateInstallUI();
+      });
+    } else if (isIOS){
+      document.getElementById("ios-install-modal").classList.add("show");
+      trackEvent("pwa_ios_instructions_shown", {});
+    }
+  });
+  document.getElementById("ios-install-close").addEventListener("click", function(){
+    document.getElementById("ios-install-modal").classList.remove("show");
+  });
+  window.addEventListener("appinstalled", function(){
+    trackEvent("pwa_installed", {});
+    installBtn.hidden = true;
+  });
+  updateInstallUI();
+
+  /* ---- §14 (MVP必做，UI骨架): Solana 錢包連結 ----
+     淨係做「連結／顯示address／斷開」，用返錢包喺瀏覽器注入嘅標準provider
+     （window.solana，Phantom同大部分Solana錢包都用呢個介面），唔使裝
+     @solana/wallet-adapter呢類library——呢個project冇build step，直接用
+     injected provider夠晒用。Token發放／NFT查詢刻意冇做：mint address、
+     每次獎勵量、NFT collection地址呢啲§14.2/14.3要求嘅參數都仲未有，
+     PM亦都要求開工前先搵Web3合規律師睇一次，唔應該喺呢個UI骨架階段就
+     兜落個財務/加密貨幣邏輯。
+
+     §14合規風險（2026-09-02文件更新，記低俾第二階段轉native app嗰陣睇）：
+     而家淨係Web App、唔經Store審批，所以冇即時阻礙。但Apple App Store
+     Review Guidelines §3.1.5(v) 明文禁止「cryptocurrency apps may not
+     offer currency for completing tasks, such as downloading other
+     apps, encouraging other users to download, posting to social
+     networks, etc.」——「睇廣告換DxSxT token」結構上同呢類「完成動作換
+     crypto」好相似，轉iOS原生版嗰陣好大機會撞到呢條，屆時可能要諗
+     「原生版拆走呢個功能」。呢個唔係法律定論，只係PM根據Apple官方文件
+     字面意思嘅提醒，正式開發呢部分前一定要搵熟悉Web3合規嘅律師覆核。 */
+  var walletPublicKey = null;
+  function shortAddr(addr){ return addr.slice(0,4) + "…" + addr.slice(-4); }
+  function updateWalletUI(){
+    var connectedRow = document.getElementById("wallet-connected-row");
+    var disconnectedRow = document.getElementById("wallet-disconnected-row");
+    if (walletPublicKey){
+      document.getElementById("wallet-address").textContent = shortAddr(walletPublicKey);
+      connectedRow.style.display = "flex";
+      disconnectedRow.style.display = "none";
+    } else {
+      connectedRow.style.display = "none";
+      disconnectedRow.style.display = "block";
+    }
+  }
+  function connectWallet(){
+    var provider = window.solana;
+    if (!provider || !provider.isPhantom){
+      showToast("⚠️ 未偵測到 Phantom 錢包，請先安裝瀏覽器擴充功能");
+      trackEvent("wallet_connect_failed", { reason: "no_provider" });
+      return;
+    }
+    provider.connect().then(function(resp){
+      walletPublicKey = resp.publicKey.toString();
+      trackEvent("wallet_connected", { wallet: "phantom" });
+      updateWalletUI();
+    }).catch(function(){
+      trackEvent("wallet_connect_failed", { reason: "user_rejected_or_error" });
+    });
+  }
+  function disconnectWallet(){
+    if (window.solana && window.solana.disconnect){ window.solana.disconnect(); }
+    walletPublicKey = null;
+    updateWalletUI();
+  }
+  document.getElementById("wallet-connect-btn").addEventListener("click", connectWallet);
+  document.getElementById("wallet-disconnect-btn").addEventListener("click", disconnectWallet);
+  // 靜靜地試吓有冇之前批准過嘅連結（onlyIfTrusted），冇就當冇事發生，唔會彈錢包confirm畫面
+  if (window.solana && window.solana.isPhantom){
+    window.solana.connect({ onlyIfTrusted: true }).then(function(resp){
+      walletPublicKey = resp.publicKey.toString();
+      updateWalletUI();
+    }).catch(function(){ /* 未trust過，維持未連結狀態 */ });
   }
 
   /* ---- UI wiring ---- */
