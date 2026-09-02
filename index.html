@@ -220,6 +220,24 @@
     display:flex; align-items:center; justify-content:center; font-size:16px;
   }
 
+  /* ---------- 公司logo開場 ---------- */
+  /* 慢慢淡入 → 停2秒 → 慢慢淡出（時間喺JS嘅LOGO_*常數度，兩邊要夾返） */
+  #logo-screen{
+    position:fixed; inset:0; z-index:65; background:#fff;
+    display:flex; align-items:center; justify-content:center;
+    transition:opacity .9s ease;
+  }
+  #logo-screen.fade{ opacity:0; }
+  #logo-screen.hidden{ display:none; }
+  #logo-img{
+    width:min(88vw, 680px); height:auto;   /* logo is 16:9, so it needs the width to read on a portrait phone */
+    animation:logoIn .9s ease-out both;
+  }
+  @keyframes logoIn{
+    from{ opacity:0; transform:scale(.96); }
+    to{ opacity:1; transform:scale(1); }
+  }
+
   /* ---------- 主畫面 ---------- */
   #home-screen{
     position:fixed; inset:0; z-index:60; overflow:hidden;
@@ -279,6 +297,14 @@
     background:rgba(30,20,10,.72); color:#fff5e6; font-size:14px; font-weight:700;
     cursor:pointer; backdrop-filter:blur(4px);
   }
+  /* The clip now runs before any tap, so it must start muted — browsers
+     block autoplay with sound. This lets the player turn it back on. */
+  #intro-sound{
+    position:absolute; bottom:max(28px, env(safe-area-inset-bottom)); left:20px;
+    width:44px; height:44px; border:none; border-radius:50%;
+    background:rgba(30,20,10,.72); color:#fff5e6; font-size:18px;
+    cursor:pointer; backdrop-filter:blur(4px);
+  }
 
   /* ---------- Interstitial ad (simulated) ---------- */
   /* §1.5 / §7 (已拍板): forced interstitial after every level completion,
@@ -315,7 +341,11 @@
 </head>
 <body>
 
-<!-- 主畫面：入game之前見到嘅第一個畫面 -->
+<!-- 開場順序：公司logo → 入game片 → 主畫面 -->
+<div id="logo-screen">
+  <img id="logo-img" src="Logo去背.PNG" alt="de stijl — Technology Network int'l">
+</div>
+
 <div id="home-screen">
   <img id="home-bg" src="Codex 圖片 2026年9月2日 下午08_12_56.png" alt="">
   <div id="home-inner">
@@ -328,7 +358,8 @@
 
 <!-- 入game loading片 -->
 <div id="intro-screen">
-  <video id="intro-video" src="intro-loading.mp4" poster="intro-poster.jpg" playsinline preload="auto"></video>
+  <video id="intro-video" src="intro-loading.mp4" poster="intro-poster.jpg" playsinline preload="auto" muted></video>
+  <button id="intro-sound" title="開聲">🔇</button>
   <button id="intro-skip" hidden>跳過 ▶</button>
 </div>
 
@@ -1091,7 +1122,15 @@
      background + sprite assets (levels don't share an asset folder),
      then wipes and re-populates #world. Used both for the initial boot
      (loadLevel(0)) and for advancing after an interstitial. */
-  function loadLevel(idx, onReady){
+  /* Entering a level: starts the clock and the analytics event. Kept separate
+     from loadLevel so a level can be preloaded during the opening sequence
+     without its timer running while the player is still watching the clip. */
+  function beginLevel(){
+    startTime = Date.now();
+    trackEvent("level_start", { level_id: manifest.level_id });
+  }
+
+  function loadLevel(idx, onReady, deferStart){
     currentLevelIndex = idx;
     manifest = LEVELS[idx];
     foundIds = {};
@@ -1109,8 +1148,7 @@
       buildWorld();
       fitCamera();
       loadingEl.style.display = "none";
-      startTime = Date.now();
-      trackEvent("level_start", { level_id: manifest.level_id });
+      if (!deferStart) beginLevel();
       if (failed > 0){
         showToast("⚠️ 有 " + failed + " 個素材載入失敗，請確認素材資料夾喺同一層");
       }
@@ -1253,56 +1291,76 @@
   });
   window.addEventListener("resize", fitCamera);
 
-  /* ---- 主畫面 → 入game片 → 關卡 ----
-     The intro clip runs ~10s but asset loading is usually much faster, so the
-     two race: whichever finishes last releases the player. The clip can be
-     skipped once the level is actually ready, never before — skipping early
-     would just dump the player on the loading screen instead. */
+  /* ---- 開場順序：公司logo → 入game片 → 主畫面 → 撳開始 → 關卡 ----
+     Level 1 preloads underneath the whole sequence, so by the time the player
+     taps 開始遊戲 the level is already built and entry is instant. Because of
+     that the level clock and level_start must NOT fire when loading finishes
+     (that would be mid-video) — they fire on the tap, via beginLevel(). */
+  var logoScreen = document.getElementById("logo-screen");
   var homeScreen = document.getElementById("home-screen");
   var introScreen = document.getElementById("intro-screen");
   var introVideo = document.getElementById("intro-video");
   var introSkip = document.getElementById("intro-skip");
+  var introSound = document.getElementById("intro-sound");
 
-  function playIntroThen(startLevel){
-    var released = false;
-    function release(){
-      if (released) return;
-      released = true;
+  // 慢慢淡入 (LOGO_FADE_IN) → 停 (LOGO_HOLD) → 慢慢淡出 (LOGO_FADE_OUT)。
+  // 淡入/淡出秒數要同CSS嘅 #logo-img animation 同 #logo-screen transition 一致。
+  var LOGO_FADE_IN = 900;
+  var LOGO_HOLD = 2000;
+  var LOGO_FADE_OUT = 900;
+
+  function showLogoThen(next){
+    logoScreen.classList.remove("hidden");
+    var done = false;
+    function go(){
+      if (done) return;
+      done = true;
+      logoScreen.classList.add("fade");
+      window.setTimeout(function(){ logoScreen.classList.add("hidden"); next(); }, LOGO_FADE_OUT);
+    }
+    logoScreen.addEventListener("click", go);   // tap to skip
+    window.setTimeout(go, LOGO_FADE_IN + LOGO_HOLD);
+  }
+
+  function playIntroThen(next){
+    var done = false;
+    function finish(){
+      if (done) return;
+      done = true;
       introVideo.pause();
       introScreen.classList.remove("show");
-      introSkip.hidden = true;
+      next();
     }
 
     introScreen.classList.add("show");
     introSkip.hidden = true;
-    try{ introVideo.currentTime = 0; }catch(err){ /* not seekable yet */ }
-    // Unmuted needs the play-button gesture; if the browser still refuses,
-    // fall back to muted so the clip is never simply missing.
-    introVideo.muted = muted;
+    // No user gesture has happened yet, so this can only autoplay muted.
+    introVideo.muted = true;
+    introSound.textContent = "🔇";
     var attempt = introVideo.play();
-    if (attempt && attempt["catch"]){
-      attempt["catch"](function(){
-        introVideo.muted = true;
-        introVideo.play()["catch"](function(){ /* can't play at all — the race below still releases */ });
-      });
-    }
+    if (attempt && attempt["catch"]) attempt["catch"](function(){ /* the cap below still moves things along */ });
 
-    var levelReady = false;
-    var videoDone = false;
-    function maybeRelease(){
-      if (levelReady && videoDone) release();
-      else if (levelReady) introSkip.hidden = false;
-    }
-    introVideo.onended = function(){ videoDone = true; maybeRelease(); };
-    introSkip.onclick = release;
-    // Safety net: never trap the player behind a clip that stalls or can't decode.
-    window.setTimeout(function(){ videoDone = true; maybeRelease(); }, 12000);
+    introSound.onclick = function(e){
+      e.stopPropagation();
+      introVideo.muted = !introVideo.muted;
+      introSound.textContent = introVideo.muted ? "🔇" : "🔊";
+    };
+    introVideo.onended = finish;
+    introSkip.onclick = finish;
+    // The skip only needs to wait long enough not to be an accidental tap —
+    // what follows is the home screen, which is already up, so there is
+    // nothing to be "too early" for.
+    window.setTimeout(function(){ introSkip.hidden = false; }, 1200);
+    // Safety net: a clip that stalls or can't decode must not trap anyone.
+    window.setTimeout(finish, 12000);
+  }
 
-    loadLevel(startLevel, function(){ levelReady = true; maybeRelease(); });
+  function showHome(){
+    homeScreen.classList.remove("hidden");
   }
 
   /* ?level=N deep-links straight into a level (also how the §2.8 placement
-     review renders each one) and skips the home screen. */
+     review renders each one), skipping logo, clip and home screen. */
   function bootLevelIndex(){
     var raw = new URLSearchParams(window.location.search).get("level");
     var n = parseInt(raw, 10);
@@ -1311,14 +1369,18 @@
 
   var deepLink = bootLevelIndex();
   if (deepLink !== null){
+    logoScreen.classList.add("hidden");
     homeScreen.classList.add("hidden");
     loadLevel(deepLink);
   } else {
     loadingEl.style.display = "none";
+    homeScreen.classList.add("hidden");
+    loadLevel(0, null, true);          // preload behind the sequence, don't start the clock
+    showLogoThen(function(){ playIntroThen(showHome); });
     document.getElementById("play-btn").addEventListener("click", function(){
       trackEvent("home_play_tapped", {});
       homeScreen.classList.add("hidden");
-      playIntroThen(0);
+      beginLevel();                    // clock + level_start begin here
     });
   }
 })();
