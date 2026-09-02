@@ -267,22 +267,31 @@
     margin:6px 0 0; font-size:clamp(13px, 3.4vw, 16px); color:#f4d9b4;
     text-shadow:0 2px 6px rgba(0,0,0,.6);
   }
-  #home-mascot{
-    width:clamp(150px, 42vw, 230px); height:auto; margin:10px 0 4px;
-    filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));
-    animation:mascotBob 2.6s ease-in-out infinite;
-  }
   @keyframes mascotBob{
     0%,100%{ transform:translateY(0) rotate(-1deg); }
     50%{ transform:translateY(-9px) rotate(1.5deg); }
   }
-  #play-btn{
-    margin-top:6px; padding:15px 46px; border:none; border-radius:999px;
-    background:linear-gradient(160deg, var(--accent), #e8641a); color:#fff;
-    font-size:19px; font-weight:800; letter-spacing:1px; cursor:pointer;
-    box-shadow:0 8px 22px rgba(232,100,26,.5), inset 0 1px 0 rgba(255,255,255,.3);
+  /* 主畫面主要CTA：狐狸叼住個木牌，牌面寫返玩家目前進度到第幾關；
+     撳落去直接續玩嗰一關（同揀關畫面撳個卡係同一條路） */
+  #level-sign-btn{
+    position:relative; border:none; background:none; padding:0; margin:8px 0 2px; cursor:pointer;
+    width:clamp(190px, 56vw, 300px);
+    filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));
+    animation:mascotBob 2.6s ease-in-out infinite;
   }
-  #play-btn:active{ transform:scale(.96); }
+  #level-sign-btn:active{ transform:scale(.96); }
+  #level-sign-btn img{ width:100%; height:auto; display:block; }
+  #level-sign-text{
+    position:absolute; left:8%; right:8%; top:57%; height:17%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:clamp(17px, 5.4vw, 25px); font-weight:800; color:#5a3410;
+    text-shadow:0 1px 0 rgba(255,255,255,.35);
+  }
+  #level-select-link{
+    margin-top:4px; padding:6px 14px; border:none; background:none;
+    color:#f4d9b4; font-size:13px; text-decoration:underline; cursor:pointer;
+    text-shadow:0 2px 6px rgba(0,0,0,.7);
+  }
 
   /* ---------- 選關 ---------- */
   #level-select-screen{
@@ -391,8 +400,11 @@
   <div id="home-inner">
     <h1 id="home-title">Find The Fox</h1>
     <p id="home-sub">揾出匿埋咗嘅狐狸</p>
-    <img id="home-mascot" src="未命名設計 (17).png" alt="">
-    <button id="play-btn">▶ 開始遊戲</button>
+    <button id="level-sign-btn">
+      <img src="未命名設計 (17).png" alt="">
+      <span id="level-sign-text"></span>
+    </button>
+    <button id="level-select-link">揀關卡 ▸</button>
   </div>
 </div>
 
@@ -1408,7 +1420,19 @@
     window.setTimeout(finish, 12000);
   }
 
+  // The level the sign button should jump straight into: the earliest
+  // unlocked level not yet completed, or the last unlocked one on replay
+  // (i.e. once everything reached so far is done).
+  function nextLevelIndex(){
+    for (var i = 0; i <= progress.unlockedIndex; i++){
+      if (progress.completed.indexOf(i) === -1) return i;
+    }
+    return progress.unlockedIndex;
+  }
+
   function showHome(){
+    var idx = nextLevelIndex();
+    document.getElementById("level-sign-text").textContent = "第 " + (idx + 1) + " 關";
     homeScreen.classList.remove("hidden");
   }
 
@@ -1509,8 +1533,16 @@
     homeScreen.classList.add("hidden");
     loadLevel(0, null, true);          // preload level 1 behind the sequence, don't start its clock
     showLogoThen(function(){ playIntroThen(showHome); });
-    document.getElementById("play-btn").addEventListener("click", function(){
-      trackEvent("home_play_tapped", {});
+    // 木牌CTA：直接續玩目前進度嗰一關
+    document.getElementById("level-sign-btn").addEventListener("click", function(){
+      var idx = nextLevelIndex();
+      trackEvent("home_play_tapped", { level_id: LEVELS[idx].level_id });
+      homeScreen.classList.add("hidden");
+      loadLevel(idx); // beginLevel() fires once its own assets are ready
+    });
+    // 細字連結：想揀第二關（已解鎖）先用
+    document.getElementById("level-select-link").addEventListener("click", function(){
+      trackEvent("home_level_select_tapped", {});
       homeScreen.classList.add("hidden");
       showLevelSelect();
     });
