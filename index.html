@@ -220,6 +220,66 @@
     display:flex; align-items:center; justify-content:center; font-size:16px;
   }
 
+  /* ---------- 主畫面 ---------- */
+  #home-screen{
+    position:fixed; inset:0; z-index:60; overflow:hidden;
+    background:#1a1410; display:flex; align-items:center; justify-content:center;
+  }
+  #home-screen.hidden{ display:none; }
+  #home-bg{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; object-position:center 30%;
+  }
+  /* the den artwork is bright in the middle, so the text sits on a soft scrim */
+  #home-screen::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(to bottom, rgba(20,12,6,.45) 0%, rgba(20,12,6,0) 30%, rgba(20,12,6,.55) 72%, rgba(20,12,6,.9) 100%);
+  }
+  #home-inner{
+    position:relative; z-index:1; text-align:center;
+    display:flex; flex-direction:column; align-items:center;
+    padding:0 24px; width:100%; max-width:520px;
+    margin-top:auto; margin-bottom:6vh;
+  }
+  #home-title{
+    margin:0; font-size:clamp(30px, 8vw, 46px); font-weight:800; letter-spacing:.5px;
+    color:#fff3dd; text-shadow:0 3px 10px rgba(0,0,0,.6), 0 0 26px rgba(255,150,60,.35);
+  }
+  #home-sub{
+    margin:6px 0 0; font-size:clamp(13px, 3.4vw, 16px); color:#f4d9b4;
+    text-shadow:0 2px 6px rgba(0,0,0,.6);
+  }
+  #home-mascot{
+    width:clamp(150px, 42vw, 230px); height:auto; margin:10px 0 4px;
+    filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));
+    animation:mascotBob 2.6s ease-in-out infinite;
+  }
+  @keyframes mascotBob{
+    0%,100%{ transform:translateY(0) rotate(-1deg); }
+    50%{ transform:translateY(-9px) rotate(1.5deg); }
+  }
+  #play-btn{
+    margin-top:6px; padding:15px 46px; border:none; border-radius:999px;
+    background:linear-gradient(160deg, var(--accent), #e8641a); color:#fff;
+    font-size:19px; font-weight:800; letter-spacing:1px; cursor:pointer;
+    box-shadow:0 8px 22px rgba(232,100,26,.5), inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  #play-btn:active{ transform:scale(.96); }
+
+  /* ---------- 入game loading片 ---------- */
+  #intro-screen{
+    position:fixed; inset:0; z-index:55; background:#efe7db; display:none;
+    align-items:center; justify-content:center;
+  }
+  #intro-screen.show{ display:flex; }
+  #intro-video{ width:100%; height:100%; object-fit:contain; background:#efe7db; }
+  #intro-skip{
+    position:absolute; bottom:max(28px, env(safe-area-inset-bottom)); right:20px;
+    padding:10px 22px; border:none; border-radius:999px;
+    background:rgba(30,20,10,.72); color:#fff5e6; font-size:14px; font-weight:700;
+    cursor:pointer; backdrop-filter:blur(4px);
+  }
+
   /* ---------- Interstitial ad (simulated) ---------- */
   /* §1.5 / §7 (已拍板): forced interstitial after every level completion,
      before the player can continue. This is a placeholder ad unit — swap
@@ -254,6 +314,23 @@
 </style>
 </head>
 <body>
+
+<!-- 主畫面：入game之前見到嘅第一個畫面 -->
+<div id="home-screen">
+  <img id="home-bg" src="Codex 圖片 2026年9月2日 下午08_12_56.png" alt="">
+  <div id="home-inner">
+    <h1 id="home-title">Find The Fox</h1>
+    <p id="home-sub">揾出匿埋咗嘅狐狸</p>
+    <img id="home-mascot" src="未命名設計 (17).png" alt="">
+    <button id="play-btn">▶ 開始遊戲</button>
+  </div>
+</div>
+
+<!-- 入game loading片 -->
+<div id="intro-screen">
+  <video id="intro-video" src="intro-loading.mp4" poster="intro-poster.jpg" playsinline preload="auto"></video>
+  <button id="intro-skip" hidden>跳過 ▶</button>
+</div>
 
 <div id="loading">🦊 載入緊 Find The Fox…</div>
 
@@ -1014,7 +1091,7 @@
      background + sprite assets (levels don't share an asset folder),
      then wipes and re-populates #world. Used both for the initial boot
      (loadLevel(0)) and for advancing after an interstitial. */
-  function loadLevel(idx){
+  function loadLevel(idx, onReady){
     currentLevelIndex = idx;
     manifest = LEVELS[idx];
     foundIds = {};
@@ -1037,6 +1114,7 @@
       if (failed > 0){
         showToast("⚠️ 有 " + failed + " 個素材載入失敗，請確認素材資料夾喺同一層");
       }
+      if (onReady) onReady();
     });
   }
 
@@ -1175,15 +1253,74 @@
   });
   window.addEventListener("resize", fitCamera);
 
-  /* ---- Boot ----
-     ?level=N jumps straight to a level so the §2.8 placement self-review can
-     render each one without playing through; out-of-range or absent → 0. */
+  /* ---- 主畫面 → 入game片 → 關卡 ----
+     The intro clip runs ~10s but asset loading is usually much faster, so the
+     two race: whichever finishes last releases the player. The clip can be
+     skipped once the level is actually ready, never before — skipping early
+     would just dump the player on the loading screen instead. */
+  var homeScreen = document.getElementById("home-screen");
+  var introScreen = document.getElementById("intro-screen");
+  var introVideo = document.getElementById("intro-video");
+  var introSkip = document.getElementById("intro-skip");
+
+  function playIntroThen(startLevel){
+    var released = false;
+    function release(){
+      if (released) return;
+      released = true;
+      introVideo.pause();
+      introScreen.classList.remove("show");
+      introSkip.hidden = true;
+    }
+
+    introScreen.classList.add("show");
+    introSkip.hidden = true;
+    try{ introVideo.currentTime = 0; }catch(err){ /* not seekable yet */ }
+    // Unmuted needs the play-button gesture; if the browser still refuses,
+    // fall back to muted so the clip is never simply missing.
+    introVideo.muted = muted;
+    var attempt = introVideo.play();
+    if (attempt && attempt["catch"]){
+      attempt["catch"](function(){
+        introVideo.muted = true;
+        introVideo.play()["catch"](function(){ /* can't play at all — the race below still releases */ });
+      });
+    }
+
+    var levelReady = false;
+    var videoDone = false;
+    function maybeRelease(){
+      if (levelReady && videoDone) release();
+      else if (levelReady) introSkip.hidden = false;
+    }
+    introVideo.onended = function(){ videoDone = true; maybeRelease(); };
+    introSkip.onclick = release;
+    // Safety net: never trap the player behind a clip that stalls or can't decode.
+    window.setTimeout(function(){ videoDone = true; maybeRelease(); }, 12000);
+
+    loadLevel(startLevel, function(){ levelReady = true; maybeRelease(); });
+  }
+
+  /* ?level=N deep-links straight into a level (also how the §2.8 placement
+     review renders each one) and skips the home screen. */
   function bootLevelIndex(){
     var raw = new URLSearchParams(window.location.search).get("level");
     var n = parseInt(raw, 10);
-    return (isFinite(n) && n >= 0 && n < LEVELS.length) ? n : 0;
+    return (isFinite(n) && n >= 0 && n < LEVELS.length) ? n : null;
   }
-  loadLevel(bootLevelIndex());
+
+  var deepLink = bootLevelIndex();
+  if (deepLink !== null){
+    homeScreen.classList.add("hidden");
+    loadLevel(deepLink);
+  } else {
+    loadingEl.style.display = "none";
+    document.getElementById("play-btn").addEventListener("click", function(){
+      trackEvent("home_play_tapped", {});
+      homeScreen.classList.add("hidden");
+      playIntroThen(0);
+    });
+  }
 })();
 </script>
 </body>
