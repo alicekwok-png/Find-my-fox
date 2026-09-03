@@ -37,4 +37,6 @@ level5_assets_v3_all/_grid/
 # find-the-fox-level3-generated-assets/clean/ (keyed + trimmed to
 # content), which index.html loads. The background PNG in the same
 # folder is real and stays tracked.
-find-the-fox-level3-generated-assets/find-the-fox-level3-[CNO]*.png
+find-the-fox-level3-generated-assets/find-the-fox-level3-C*.png
+find-the-fox-level3-generated-assets/find-the-fox-level3-N*.png
+find-the-fox-level3-generated-assets/find-the-fox-level3-O*.png
