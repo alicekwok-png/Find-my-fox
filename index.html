@@ -177,6 +177,12 @@
   }
   .round-btn img{ width:100%; height:100%; object-fit:contain; }
   .round-btn:active{ transform:scale(.92); }
+  /* zoom in/out — no icon art for these, so a plain glyph on the UI chip colour */
+  .round-btn.zoom-btn{
+    width:46px; height:46px; background:var(--ui-bg); color:var(--ui-fg);
+    font-size:26px; font-weight:700; line-height:1; backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.12);
+  }
   .round-btn .label{
     position:absolute; right:64px; top:50%; transform:translateY(-50%);
     background:var(--ui-bg); color:var(--ui-fg); font-size:11px; padding:3px 8px;
@@ -462,6 +468,8 @@
   <div id="hint-toast"></div>
 
   <div id="action-buttons">
+    <button class="round-btn zoom-btn" id="zoom-in-btn" title="放大" aria-label="放大">＋</button>
+    <button class="round-btn zoom-btn" id="zoom-out-btn" title="縮小" aria-label="縮小">－</button>
     <button class="round-btn" id="hint-btn" title="提示"><img src="icon_4.png" alt=""><span class="label">提示</span></button>
   </div>
 </div>
@@ -510,57 +518,60 @@
      background painting; treat as a draft for art/QA sign-off,
      not final coordinates.
      ========================================================= */
-  var ASSET_DIR = "find-the-fox-level1-assets (1)/";
+  /* Level 1 art refresh (2026-09-03): new background + 15 freshly named Tier A
+     sprites + the 5 Tier B objects from asset-prompts-v3 §B, all real RGBA.
+     §2.4 gate: background measured via PIL = 2688x1152, ratio 2.33 — OUTSIDE the
+     ~1.7–2:1 target range (too wide). Flagged to PM before placing; PM decided
+     to keep the original size and waive the range for this level.
+     §2.10 anchor table + §2.8 self-review: every target below was placed onto a
+     named, real background element read off 100px-gridded crops, then verified
+     on a rendered composite (bounds / target-target / target-face overlap
+     checked programmatically; floating + scale checked visually per target).
+     Head/face boxes used for §2.7: father, sleeping retriever, shaggy dog on
+     stump, cat on log, mother, daughter, boy, chicken.
+     Scale (§2.9): boy standing ≈530px → foxes 150–180px boxes (knee-to-thigh
+     height, smaller than both dogs); shakers 90 (≈1.5× the real mug),
+     plush 130, jack-o-lantern 105 (between the two real pumpkins),
+     weathervane 155 (≈ the real hanging lanterns). */
+  var ASSET_DIR = "find-the-fox-level1-assets/find-the-fox-level1-assets/";
 
   var LEVEL_1 = {
     level_id: "fox_den_01",
     theme: "red_fox_autumn",
-    background_asset: ASSET_DIR + "ChatGPT Image 2026年9月2日 上午02_09_09.png",
-    // §2.4 QA gate: measured directly off the source PNG via PIL (im.size),
-    // not eyeballed off a screenshot — 1672/941 = 1.78, inside the required
-    // ~1.7:1–2:1 panorama ratio, so no outpaint was needed for this asset.
-    background_size: { width: 1672, height: 941 },
+    background_asset: ASSET_DIR + "background/level1-forest-clearing-panorama.png",
+    background_size: { width: 2688, height: 1152 },
     initial_camera_position: { x: 0, y: 0 },
-    target_count_total: 21, // 16 Tier A (fox_12 back as a filler at the fallen-log/cat spot, per §2.6 candidate-map style reuse — not next to fox_02 this time) + 5 Tier B
+    target_count_total: 20, // 15 Tier A (14 red-fox hero + 1 grey-fox cameo) + 5 Tier B, per §2.1 L1 row
     targets: [
-      // ---- Tier A: hero_fox / cameo_fox (15) ----
-      // placement_class per §2.3: ground_only sprites are only ever placed on a
-      // real support visible in the background (leaf litter, table, log, cart bed —
-      // never mid-canopy/sky); elevated_ok sprites carry their own hollow/hook/roof
-      // structure; airborne_action sprites are genuine jump/pounce poses, free to
-      // sit in open sky. Each row below was checked against the real art, not guessed.
-      { id:"fox_01", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_43 (1).png", position:{x:120,y:900}, hitbox:{width:118,height:118}, difficulty_tier:"partial", placement_class:"ground_only" }, // peeking over a pumpkin — must sit on ground
-      { id:"fox_02", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_44 (2).png", position:{x:1560,y:880}, hitbox:{width:112,height:112}, difficulty_tier:"partial", placement_class:"ground_only" }, // lying in mushroom cluster — on the real mushroom patch, bottom-right
-      { id:"fox_03", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_44 (3).png", position:{x:650,y:70}, hitbox:{width:110,height:110}, difficulty_tier:"exposed", placement_class:"airborne_action" }, // mid-leap pouncing a falling leaf
-      { id:"fox_04", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_45 (4).png", position:{x:980,y:870}, hitbox:{width:108,height:108}, difficulty_tier:"partial", placement_class:"ground_only" }, // sleeping in a leaf pile
-      { id:"fox_05", target_type:"cameo_fox", species:"gray_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午08_57_45 (5).png", position:{x:1585,y:415}, hitbox:{width:96,height:96}, difficulty_tier:"hidden", placement_class:"ground_only" }, // grey-fox cameo, moved to sit in the shadow of the shed's potted-plant shelf for better concealment
-      { id:"fox_06", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_17 (1).png", position:{x:895,y:355}, hitbox:{width:100,height:100}, difficulty_tier:"hidden", placement_class:"elevated_ok" }, // curled asleep inside the tree hollow — nudged right/up off (870,390) per §2.7, that spot sat only ~20px clear of mother's head, too tight
-      { id:"fox_07", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_18 (2).png", position:{x:1150,y:60}, hitbox:{width:110,height:110}, difficulty_tier:"exposed", placement_class:"airborne_action" }, // reaching up mid-jump
-      { id:"fox_08", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_18 (3).png", position:{x:720,y:705}, hitbox:{width:118,height:118}, difficulty_tier:"hidden", placement_class:"ground_only" }, // moved off the log down onto the leaf-covered ground beside the picnic basket, dappled fur blends into the maple leaves
-      { id:"fox_09", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_18 (4).png", position:{x:1080,y:910}, hitbox:{width:106,height:106}, difficulty_tier:"exposed", placement_class:"ground_only" }, // §2.6: nudged off the table cluster into the chicken/ground-litter area — same texture quality, previously unused
-      { id:"fox_10", target_type:"cameo_fox", species:"gray_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_06_19 (5).png", position:{x:330,y:220}, hitbox:{width:96,height:120}, difficulty_tier:"partial", placement_class:"elevated_ok" }, // grey-fox cameo peeking behind the real hanging lantern
-      { id:"fox_11", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_01 (1).png", position:{x:90,y:680}, hitbox:{width:110,height:110}, difficulty_tier:"hidden", placement_class:"ground_only" }, // §2.6: relocated off the table cluster to the woodpile's log-end texture — the whole pumpkin is baked into this sprite so it doesn't need a real background pumpkin nearby, just ground
-      { id:"fox_12", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_02 (2).png", position:{x:1080,y:470}, hitbox:{width:106,height:106}, difficulty_tier:"partial", placement_class:"ground_only" }, // filler prop, kept per instruction — on the ground right below the fallen log the cat sits on (was mis-placed at (620,415), nowhere near the log; fixed), well clear of the cat's face
-      { id:"fox_13", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_02 (3).png", position:{x:850,y:35}, hitbox:{width:96,height:96}, difficulty_tier:"hidden", placement_class:"airborne_action" }, // §2.6: moved again — had landed right beside fox_07's canopy gap, re-clustering; now a separate leaf-canopy opening away from both the shed roofline and fox_07
-      { id:"fox_14", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_03 (4).png", position:{x:300,y:900}, hitbox:{width:120,height:100}, difficulty_tier:"hidden", placement_class:"ground_only" }, // almost fully buried in a leaf pile, only an ear visible
-      { id:"fox_15", target_type:"hero_fox", species:"red_fox", sprite_asset: ASSET_DIR + "12_蘑菇叢仰躺小狐狸_透明.png", position:{x:520,y:625}, hitbox:{width:96,height:80}, difficulty_tier:"partial", placement_class:"ground_only" }, // §2.6: relocated beside the second sleeping dog near the cart — that fur/ground texture had no target on it; nudged down from (500,595) for clearer margin off the dog's face per §2.7
+      // ---- Zone 1 · campfire / woodpile / cart (5 Tier A + 1 Tier B) ----
+      { id:"fox_04", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-04-red-peeking.png",    position:{x:100, y:440},  hitbox:{width:160,height:160}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"standing on top of the stacked firewood pile" },
+      { id:"fox_11", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-11-tiny-kit.png",       position:{x:215, y:880},  hitbox:{width:110,height:110}, difficulty_tier:"hidden",  placement_class:"ground_only", anchor_ref:"sitting in the mouth of father's open canvas tool bag (§2.5 hiding interface)" },
+      { id:"fox_03", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-03-red-curled.png",     position:{x:660, y:540},  hitbox:{width:140,height:140}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"curled on top of the folded-blanket pile in the wooden cart" },
+      { id:"fox_02", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-02-red-sitting.png",    position:{x:880, y:960},  hitbox:{width:150,height:170}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"sitting on the leaf litter beside the campfire, opposite father" },
+      { id:"fox_09", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-09-lying.png",          position:{x:980, y:470},  hitbox:{width:170,height:130}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"lying along the fallen dead log, left of the cat" },
+      { id:"obj_06", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "tier-b/O6-fox-salt-pepper-shakers.png", position:{x:735, y:880}, hitbox:{width:90,height:90}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"on the flat ring stones beside the campfire", intended_scale_ref:"hand-sized pair, ≈1.5× the real enamel mug" }, // v3 §B says Zone 1 \"small camp table beside a kettle\" — neither exists in the generated art, so re-anchored to the one real flat camp-kitchen surface by the fire
 
-      // ---- Tier B: fox_object (5) ----
-      { id:"obj_01", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o12_fox_weathervane.png", position:{x:955,y:96}, hitbox:{width:90,height:90}, difficulty_tier:"exposed", placement_class:"elevated_ok" }, // mounted on the treehouse roof peak
-      { id:"obj_02", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o18_fox_face_pumpkin.png", position:{x:1300,y:760}, hitbox:{width:96,height:96}, difficulty_tier:"partial", placement_class:"ground_only" }, // sitting on the table among the real pumpkins
-      { id:"obj_03", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o06_fox_shaker_set.png", position:{x:1382,y:702}, hitbox:{width:90,height:90}, difficulty_tier:"partial", placement_class:"ground_only" }, // on the table beside the jars
-      { id:"obj_04", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o09_knitted_plush_fox.png", position:{x:868,y:642}, hitbox:{width:92,height:92}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"picnic basket/blanket in mother & daughter's lap" },
-      { id:"obj_05", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "the_fox_den_o22_fox_pattern_scarf.png", position:{x:330,y:460}, hitbox:{width:88,height:88}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"rolled blankets on the wooden cart bed" },
+      // ---- Zone 2 · oak / treehouse / picnic blanket (5 Tier A + 2 Tier B) ----
+      { id:"fox_05", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-05-red-walking.png",    position:{x:1080,y:660},  hitbox:{width:180,height:130}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"walking on the leaf ground under the oak, below the fallen log" },
+      { id:"fox_01", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-01-red-standing.png",   position:{x:1060,y:1000}, hitbox:{width:170,height:160}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"standing on the checkered picnic blanket's left corner" },
+      { id:"fox_10", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-10-looking-up.png",     position:{x:1530,y:300},  hitbox:{width:150,height:150}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"standing on the treehouse porch deck, looking up at the string lights" },
+      { id:"fox_13", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-13-tail-over-face.png", position:{x:1585,y:780},  hitbox:{width:150,height:150}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"sitting inside the open picnic basket among the jars (§2.5 hiding interface)" },
+      { id:"fox_07", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-07-crossing.png",       position:{x:1750,y:660},  hitbox:{width:170,height:170}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"on the ground at the foot of the treehouse ladder" },
+      { id:"obj_12", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "tier-b/O12-fox-weathervane.png",   position:{x:1505,y:84},   hitbox:{width:140,height:155}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"mounted on the treehouse roof's left eave corner", intended_scale_ref:"roof-finial ornament, ≈ the real hanging lanterns" }, // its own wooden finial base sits on the roof slope (§2.3 v2.9 connector). Peak is too close to the top edge for a vane; the right eave sits over the trunk — two earlier placements there floated and were rejected on the composite
+      { id:"obj_09", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "tier-b/O9-knitted-plush-fox-toy.png", position:{x:1690,y:990}, hitbox:{width:130,height:130}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"sitting upright on the checkered picnic blanket, right of the mug (§2.5 laid-out blanket)", intended_scale_ref:"toddler-sized plush, ≈2× the mug" },
 
-      // §2.5: the background prompt drew father an open canvas tool satchel
-      // specifically as a hiding surface — placement had never actually used
-      // it until this pass. Re-using the spare grey-fox-with-scarf variant
-      // (same cameo species as fox_05, different scarf colour) rather than
-      // requesting new art for one slot.
-      { id:"fox_16", target_type:"cameo_fox", species:"gray_fox", sprite_asset: ASSET_DIR + "ChatGPT Image 2026年8月30日 下午09_17_03 (5).png", position:{x:405,y:865}, hitbox:{width:100,height:100}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"father's open canvas tool satchel by the campfire" }
+      // ---- Zone 3 · harvest table / shed / mushrooms (5 Tier A + 2 Tier B) ----
+      { id:"fox_06", target_type:"cameo_fox", species:"gray_fox", sprite_asset: ASSET_DIR + "tier-a/fox-06-gray-sitting.png",   position:{x:2380,y:590},  hitbox:{width:150,height:160}, difficulty_tier:"hidden",  placement_class:"ground_only", anchor_ref:"sitting inside the open shed doorway, in front of the pot shelves" },
+      { id:"fox_12", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-12-dark-red.png",       position:{x:2600,y:525},  hitbox:{width:120,height:130}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"sitting on top of the wooden barrel beside the shed" },
+      { id:"fox_08", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-08-leaf-collar.png",    position:{x:2330,y:900},  hitbox:{width:170,height:170}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"standing behind the table's right legs, in front of the chair" },
+      { id:"fox_14", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-14-autumn-mottled.png", position:{x:2165,y:1050}, hitbox:{width:150,height:170}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"on hind legs among the fallen apples and acorns below the apple basket" },
+      { id:"fox_15", target_type:"hero_fox",  species:"red_fox",  sprite_asset: ASSET_DIR + "tier-a/fox-15-rolling.png",        position:{x:2500,y:1040}, hitbox:{width:170,height:150}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"rolling on its back in the mushroom cluster at the right tree's base" },
+      { id:"obj_18", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "tier-b/O18-fox-face-jack-o-lantern.png", position:{x:2240,y:712}, hitbox:{width:105,height:105}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"resting on the wooden table's front edge, in front of the preserve jars", intended_scale_ref:"between the two real pumpkins on the same table" },
+      { id:"obj_22", target_type:"fox_object", species:"red_fox", sprite_asset: ASSET_DIR + "tier-b/O22-fox-head-pattern-scarf.png", position:{x:2385,y:745}, hitbox:{width:140,height:140}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"draped over the wooden table's right end, hanging down toward the chair" }
     ]
   };
   LEVEL_1.level_name = "The Fox Den";
+
 
   /* =========================================================
      Level 2 — "極光冰原" (Arctic Fox / Aurora Ice Field).
@@ -840,6 +851,97 @@
     ]
   };
 
+  /* =========================================================
+     LEVEL 5 — 荒狐 Corsac Fox／中亞草原・戈壁
+     Anchors for Tier B/C are the PM-fixed ones from
+     find-the-fox-level5-asset-prompts-v3 (1).md §B/§C (§2.10) — not
+     chosen here. Tier A has NO PM anchor in the v2 素材清單 (it only
+     gives difficulty + individual traits), so those 15 are placed by
+     difficulty tier on real supports and are flagged for PM sign-off.
+
+     §2.4 gate: level5_background.png measured via PIL = 2688x1152,
+     ratio 2.33 — WIDER than the 1.7–2.0 spec (same output size the
+     L4 v1 painting had). Not the "too narrow" halt case, so placement
+     proceeded; flagged in the hand-off.
+
+     §2.9 scale: father kneeling spans y590–900 (~310px ≈ 110cm) →
+     1cm ≈ 2.8px in the foreground. Sitting corsac (~35cm) ≈ 100px;
+     ger doorway measured at 150×230 so N2 is sized to it, not guessed.
+
+     §2.7 face/head no-go boxes measured off the grid tiles:
+       father (530–610,610–700)   horse1 head (380–510,530–680)
+       mother (1240–1340,690–770) child (1350–1440,740–820)
+       camel head (1475–1570,595–725)
+       sibling (1910–2010,640–730) horse2 head (1990–2110,575–750)
+
+     Tier A sprites: raw exports are opaque (alpha 255 at the corners),
+     clean/ carries real alpha → clean/ is what loads. O/N/C are real
+     transparent PNGs and load from the folder root.
+     ========================================================= */
+  var ASSET_DIR5 = "level5_assets_v3_all/";
+  var ASSET_DIR5_CLEAN = ASSET_DIR5 + "clean/";
+
+  var LEVEL_5 = {
+    level_id: "corsac_steppe_05",
+    level_name: "戈壁草原牧家",
+    theme: "corsac_fox_steppe",
+    background_asset: ASSET_DIR5 + "level5_background.png",
+    background_size: { width: 2688, height: 1152 },
+    viewport_size: { width: 1080, height: 1920 },
+    initial_camera_position: { x: 0, y: 0 },
+    target_count_total: 37, // 15 Tier A (11 corsac + 3 Tibetan-sand-fox cameo + 1 pale-fox cameo) + 17 Tier B (11 reskin + 6 steppe-only) + 5 Tier C
+    targets: [
+      // ---- Tier A: hero_fox corsac_fox (11) — no PM anchor, placed by difficulty ----
+      { id:"fox_01", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-01.png", position:{x:110,y:900}, hitbox:{width:150,height:105}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 1 — standing on the open grass left of the resting horse, clear of its hooves" },
+      { id:"fox_02", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-02.png", position:{x:1745,y:905}, hitbox:{width:110,height:95}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 3 — peeking out from behind the wooden bucket at the far right (moved: its old cart spot now hosts fox_04, whose sprite carries its own wheel)" },
+      { id:"fox_03", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-03.png", position:{x:275,y:795}, hitbox:{width:110,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 1 — tucked behind the green felt bundle beside the saddle bags, only the head above it" },
+      { id:"fox_04", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-04.png", position:{x:1000,y:705}, hitbox:{width:150,height:115}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 1 second cluster — the sprite carries its own cart wheel, so it stands beside the real cart where that wheel reads as a spare leaning against it, not a stray wheel on open dirt" },
+      { id:"fox_05", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-05.png", position:{x:1090,y:900}, hitbox:{width:70,height:70}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 2 — the cub peeking from behind the wooden bucket left of mother" },
+      { id:"fox_06", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-06.png", position:{x:2390,y:555}, hitbox:{width:110,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 3 — wedged into a crevice of the rocky outcrop, left of the cart wheel" },
+      { id:"fox_07", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-07.png", position:{x:1150,y:720}, hitbox:{width:140,height:80}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 1 second cluster — lying under the cart bed, long tail out the side" },
+      { id:"fox_08", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-08.png", position:{x:1080,y:1060}, hitbox:{width:100,height:110}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 2 — sitting on the open dirt between the cart and the rug (moved out of the far-right bucket cluster, where fox_02/11/12 already sit, per §2.6)" },
+      { id:"fox_09", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-09.png", position:{x:90,y:1060}, hitbox:{width:140,height:100}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 1 — low in the tall dry grass at the far-left foreground" },
+      { id:"fox_10", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-10.png", position:{x:1640,y:770}, hitbox:{width:130,height:90}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 2 second cluster — in the dry grass below the grazing camel, clear of its lowered head" },
+      { id:"fox_11", target_type:"hero_fox", species:"corsac_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-11.png", position:{x:1760,y:1035}, hitbox:{width:160,height:120}, difficulty_tier:"exposed", placement_class:"airborne_action", anchor_ref:"[PM未指定] Zone 2/3 — mid-pounce on a grasshopper on the open ground right of the rug; the sprite carries its own grass tufts so it sits just above ground level, not in the sky" },
+
+      // ---- Tier A: cameo_fox tibetan_sand_fox (3) ----
+      { id:"fox_12", target_type:"cameo_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-12.png", position:{x:1830,y:800}, hitbox:{width:100,height:110}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 2/3 — sitting on the grass between the camel and the sibling" },
+      { id:"fox_13", target_type:"cameo_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-13.png", position:{x:2440,y:1080}, hitbox:{width:120,height:90}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 3 — the sprite carries its own cart wheel, so it sits below the real leaning wheel where a second wheel reads as part of that cluster; peeks from behind it" },
+      { id:"fox_14", target_type:"cameo_fox", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-14.png", position:{x:2160,y:990}, hitbox:{width:120,height:80}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 3 — flattened behind the scattered stones beyond the pitchfork" },
+
+      // ---- Tier A: cameo_fox pale_fox (1) ----
+      { id:"fox_15", target_type:"cameo_fox", species:"pale_fox", sprite_asset: ASSET_DIR5_CLEAN + "find-the-fox-level5-v2-fox-15.png", position:{x:2200,y:1110}, hitbox:{width:100,height:70}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] Zone 3 — ears just above the dry grass at the bottom edge" },
+
+      // ---- Tier B reskin (11) — anchors PM-fixed in prompts-v3 §B ----
+      { id:"obj_O1", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O1_fox_face_mug.png", position:{x:835,y:745}, hitbox:{width:45,height:45}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺蒙古包門邊嘅木台階 — on the right end of the stone/wood threshold slab in front of the ger door", intended_scale_ref:"mug, ~12cm" },
+      { id:"obj_O2", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O2_fox_blanket.png", position:{x:380,y:800}, hitbox:{width:110,height:70}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"搭喺馬鞍袋上面 — folded on top of the red leather saddle bag", intended_scale_ref:"folded felt blanket, ~40cm across" },
+      { id:"obj_O3", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O3_fox_tail_keychain.png", position:{x:415,y:845}, hitbox:{width:32,height:48}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"掛喺馬鞍袋嘅背帶 — hanging off the red saddle bag's strap; its own clip is the §2.3 connector" },
+      { id:"obj_O4", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O4_fox_cookie.png", position:{x:1225,y:1000}, hitbox:{width:40,height:40}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺茶火邊嘅布上 — on the felt rug just left of the fire ring, in front of mother" },
+      { id:"obj_O5", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O5_knitted_fox_plush.png", position:{x:1000,y:940}, hitbox:{width:70,height:70}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"坐喺氈毯嘅圖案中間 — sitting on the rug's patterned left panel" },
+      { id:"obj_O6", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O6_fox_pattern_thermos.png", position:{x:1560,y:920}, hitbox:{width:42,height:80}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"企喺氈毯上 — standing upright on the rug's right panel" },
+      { id:"obj_O7", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O7_fox_salt_pepper_set.png", position:{x:1340,y:985}, hitbox:{width:48,height:52}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"貼住奶茶壺擺放 — on the front stones of the fire ring, directly below the real milk-tea pot" },
+      { id:"obj_O8", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O8_fox_ear_hat.png", position:{x:2590,y:990}, hitbox:{width:190,height:240}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"掛喺牧具嘅手柄上 — the sprite carries its own shepherd's crook + rope (the §2.3 connector); crook base on the ground at the far-right tool area, below the leaning wheel", intended_scale_ref:"herding crook ~1.3m — human-scale, must not shrink to trinket size" },
+      { id:"obj_O9", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O9_fox_wind_chime.png", position:{x:2551,y:787}, hitbox:{width:200,height:200}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"掛喺木頭車輪嘅輪軸 — the sprite carries its own hub + rope; hub aligned onto the real wheel's axle at (2555,705) so the chime hangs from it", intended_scale_ref:"chime body ~35cm; sprite's wheel fragment scaled to the real wheel's ~105px radius" },
+      { id:"obj_O10", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O10_fox_field_guide.png", position:{x:2050,y:960}, hitbox:{width:55,height:65}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"半掩喺散落牧具之間 — lying beside the pitchfork's handle, below horse 2's front hooves" },
+      { id:"obj_O11", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "O11_fox_pincushion.png", position:{x:225,y:918}, hitbox:{width:45,height:45}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"塞入盤好嘅繩圈中間 — inside the left rope coil (the right coil sits under father's boots)" },
+
+      // ---- Tier B steppe-only (6) — anchors PM-fixed in prompts-v3 §B ----
+      { id:"obj_N1", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "N1_fox_embroidery_patch.png", position:{x:300,y:868}, hitbox:{width:50,height:50}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"直接縫喺馬鞍袋面 — flat on the face of the green felt bundle" },
+      { id:"obj_N2", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "N2_ger_door_curtain.png", position:{x:745,y:625}, hitbox:{width:150,height:228}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"掛喺蒙古包門口 — fills the real doorway (measured 150×230); the sprite's own wooden rod is the §2.3 connector, sitting on the lintel", intended_scale_ref:"full door curtain — sized to the real doorway, not to a default" },
+      { id:"obj_N3", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "N3_saddle_bag_fox_charm.png", position:{x:2400,y:790}, hitbox:{width:110,height:95}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"靠住石頭擺放 — leaning on the base boulder of the outcrop, left of the wheel" },
+      { id:"obj_N4", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "N4_fox_milk_tea_pot.png", position:{x:1405,y:1000}, hitbox:{width:65,height:70}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"直接放喺茶火上 — on the right-front stones of the fire ring, beside the real pot already on the fire (stacking a second pot on the flames would double the background's pot)", intended_scale_ref:"milk-tea pot ~25cm" },
+      { id:"obj_N5", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "N5_fox_quiver.png", position:{x:2300,y:960}, hitbox:{width:50,height:110}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"塞入散石後面 — behind the small stone pile at the dung pile's left edge, below horse 2's hind hooves" },
+      { id:"obj_N6", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "N6_felt_fox_doll.png", position:{x:960,y:985}, hitbox:{width:55,height:55}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"塞入氈毯嘅摺痕 — in the rumpled left fringe of the rug" },
+
+      // ---- Tier C (5) — anchors PM-fixed in prompts-v3 §C ----
+      { id:"clue_C1", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C1_fox_pawprints.png", position:{x:760,y:810}, hitbox:{width:130,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"蒙古包門口嘅泥地 — on the dirt directly below the door step" },
+      { id:"clue_C2", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C2_fox_tail_tip.png", position:{x:935,y:1010}, hitbox:{width:60,height:50}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"氈毯邊沿底下 — under the rug's left fringe" },
+      { id:"clue_C3", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C3_fox_ears_behind_rock.png", position:{x:2320,y:700}, hitbox:{width:55,height:50}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"石頭背後 — ears above the top edge of the outcrop's left base boulder" },
+      { id:"clue_C4", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C4_fox_shadow.png", position:{x:880,y:620}, hitbox:{width:90,height:120}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"蒙古包氈牆表面 — on the felt wall to the RIGHT of the door; the left wall is blocked by father's and the horse's heads (§2.7)" },
+      { id:"clue_C5", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C5_fox_nose_whiskers.png", position:{x:2420,y:900}, hitbox:{width:60,height:50}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"曬乾嘅牛糞燃料堆 — nose poking out of the dung pile" }
+    ]
+  };
+
   /* ================= Engine ================= */
   var viewportEl = document.getElementById("viewport");
   var worldEl = document.getElementById("world");
@@ -849,12 +951,19 @@
   var completeScreen = document.getElementById("complete-screen");
   var hintToast = document.getElementById("hint-toast");
 
-  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4];
+  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5];
   var currentLevelIndex = 0;
   var manifest = LEVELS[currentLevelIndex];
+  /* Camera: scale = fitScale * zoom. fitScale is "fit the panorama's height
+     to the viewport" (zoom 1.0, the default panorama view); zoom ranges from
+     "whole picture fits on screen" up to ZOOM_MAX. Both axes pan, clamped to
+     the picture's edges (or centred when the picture is smaller than the
+     viewport on that axis). §1.1 asked for a configurable dual-axis camera. */
+  var fitScale = 1;
+  var zoom = 1;
+  var ZOOM_MAX = 4;
   var scale = 1;
   var camX = 0, camY = 0;
-  var minCamX = 0, maxCamX = 0;
   var foundIds = {};
   var foundCount = 0;
   var hintsUsed = 0;
@@ -916,63 +1025,129 @@
     totalCountEl.textContent = manifest.target_count_total;
   }
 
-  function fitCamera(){
-    var vw = viewportEl.clientWidth, vh = viewportEl.clientHeight;
-    scale = vh / manifest.background_size.height;
-    var scaledW = manifest.background_size.width * scale;
-    worldEl.style.transform = "scale(" + scale + ")";
-    minCamX = Math.min(0, vw - scaledW);
-    maxCamX = 0;
-    camX = clamp(camX, minCamX, maxCamX);
-    camY = 0;
-    applyCamera();
-  }
-
   function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
 
-  function applyCamera(){
-    viewportEl.scrollLeft; // no-op, we drive via transform on an inner wrapper below
+  // Zoom range: can't zoom out past "the whole picture fits on screen" (no
+  // point showing empty space around it), can't zoom in past ZOOM_MAX.
+  function zoomBounds(){
+    var vw = viewportEl.clientWidth, vh = viewportEl.clientHeight;
+    var containScale = Math.min(vw / manifest.background_size.width, vh / manifest.background_size.height);
+    return { min: Math.min(1, containScale / fitScale), max: ZOOM_MAX };
+  }
+
+  // Keep the picture's edges on/inside the viewport edges on each axis; if the
+  // picture is smaller than the viewport on an axis, centre it on that axis.
+  function clampCamera(){
+    var vw = viewportEl.clientWidth, vh = viewportEl.clientHeight;
+    var sw = manifest.background_size.width * scale;
+    var sh = manifest.background_size.height * scale;
+    camX = sw <= vw ? (vw - sw) / 2 : clamp(camX, vw - sw, 0);
+    camY = sh <= vh ? (vh - sh) / 2 : clamp(camY, vh - sh, 0);
   }
 
   // We pan by translating #world's *container offset* rather than the scaled
   // element itself, so drag math stays in screen pixels regardless of scale.
-  function setWorldOffset(x){
+  function applyCamera(animate){
+    clampCamera();
+    worldEl.style.transition = animate ? "transform .45s ease" : "none";
     worldEl.style.transformOrigin = "top left";
-    worldEl.style.transform = "translate(" + x + "px,0px) scale(" + scale + ")";
-  }
-
-  function panTo(x, animate){
-    camX = clamp(x, minCamX, maxCamX);
-    worldEl.style.transition = animate ? "transform .5s ease" : "none";
-    setWorldOffset(camX);
+    worldEl.style.transform = "translate(" + camX + "px," + camY + "px) scale(" + scale + ")";
     if (animate){
-      window.setTimeout(function(){ worldEl.style.transition = "none"; }, 520);
+      window.setTimeout(function(){ worldEl.style.transition = "none"; }, 470);
     }
   }
 
-  /* ---- Drag / tap handling ---- */
-  var dragging = false, dragStartX = 0, dragStartCamX = 0, moved = false;
+  function panTo(x, y, animate){
+    camX = x; camY = y;
+    applyCamera(animate);
+  }
+
+  // Zoom about a screen-space anchor so whatever is under the cursor/fingers
+  // stays put. anchorX/anchorY null = viewport centre.
+  function zoomTo(newZoom, anchorX, anchorY, animate){
+    var b = zoomBounds();
+    newZoom = clamp(newZoom, b.min, b.max);
+    if (anchorX == null){ anchorX = viewportEl.clientWidth / 2; anchorY = viewportEl.clientHeight / 2; }
+    var oldScale = scale;
+    var newScale = fitScale * newZoom;
+    var wx = (anchorX - camX) / oldScale;   // world point under the anchor
+    var wy = (anchorY - camY) / oldScale;
+    zoom = newZoom; scale = newScale;
+    camX = anchorX - wx * newScale;
+    camY = anchorY - wy * newScale;
+    applyCamera(animate);
+  }
+
+  // Recompute the fit scale for the current viewport (boot, level load,
+  // resize); keeps the current zoom but re-clamps it to the new bounds.
+  function fitCamera(){
+    fitScale = viewportEl.clientHeight / manifest.background_size.height;
+    var b = zoomBounds();
+    zoom = clamp(zoom, b.min, b.max);
+    scale = fitScale * zoom;
+    applyCamera(false);
+  }
+
+  /* ---- Drag / tap / pinch handling ---- */
+  var dragging = false, moved = false;
+  var dragStartX = 0, dragStartY = 0, dragStartCamX = 0, dragStartCamY = 0;
+  var pinch = null; // { startDist, startZoom, lastMidX, lastMidY } while two fingers are down
+
+  function getPoint(e){
+    var t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
+    return { x: t.clientX, y: t.clientY };
+  }
+
+  function startPinch(e){
+    var t0 = e.touches[0], t1 = e.touches[1];
+    pinch = {
+      startDist: Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY) || 1,
+      startZoom: zoom,
+      lastMidX: (t0.clientX + t1.clientX) / 2,
+      lastMidY: (t0.clientY + t1.clientY) / 2
+    };
+    dragging = false; moved = true; // a pinch is never a tap
+  }
+  function movePinch(e){
+    var t0 = e.touches[0], t1 = e.touches[1];
+    var dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+    var midX = (t0.clientX + t1.clientX) / 2, midY = (t0.clientY + t1.clientY) / 2;
+    // two-finger drag pans; spreading/squeezing zooms about the fingers' midpoint
+    camX += midX - pinch.lastMidX; camY += midY - pinch.lastMidY;
+    pinch.lastMidX = midX; pinch.lastMidY = midY;
+    zoomTo(pinch.startZoom * (dist / pinch.startDist), midX, midY, false);
+  }
 
   function pointerDown(e){
+    if (e.touches && e.touches.length >= 2){ startPinch(e); return; }
     dragging = true; moved = false;
-    dragStartX = getX(e);
-    dragStartCamX = camX;
+    var p = getPoint(e);
+    dragStartX = p.x; dragStartY = p.y;
+    dragStartCamX = camX; dragStartCamY = camY;
     viewportEl.classList.add("dragging");
   }
   function pointerMove(e){
+    if (e.touches && e.touches.length >= 2){
+      if (!pinch) startPinch(e);
+      movePinch(e);
+      return;
+    }
     if (!dragging) return;
-    var dx = getX(e) - dragStartX;
-    if (Math.abs(dx) > DRAG_THRESHOLD) moved = true;
-    panTo(dragStartCamX + dx, false);
+    var p = getPoint(e);
+    var dx = p.x - dragStartX, dy = p.y - dragStartY;
+    if (Math.hypot(dx, dy) > DRAG_THRESHOLD) moved = true;
+    panTo(dragStartCamX + dx, dragStartCamY + dy, false);
   }
   function pointerUp(){
+    if (pinch){
+      // A finger lifted off a pinch — don't let the one still down yank the
+      // camera; the player re-touches to start a fresh drag.
+      pinch = null; dragging = false; moved = true;
+      viewportEl.classList.remove("dragging");
+      return;
+    }
     dragging = false;
     viewportEl.classList.remove("dragging");
-  }
-  function getX(e){
-    if (e.touches && e.touches.length) return e.touches[0].clientX;
-    if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientX;
-    return e.clientX;
   }
 
   viewportEl.addEventListener("mousedown", pointerDown);
@@ -981,8 +1156,18 @@
   viewportEl.addEventListener("touchstart", pointerDown, {passive:true});
   viewportEl.addEventListener("touchmove", pointerMove, {passive:true});
   viewportEl.addEventListener("touchend", pointerUp);
+  viewportEl.addEventListener("touchcancel", pointerUp);
 
-  // Suppress the tap-to-find click that immediately follows a real drag.
+  // Mouse wheel / trackpad: zoom about the cursor. ~0.86x per wheel notch.
+  viewportEl.addEventListener("wheel", function(e){
+    e.preventDefault();
+    zoomTo(zoom * Math.exp(-e.deltaY * 0.0015), e.clientX, e.clientY, false);
+  }, {passive:false});
+
+  document.getElementById("zoom-in-btn").addEventListener("click", function(){ zoomTo(zoom * 1.4, null, null, true); });
+  document.getElementById("zoom-out-btn").addEventListener("click", function(){ zoomTo(zoom / 1.4, null, null, true); });
+
+  // Suppress the tap-to-find click that immediately follows a real drag/pinch.
   worldEl.addEventListener("click", function(e){
     if (moved){ e.stopPropagation(); e.preventDefault(); }
   }, true);
@@ -1044,9 +1229,9 @@
     var t = findNextUnfound();
     if (!t){ return; }
     hintsUsed++;
-    var vw = viewportEl.clientWidth;
-    var targetScreenX = t.position.x * scale;
-    panTo(vw / 2 - targetScreenX, true);
+    // centre the target on screen at the current zoom (both axes)
+    panTo(viewportEl.clientWidth / 2 - t.position.x * scale,
+          viewportEl.clientHeight / 2 - t.position.y * scale, true);
     var el = worldEl.querySelector('[data-id="' + t.id + '"]');
     if (el){
       el.classList.add("hint-active");
@@ -1205,7 +1390,7 @@
     hintsUsed = 0;
     foundCountEl.textContent = "0";
     completeScreen.classList.remove("show");
-    camX = 0;
+    zoom = 1; camX = 0; camY = 0;
     loadingEl.style.display = "flex";
     loadingEl.textContent = "🦊 載入緊 " + (manifest.level_name || manifest.level_id) + "…";
 

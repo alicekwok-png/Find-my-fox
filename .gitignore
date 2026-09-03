@@ -24,3 +24,10 @@ find-the-fox-level4-assets (1)/fox-*.png
 
 # Local Claude Code dev-server config, not needed by the deployed site.
 .claude/
+
+# Level 5's raw Tier A exports are opaque (alpha 255 at the corners) —
+# same problem as L3/L4 — superseded by level5_assets_v3_all/clean/,
+# which index.html loads. _grid/ is the PM's own zone-grid reference
+# crops, not runtime assets.
+level5_assets_v3_all/find-the-fox-level5-v2-fox-*.png
+level5_assets_v3_all/_grid/
