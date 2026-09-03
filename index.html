@@ -651,94 +651,93 @@
   };
 
   /* =========================================================
-     Level 3 — "沙漠星空綠洲" (Fennec Fox / Desert Starry Oasis).
-     Background is a night-time oasis panorama (father brewing tea
-     beside a resting camel, a mother+child at the stone well, a
-     drinking camel and palms around the pond, a young man with his
-     Saluki outside a tent strung with a lantern) under a starry sky.
+     LEVEL 3 — 耳廓狐 Fennec Fox／沙漠星空・綠洲 (v3 background + v3 Tier B/C)
+     Tier A (15) reuses the v2 sprites in level3_desert_fox_assets/clean/
+     (the tracked set with real alpha). Tier B/C (16) are the new
+     find-the-fox-level3-generated-assets exports — those arrived as RGB
+     with a transparency checkerboard baked into the pixels, so they were
+     keyed (border flood through the two checker greys, stopping at the
+     linework; N4's enclosed glass keyed globally) into .../clean/, which
+     is what loads.
 
-     Asset provenance note (unlike Levels 1-2): the supplied Level 3
-     sprite PNGs (level3_desert_fox_assets/) were NOT real transparent
-     PNGs — they were flat RGB with a plain near-white background OR,
-     on many of them, an actual checkerboard pattern painted as solid
-     pixels (mimicking a transparency preview rather than being one).
-     A naive single-seed flood fill only cleared one of the two
-     checker shades (the classic 4-connectivity-vs-diagonal-checker
-     failure), so the real fix was a color-CLASS flood fill (any
-     low-saturation, high-brightness pixel connected to the border,
-     not just pixels close to one seed color) run from
-     level3_desert_fox_assets/ into level3_desert_fox_assets/clean/ —
-     every sprite_asset below points at that cleaned copy.
+     §2.4 gate: find-the-fox-level3-background.png measured via PIL =
+     2560x1440, ratio 1.78 — inside the 1.7–2.0 spec.
 
-     §2.4 QA gate: background measured directly off the source PNG via
-     PIL (im.size) — 2560x1440 = 1.78, inside the required ~1.7:1-2:1
-     panorama ratio, no outpaint needed.
+     Anchors for Tier B/C are the PM-fixed ones from
+     find-the-fox-level3-asset-prompts-v3 (2).md §B/§C (§2.10). Tier A
+     anchors are read off each fox's v2 prompt, which names the prop the
+     sprite carries (burrow / cactus / palm trunk / basket / lantern / flat
+     rock / dune) — placed onto the matching real feature so the carried
+     prop reads as part of the scene.
 
-     Placement (§2.3-§2.9): built the same way as Level 2 — reference
-     heights measured directly off this background (kneeling father
-     ≈320px, sleeping-camel back ≈300px, well structure ≈275px), every
-     position/size checked against a rendered composite, and every one
-     of the 31 targets walked back through the full §2.3-2.9 checklist
-     (not just ones flagged first pass). Two elevated_ok items failed
-     the "must show a real connector" rule on the first render — a
-     hanging pendant with no visible link to the well's crossbeam, and
-     a lantern-perched fox floating detached from the tent's crossbeam
-     — both fixed by measuring the exact attachment point on the real
-     wooden beam and re-deriving the sprite's own hook/rope position
-     from its content bounding box, not by eyeballing.
+     §2.9 scale: father kneeling spans y760–1120 (~360px ≈ 110cm) →
+     1cm ≈ 3.3px foreground. A fennec (~25cm sitting) ≈ 80px; the real
+     post lantern is ~100px tall, so fox_10's carried lantern is sized to
+     match it. Mid-ground (rock outcrop, rear palm) items sized ~0.7x.
+
+     §2.7 face/head no-go boxes measured off the grid tiles:
+       father (430–530,780–880)      camel1 head (280–430,820–970)
+       mother (1090–1180,740–830)    child (1175–1255,800–880)
+       camel2 head (1490–1590,790–960)
+       girl (2010–2110,790–880)      boy (2240–2350,770–870)
+       saluki head (2090–2190,825–905)
      ========================================================= */
-  var ASSET_DIR3 = "level3_desert_fox_assets/clean/";
+  var ASSET_DIR3 = "level3_desert_fox_assets/clean/";                 // Tier A (v2 foxes)
+  var ASSET_DIR3_V3 = "find-the-fox-level3-generated-assets/";       // v3 background
+  var ASSET_DIR3_V3_CLEAN = ASSET_DIR3_V3 + "clean/";                // v3 Tier B/C, keyed
 
   var LEVEL_3 = {
     level_id: "desert_oasis_03",
     level_name: "沙漠星空綠洲",
     theme: "fennec_desert_starry_oasis",
-    background_asset: "level3_desert_fox_assets/level3_desert_oasis_background.png",
+    background_asset: ASSET_DIR3_V3 + "find-the-fox-level3-background.png",
     background_size: { width: 2560, height: 1440 },
     viewport_size: { width: 1080, height: 1920 },
     initial_camera_position: { x: 0, y: 0 },
-    target_count_total: 31, // 15 Tier A (11 fennec hero + 3 corsac cameo + 1 arctic-fox cameo, an L2 callback) + 13 Tier B + 3 Tier C
+    target_count_total: 31, // 15 Tier A (11 fennec hero + 3 corsac cameo + 1 arctic-fox cameo, an L2 callback) + 13 Tier B (9 reskin + 4 desert-only) + 3 Tier C
     targets: [
-      // ---- Tier A: hero_fox fennec_fox (11) ----
-      { id:"fox_01", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_01.png", position:{x:200,y:1259}, hitbox:{width:150,height:150}, difficulty_tier:"exposed", placement_class:"ground_only" }, // sitting on the end of father's rolled travel rug
-      { id:"fox_02", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_02.png", position:{x:1300,y:1304}, hitbox:{width:150,height:150}, difficulty_tier:"partial", placement_class:"ground_only" }, // peeking from its own sand burrow, open ground near the pond
-      { id:"fox_03", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_03.png", position:{x:100,y:1091}, hitbox:{width:160,height:160}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"asleep against the base of the prickly-pear cactus" },
-      { id:"fox_04", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_04.png", position:{x:1250,y:1130}, hitbox:{width:170,height:170}, difficulty_tier:"exposed", placement_class:"ground_only" }, // standing at its own reflected pond edge, set directly on the real pond shore
-      { id:"fox_05", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_05.png", position:{x:1400,y:780}, hitbox:{width:165,height:165}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"peeking from behind the base of the oasis palm cluster" },
-      { id:"fox_06", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_06.png", position:{x:904,y:901}, hitbox:{width:150,height:150}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"peeking out of the woven basket beside mother" },
-      { id:"fox_07", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_07.png", position:{x:1750,y:1342}, hitbox:{width:165,height:165}, difficulty_tier:"exposed", placement_class:"ground_only" }, // mid-leap off its own sand dune, open ground
-      { id:"fox_08", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_08.png", position:{x:1900,y:1163}, hitbox:{width:160,height:160}, difficulty_tier:"exposed", placement_class:"ground_only" }, // sitting on its own rock pedestal watching a shooting star, near the young man and Saluki
-      { id:"fox_09", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_09.png", position:{x:1560,y:1362}, hitbox:{width:150,height:150}, difficulty_tier:"hidden", placement_class:"ground_only" }, // buried in its own sand mound, only ears and an eye visible
-      { id:"fox_10", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_10.png", position:{x:2064,y:353}, hitbox:{width:165,height:165}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"perched on the tent's lantern crossbeam" }, // §2.3 fix: the sprite's own hanging rope is cut off at the top of its canvas (no in-frame hook), so it was drifting in open sky with no support; re-derived the rope's exact canvas position from the sprite's content bbox and placed it so the rope disappears behind the real crossbeam's left end-cap instead of floating beside it
-      { id:"fox_11", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_11.png", position:{x:2320,y:1320}, hitbox:{width:160,height:160}, difficulty_tier:"partial", placement_class:"ground_only" }, // digging in the open sand near the wagon wheel
+      // ---- Tier A: hero_fox fennec_fox (11) — anchor = the prop each v2 sprite carries ----
+      { id:"fox_01", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_01.png", position:{x:700,y:785}, hitbox:{width:100,height:95}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"sitting atop a dune (own dune) — the open mid-ground dune right of father, Zone 1" },
+      { id:"fox_02", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_02.png", position:{x:760,y:1300}, hitbox:{width:90,height:60}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"burrow in the sand (own burrow) — foreground sand below the camp, Zone 1" },
+      { id:"fox_03", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_03.png", position:{x:230,y:1300}, hitbox:{width:80,height:50}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"buried near a small cactus (own cactus) — at the foot of the real prickly-pear cluster, bottom-left" },
+      { id:"fox_04", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_04.png", position:{x:1340,y:990}, hitbox:{width:110,height:110}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"standing at the oasis pool edge, reflection in the water (own reflection) — standing in the reeds at the water's edge; moved up from y1035 so the carried reflection lands on the real water instead of the bank rocks" },
+      { id:"fox_05", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_05.png", position:{x:1030,y:640}, hitbox:{width:70,height:80}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"peeking from behind a palm trunk (own trunk) — aligned onto the rear palm's trunk where it emerges above the shrub; mid-ground, sized down" },
+      { id:"fox_06", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_06.png", position:{x:1900,y:1040}, hitbox:{width:80,height:80}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"inside a woven basket, ears out (own basket) — on the sand of the old campsite, left of the kneeling girl" },
+      { id:"fox_07", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_07.png", position:{x:830,y:1080}, hitbox:{width:130,height:100}, difficulty_tier:"partial", placement_class:"airborne_action", anchor_ref:"mid-pounce over a dune, sand flying — leaping over the real dry shrub on the Zone 1/2 dune" },
+      { id:"fox_08", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_08.png", position:{x:1700,y:1200}, hitbox:{width:95,height:95}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"sitting on a flat rock looking up (own rock) — on the real flat rock at the Zone 2/3 boundary" },
+      { id:"fox_09", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_09.png", position:{x:1750,y:1360}, hitbox:{width:80,height:45}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"buried in sand near scattered rocks, nose + one eye — in the Zone 3 stone pile's sand" },
+      { id:"fox_10", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_10.png", position:{x:2379,y:655}, hitbox:{width:150,height:150}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"peeking from behind a hanging lantern (own lantern + rope) — sprite's rope top set on the post's arm at (2400,580) so its lantern sits over the real one and the rope is the §2.3 connector", intended_scale_ref:"lantern sized to the real post lantern (~100px tall)" },
+      { id:"fox_11", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_11.png", position:{x:1500,y:1290}, hitbox:{width:120,height:95}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"digging in the sand — open foreground sand in front of the pool, Zone 2" },
 
       // ---- Tier A: cameo_fox corsac_fox (3) ----
-      { id:"fox_12", target_type:"cameo_fox", species:"corsac_fox", sprite_asset: ASSET_DIR3 + "level3_corsac_12.png", position:{x:2485,y:1300}, hitbox:{width:150,height:150}, difficulty_tier:"exposed", placement_class:"ground_only" }, // sitting on its own sand mound, far right of the campsite
-      { id:"fox_13", target_type:"cameo_fox", species:"corsac_fox", sprite_asset: ASSET_DIR3 + "level3_corsac_13.png", position:{x:270,y:890}, hitbox:{width:150,height:150}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"peeking from behind the dry desert shrub near the campfire" },
-      { id:"fox_14", target_type:"cameo_fox", species:"corsac_fox", sprite_asset: ASSET_DIR3 + "level3_corsac_14.png", position:{x:780,y:1345}, hitbox:{width:150,height:150}, difficulty_tier:"hidden", placement_class:"ground_only" }, // lying low among its own scattered rocks, open sand
+      { id:"fox_12", target_type:"cameo_fox", species:"corsac_fox", sprite_asset: ASSET_DIR3 + "level3_corsac_12.png", position:{x:1850,y:930}, hitbox:{width:100,height:90}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"sitting on a dune (own dune), fur matching the sand — the dune between camel 2 and the girl" },
+      { id:"fox_13", target_type:"cameo_fox", species:"corsac_fox", sprite_asset: ASSET_DIR3 + "level3_corsac_13.png", position:{x:740,y:900}, hitbox:{width:85,height:70}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"peeking from behind a dry desert shrub (own shrub) — onto the real shrub right of father, Zone 1" },
+      { id:"fox_14", target_type:"cameo_fox", species:"corsac_fox", sprite_asset: ASSET_DIR3 + "level3_corsac_14.png", position:{x:1725,y:1275}, hitbox:{width:90,height:50}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"half-buried near scattered rocks — just below fox_08's flat rock, Zone 3 stones" },
 
-      // ---- Tier A: cameo_fox arctic_fox, returning from Level 2 (1) ----
-      { id:"fox_15", target_type:"cameo_fox", species:"arctic_fox", sprite_asset: ASSET_DIR3 + "level3_arctic_15.png", position:{x:1550,y:1200}, hitbox:{width:160,height:160}, difficulty_tier:"partial", placement_class:"ground_only" }, // panting at the pond edge, comically overheated out of its element — a callback gag, not a real desert resident
+      // ---- Tier A: cameo_fox arctic_fox (1, L2 callback) ----
+      { id:"fox_15", target_type:"cameo_fox", species:"arctic_fox", sprite_asset: ASSET_DIR3 + "level3_arctic_15.png", position:{x:1230,y:1250}, hitbox:{width:110,height:100}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"standing in the sand near the oasis, overheated — foreground sand in front of the well" },
 
-      // ---- Tier B: fox_object, all fennec_fox pattern (13) ----
-      { id:"obj_o01", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "o01_fennec_face_mug.png", position:{x:475,y:955}, hitbox:{width:85,height:85}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"set down near father's campfire" },
-      { id:"obj_o02", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "o02_fennec_fox_cookie.png", position:{x:350,y:1020}, hitbox:{width:78,height:78}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"dropped in the sand beside the campfire" },
-      { id:"obj_o03", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "o03_fox_tail_keychain.png", position:{x:600,y:1160}, hitbox:{width:85,height:100}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"clipped onto the patterned saddlebag's handle" },
-      { id:"obj_o04", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "o04_fennec_knitted_plush.png", position:{x:1130,y:1000}, hitbox:{width:95,height:95}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"set on the rug beside mother and child" },
-      { id:"obj_o05", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "o05_fennec_pattern_thermos.png", position:{x:960,y:1040}, hitbox:{width:90,height:100}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"set on the rug beside mother's basket" },
-      { id:"obj_o06", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "o06_fennec_salt_pepper_shakers.png", position:{x:1250,y:975}, hitbox:{width:90,height:90}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"set on the rug at the pond's edge" },
-      { id:"obj_o07", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "o07_fennec_pattern_scarf.png", position:{x:2450,y:1080}, hitbox:{width:130,height:130}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"draped over the old wagon wheel" },
-      { id:"obj_o08", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "o08_fennec_wind_chime.png", position:{x:2230,y:350}, hitbox:{width:150,height:170}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"hanging from the tent's lantern crossbeam, beside the tassels" },
-      { id:"obj_o09", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "o09_fennec_field_guide_book.png", position:{x:2400,y:700}, hitbox:{width:90,height:90}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"propped against the tent's front support pole" },
-      { id:"obj_n01", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "n01_brass_astrolabe_pendant.png", position:{x:935,y:555}, hitbox:{width:85,height:105}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"hung from the well's wooden crossbeam" }, // §2.3 fix: first pass floated well clear of the post with no visible chain link; re-measured the beam's real end-cap position and moved the pendant so its chain loop overlaps the wood instead of hanging in open sky
-      { id:"obj_n02", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "n02_camel_bell.png", position:{x:150,y:780}, hitbox:{width:95,height:95}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"hanging from the resting camel's harness" },
-      { id:"obj_n03", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "n03_bedouin_rug_fox_pattern.png", position:{x:2150,y:1260}, hitbox:{width:190,height:190}, difficulty_tier:"partial", placement_class:"ground_only", intended_scale_ref:"a real half-unrolled rug, not a hand-sized item — sized against the rug mother and child are sitting on" }, // carries its own sand-pile base; kept off the real flat rug under the tent's jugs so the two rug patterns don't visually clash, placed on open sand between the rope coil and the wagon wheel instead
-      { id:"obj_n04", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "n04_fox_silhouette_sand_timer.png", position:{x:770,y:1200}, hitbox:{width:105,height:105}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"set on the flat stone beside the saddlebags" },
+      // ---- Tier B reskin (9) — anchors PM-fixed in prompts-v3 (2) §B ----
+      { id:"obj_O1", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-O1-fox-face-mug.png", position:{x:330,y:1125}, hitbox:{width:45,height:45}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺爸爸腳邊嘅平滑沙岩石面 — on the front-left stone of the campfire ring, the smooth rock nearest father's side of the fire", intended_scale_ref:"mug ~12cm" },
+      { id:"obj_O2", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-O2-fox-cookie.png", position:{x:450,y:1135}, hitbox:{width:40,height:40}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺攤開嘅營地布上 — NOTE: the v3 background has no spread cloth at the camp; placed on the sand at the fire ring's right-front, the closest match (PM to confirm)" },
+      { id:"obj_O3", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-O3-fox-tail-keychain.png", position:{x:400,y:665}, hitbox:{width:30,height:45}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"掛喺行李袋嘅背帶扣 — clipped to the strap of the right-hand barrel pack by the rock; its own carabiner is the §2.3 connector" },
+      { id:"obj_O4", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-O4-knitted-plush.png", position:{x:1095,y:1125}, hitbox:{width:55,height:60}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"靠住石井邊沿坐低 — back against the well's front-left stones (moved up-right from (1075,1150), which sat on open sand a step away from the well)" },
+      { id:"obj_O5", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-O5-fox-pattern-thermos.png", position:{x:1420,y:1075}, hitbox:{width:34,height:70}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"企喺綠洲水池邊 — standing on the pool's near bank rocks" },
+      { id:"obj_O6", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-O6-fox-salt-pepper-shakers.png", position:{x:1015,y:790}, hitbox:{width:40,height:36}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"塞入棕櫚樹根縫隙 — tucked into the lower edge of the shrub at the rear palm's foot (the roots themselves are hidden by the shrub; the big palm's base is occupied by mother and child, §2.7) (the big palm's base is occupied by mother and child, §2.7)" },
+      { id:"obj_O7", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-O7-fox-pattern-scarf.png", position:{x:2380,y:1140}, hitbox:{width:90,height:70}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"搭喺破爛木頭車輪上 — draped over the leaning cart wheel's upper rim" },
+      { id:"obj_O8", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-O8-fox-wind-chime.png", position:{x:2478,y:700}, hitbox:{width:55,height:120}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"掛喺木製燈籠柱嘅掛鉤 — its top ring on the post's awning-rope tie hook (the arm's end already carries the real lantern + fox_10)", intended_scale_ref:"chime ~36cm" },
+      { id:"obj_O9", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-O9-fox-field-guide.png", position:{x:1780,y:1120}, hitbox:{width:55,height:50}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"半掩喺散落石堆之間 — lying beside the Zone 3 stone pile" },
 
-      // ---- Tier C: partial_clue, all fennec_fox (3) ----
-      { id:"clue_c01", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "c01_fox_pawprints_sand.png", position:{x:720,y:1010}, hitbox:{width:190,height:190}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"trail crossing the open sand between the campfire and the oasis" },
-      { id:"clue_c02", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "c02_fennec_ear_tips_clue.png", position:{x:1350,y:970}, hitbox:{width:90,height:90}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"just visible above the rocks ringing the pond" },
-      { id:"clue_c03", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "c03_fox_tail_tip_clue.png", position:{x:1870,y:1030}, hitbox:{width:90,height:90}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"poking out of the desert shrub at the pond's edge" }
+      // ---- Tier B desert-only (4) — anchors PM-fixed in prompts-v3 (2) §B ----
+      { id:"obj_N1", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-N1-astrolabe-pendant.png", position:{x:1400,y:400}, hitbox:{width:40,height:52}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"掛喺搖曳嘅棕櫚葉度 — its top ring touching the tip of the big palm's lowest right frond (raised 20px — at y445 there was a sliver of sky between ring and frond) (§2.3 connector = the frond tip)" },
+      { id:"obj_N2", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-N2-camel-bell.png", position:{x:330,y:985}, hitbox:{width:34,height:46}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"直接掛喺休息嗰隻駱駝嘅頸繩上 — its rope loop on the resting camel's neck rope just under the jaw; the loop is the §2.3 connector" },
+      { id:"obj_N3", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-N3-bedouin-fox-rug.png", position:{x:1900,y:1200}, hitbox:{width:110,height:70}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"半埋喺舊營址嘅沙地 — on the sand at the campsite's stone-pile edge" },
+      { id:"obj_N4", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-N4-sand-timer.png", position:{x:300,y:610}, hitbox:{width:30,height:48}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"塞入行李袋背後嘅罅隙 — in the gap between the rolled tent and the barrel pack, behind the packs" },
+
+      // ---- Tier C (3) — anchors PM-fixed in prompts-v3 (2) §C ----
+      { id:"clue_C1", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C1-fox-pawprints.png", position:{x:640,y:1180}, hitbox:{width:130,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅沙地 — trail on the sand right-front of the campfire" },
+      { id:"clue_C2", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C2-fox-ear-tips.png", position:{x:1120,y:610}, hitbox:{width:50,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"棕櫚樹幹背後 — ears at the big palm trunk's left edge, above mother's head (the trunk base is occupied by mother and child, §2.7)" },
+      { id:"clue_C3", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C3-fox-tail-tip.png", position:{x:2270,y:1330}, hitbox:{width:45,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"破爛木頭車輪底部 — under the fallen wheel's lower-left rim where it meets the sand" }
     ]
   };
 

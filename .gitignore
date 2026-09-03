@@ -31,3 +31,10 @@ find-the-fox-level4-assets (1)/fox-*.png
 # crops, not runtime assets.
 level5_assets_v3_all/find-the-fox-level5-v2-fox-*.png
 level5_assets_v3_all/_grid/
+
+# Level 3 v3 (re-generated) Tier B/C sprite exports are RGB with a
+# baked-in checkerboard — superseded by
+# find-the-fox-level3-generated-assets/clean/ (keyed + trimmed to
+# content), which index.html loads. The background PNG in the same
+# folder is real and stays tracked.
+find-the-fox-level3-generated-assets/find-the-fox-level3-[CNO]*.png
