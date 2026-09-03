@@ -954,8 +954,8 @@
   var currentLevelIndex = 0;
   var manifest = LEVELS[currentLevelIndex];
   /* Camera: scale = fitScale * zoom. fitScale is "fit the panorama's height
-     to the viewport" (zoom 1.0); zoom ranges from "whole picture fits on
-     screen" up to ZOOM_MAX. Both axes pan, clamped to the picture's edges (or
+     to the viewport" (zoom 1.0); zoom ranges from "picture covers the whole
+     viewport" (no letterboxing, see zoomBounds) up to ZOOM_MAX. Both axes pan, clamped to the picture's edges (or
      centred when the picture is smaller than the viewport on that axis).
      §1.1 asked for a configurable dual-axis camera.
 
@@ -1033,13 +1033,19 @@
 
   function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
 
-  // Zoom range: can't zoom out past "the whole picture fits on screen" (no
-  // point showing empty space around it), can't zoom in past ZOOM_MAX.
+  // Zoom range: can't zoom out past "the picture covers the whole viewport"
+  // — PM (2026-09-04, reference: the Differences-style portrait video): the
+  // 9:16 frame must always be filled edge to edge, never letterboxed with
+  // empty space above/below; zooming and panning happen inside that frame.
+  // On a portrait phone a wide panorama covers at zoom 1.0 (height-fit),
+  // so min is 1; in a landscape/desktop window cover needs zoom > 1 and the
+  // bound rises accordingly. Can't zoom in past ZOOM_MAX.
   function zoomBounds(){
     var vw = viewportEl.clientWidth, vh = viewportEl.clientHeight;
     if (!(vw > 0 && vh > 0 && fitScale > 0)) return { min: 1, max: ZOOM_MAX }; // no real viewport yet — see fitCamera()
-    var containScale = Math.min(vw / manifest.background_size.width, vh / manifest.background_size.height);
-    return { min: Math.min(1, containScale / fitScale), max: ZOOM_MAX };
+    var coverScale = Math.max(vw / manifest.background_size.width, vh / manifest.background_size.height);
+    var min = coverScale / fitScale;
+    return { min: min, max: Math.max(ZOOM_MAX, min) };
   }
 
   // Keep the picture's edges on/inside the viewport edges on each axis; if the
