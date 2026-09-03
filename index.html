@@ -955,13 +955,20 @@
   var currentLevelIndex = 0;
   var manifest = LEVELS[currentLevelIndex];
   /* Camera: scale = fitScale * zoom. fitScale is "fit the panorama's height
-     to the viewport" (zoom 1.0, the default panorama view); zoom ranges from
-     "whole picture fits on screen" up to ZOOM_MAX. Both axes pan, clamped to
-     the picture's edges (or centred when the picture is smaller than the
-     viewport on that axis). §1.1 asked for a configurable dual-axis camera. */
+     to the viewport" (zoom 1.0); zoom ranges from "whole picture fits on
+     screen" up to ZOOM_MAX. Both axes pan, clamped to the picture's edges (or
+     centred when the picture is smaller than the viewport on that axis).
+     §1.1 asked for a configurable dual-axis camera.
+
+     A level opens at ZOOM_DEFAULT (or its manifest's camera_zoom), not 1.0:
+     at zoom 1.0 the picture's height equals the viewport's, so there is
+     nothing to pan vertically until the player pinches — PM's call
+     (2026-09-03) is that up/down/left/right must all work from the start, and
+     a larger view is fine. 1.35 leaves ~26% of the height off-screen. */
   var fitScale = 1;
-  var zoom = 1;
+  var ZOOM_DEFAULT = 1.35;
   var ZOOM_MAX = 4;
+  var zoom = ZOOM_DEFAULT;
   var scale = 1;
   var camX = 0, camY = 0;
   var foundIds = {};
@@ -1031,6 +1038,7 @@
   // point showing empty space around it), can't zoom in past ZOOM_MAX.
   function zoomBounds(){
     var vw = viewportEl.clientWidth, vh = viewportEl.clientHeight;
+    if (!(vw > 0 && vh > 0 && fitScale > 0)) return { min: 1, max: ZOOM_MAX }; // no real viewport yet — see fitCamera()
     var containScale = Math.min(vw / manifest.background_size.width, vh / manifest.background_size.height);
     return { min: Math.min(1, containScale / fitScale), max: ZOOM_MAX };
   }
@@ -1081,6 +1089,11 @@
   // Recompute the fit scale for the current viewport (boot, level load,
   // resize); keeps the current zoom but re-clamps it to the new bounds.
   function fitCamera(){
+    // A hidden tab / background PWA launch reports a 0x0 viewport; dividing
+    // by it turns zoom, scale and both camera axes into NaN and the browser
+    // silently drops the transform. Leave the camera as-is and let the
+    // resize/visibilitychange listeners re-fit once there's a real size.
+    if (!(viewportEl.clientWidth > 0 && viewportEl.clientHeight > 0)) return;
     fitScale = viewportEl.clientHeight / manifest.background_size.height;
     var b = zoomBounds();
     zoom = clamp(zoom, b.min, b.max);
@@ -1390,7 +1403,7 @@
     hintsUsed = 0;
     foundCountEl.textContent = "0";
     completeScreen.classList.remove("show");
-    zoom = 1; camX = 0; camY = 0;
+    zoom = manifest.camera_zoom || ZOOM_DEFAULT; camX = 0; camY = 0;
     loadingEl.style.display = "flex";
     loadingEl.textContent = "🦊 載入緊 " + (manifest.level_name || manifest.level_id) + "…";
 
@@ -1399,6 +1412,13 @@
       var failed = results.filter(function(ok){ return !ok; }).length;
       buildWorld();
       fitCamera();
+      // Open on the ground, not the sky: with the picture taller than the
+      // viewport (ZOOM_DEFAULT > 1), camY = 0 would show the top ~26% —
+      // empty sky in every panorama so far — so anchor the first view to the
+      // bottom edge instead. Left edge horizontally, as before. §1.1's
+      // "初始鏡頭位置" is still 待確認; this is the engineering default.
+      camY = viewportEl.clientHeight - manifest.background_size.height * scale;
+      applyCamera(false);
       loadingEl.style.display = "none";
       if (!deferStart) beginLevel();
       if (failed > 0){
@@ -1542,6 +1562,10 @@
     muted = e.target.checked;
   });
   window.addEventListener("resize", fitCamera);
+  // A tab that loaded while hidden (0x0 viewport — see fitCamera) gets its
+  // first real fit when it becomes visible; Chrome doesn't always fire
+  // resize for that transition.
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) fitCamera(); });
 
   /* ---- 開場順序：公司logo → 入game片 → 主畫面 → 撳開始 → 關卡 ----
      Level 1 preloads underneath the whole sequence, so by the time the player
