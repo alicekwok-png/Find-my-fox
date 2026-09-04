@@ -49,3 +49,12 @@ find-the-fox-level8-assets/find-the-fox-level8-assets/tier-a/
 find-the-fox-level8-assets/find-the-fox-level8-assets/tier-b/
 find-the-fox-level8-assets/find-the-fox-level8-assets/tier-c/
 find-the-fox-level8-assets/find-the-fox-level8-assets/previews/
+
+# Level 7 raw exports: Tier A foxes are opaque RGB on a grey backdrop with a
+# baked checker patch, Tier B/C carry the white checker squares — superseded
+# by find-the-fox-level7-assets/clean/ (keyed + trimmed), which index.html
+# loads. The character reference sheet is not a runtime asset.
+find-the-fox-level7-assets/fox-*.png
+find-the-fox-level7-assets/character-reference-ruppells-fox.png
+find-the-fox-level7-assets/tier-b/
+find-the-fox-level7-assets/tier-c/

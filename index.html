@@ -1114,6 +1114,84 @@
   var hintToast = document.getElementById("hint-toast");
 
   /* =========================================================
+     Level 7 — 魯氏狐 Rüppell's Fox／中東沙漠夜景
+     Source: find-the-fox-level7-asset-prompts-v3.md (background + Tier B/C
+     PM anchors, 2026-09-02) + find-the-fox-level7-asset-prompts.md (v2 Tier A,
+     no PM anchors — placed by each prompt's described spot).
+     §2.4 QA gate: background measured via PIL = 2560x1440 = 1.78:1.
+     Tier A arrived as opaque RGB on a light-grey studio backdrop, Tier B/C
+     with a baked white/grey checkerboard — both keyed by border/transparent
+     flood (key_l7.py) and trimmed to content; clean/ is what loads.
+     Scale: father kneeling ≈270px ≈ 110cm → 1cm ≈ 2.45px.
+     §2.7 face no-go boxes: camel 1 head (80-190,800-890), father
+     (215-290,865-930), mother (1160-1225,860-915), child (1230-1295,900-955),
+     camel 2 head (1470-1590,890-985), sibling (2160-2245,760-835), Saluki
+     head (2225-2310,810-890).
+     ========================================================= */
+  var ASSET_DIR7 = "find-the-fox-level7-assets/";
+  var ASSET_DIR7_CLEAN = ASSET_DIR7 + "clean/";
+
+  var LEVEL_7 = {
+    level_id: "ruppells_desert_night_07",
+    level_name: "中東沙漠夜景",
+    theme: "ruppells_fox_desert_night",
+    background_asset: ASSET_DIR7 + "background/level7_desert_night_panorama.png",
+    background_size: { width: 2560, height: 1440 },
+    viewport_size: { width: 1080, height: 1920 },
+    initial_camera_position: { x: 0, y: 0 },
+    target_count_total: 42, // 15 Tier A (11 Rüppell's hero + 3 fennec cameo + 1 Blanford's teaser) + 20 Tier B (14 reskin + 6 desert-only) + 7 Tier C
+    targets: [
+      // ---- Tier A: Rüppell's fox hero (11) — [PM未指定] placed per the v2 prompt's spot ----
+      { id:"fox_01", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-01-ruppells-pale-dune.png", position:{x:430,y:720}, hitbox:{width:80,height:85}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] sitting atop a dune under the stars — on the Zone 1 dune crest right of the moon" },
+      { id:"fox_02", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-02-ruppells-dark-archway.png", position:{x:1190,y:745}, hitbox:{width:72,height:108}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] peeking out from behind the stone archway — the sprite's own column overlaid on the arch's left pillar, fox at the pillar's outer edge, feet on the mound" },
+      { id:"fox_03", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-03-ruppells-white-chest-sand.png", position:{x:980,y:835}, hitbox:{width:100,height:55}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] curled asleep buried in sand near the ruins — on the mound sand left of the ruin wall" },
+      { id:"fox_04", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-04-ruppells-notched-ear-embers.png", position:{x:2180,y:1250}, hitbox:{width:90,height:80}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] standing near the dying embers — on the sand left of the Zone 3 ember fire (the only dying fire in the painting)" },
+      { id:"fox_05", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-05-ruppells-juvenile-ruins.png", position:{x:1080,y:690}, hitbox:{width:80,height:80}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] juvenile peeking out of a crack in the ruins wall — the sprite's own stone hole set into the left ruin wall's face" },
+      { id:"fox_06", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-06-ruppells-older-tail-tip.png", position:{x:600,y:1180}, hitbox:{width:90,height:85}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] older fox (vendor rendered it standing, tail tip on sand) — open foreground sand below the saddle-bag cluster" },
+      { id:"fox_07", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-07-ruppells-bushy-trotting.png", position:{x:560,y:770}, hitbox:{width:110,height:70}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] trotting across the dunes — on the dune slope between the crest and the signpost mound (feet on sand, dynamic pose)" },
+      { id:"fox_08", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-08-ruppells-bracelet-moon.png", position:{x:150,y:725}, hitbox:{width:80,height:85}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] standing alert looking up at the moon — on the far-left dune ridge under the moon" },
+      { id:"fox_09", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-09-ruppells-stripe-pillar.png", position:{x:1725,y:665}, hitbox:{width:80,height:95}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] hiding behind a collapsed stone pillar — its own column stub set at the upper end of the Zone 2 fallen column, beside the ruin block" },
+      { id:"fox_10", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-10-ruppells-golden-rock.png", position:{x:100,y:1155}, hitbox:{width:80,height:90}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] peeking from behind a rock near the campfire — its own rock laid over the big foreground rock left-below the fire" },
+      { id:"fox_11", target_type:"hero_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-11-ruppells-alert-digging.png", position:{x:1400,y:860}, hitbox:{width:90,height:70}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] digging near the ruins — on the sand in front of the arch opening" },
+      // ---- Tier A cameo: fennec (3) + Blanford's teaser (1) ----
+      { id:"fox_12", target_type:"cameo_fox", species:"fennec_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-12-fennec-pale-moon-dune.png", position:{x:350,y:705}, hitbox:{width:60,height:70}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] ears silhouetted against the moon, sitting on a dune — on the crest directly below the moon" },
+      { id:"fox_13", target_type:"cameo_fox", species:"fennec_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-13-fennec-throat-patch-burrow.png", position:{x:900,y:1250}, hitbox:{width:80,height:55}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] peeking out of a sand burrow (own burrow) — open foreground sand below the rug" },
+      { id:"fox_14", target_type:"cameo_fox", species:"fennec_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-14-fennec-stripe-ears-hidden.png", position:{x:1300,y:1300}, hitbox:{width:70,height:50}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] buried in sand, only the ears — foreground sand below the rug" },
+      { id:"fox_15", target_type:"cameo_fox", species:"blanfords_fox", sprite_asset: ASSET_DIR7_CLEAN + "fox-15-blanford-teaser-rock.png", position:{x:2470,y:600}, hitbox:{width:70,height:60}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] teaser silhouette on a distant rock ledge — the flat slab at the foot of the jagged rock formation, far right" },
+      // ---- Tier B: 14 reskin fox objects — PM anchors (Section B) ----
+      { id:"obj_O1", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O01_fox_face_mug.png", position:{x:165,y:1108}, hitbox:{width:30,height:30}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺營火邊嘅平沙石 — on the flat stone at the right of the fire ring" },
+      { id:"obj_O2", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O02_fox_pattern_blanket_saddlebag.png", position:{x:865,y:870}, hitbox:{width:60,height:40}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"搭喺鞍袋上面 — folded on top of the tall basket in the Zone 1 saddle-bag stack" },
+      { id:"obj_O3", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O03_black_white_fox_tail_keychain.png", position:{x:898,y:925}, hitbox:{width:30,height:70}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"掛喺鞍袋帶 — hanging from the outer strap of the basket in the saddle-bag stack; its own clip is the §2.3 connector" },
+      { id:"obj_O4", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O04_fox_shaped_cookie_embers.png", position:{x:150,y:1150}, hitbox:{width:28,height:30}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺熄咗嘅炭火邊嘅布上 — NOTE: no cloth at the Zone 1 fire; on the sand at the fire ring's right-front (PM to confirm)" },
+      { id:"obj_O5", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O05_knitted_ruppells_fox_plush.png", position:{x:1505,y:808}, hitbox:{width:45,height:55}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"靠住石拱門座腳 — leaning at the inner foot of the arch's right pillar" },
+      { id:"obj_O6", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O06_fox_pattern_thermos_ruins.png", position:{x:1140,y:770}, hitbox:{width:26,height:60}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"企喺廢墟碎石中間 — standing among the rubble stones on the mound below the left ruin wall" },
+      { id:"obj_O7", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O07_fox_shaped_salt_pepper_shakers.png", position:{x:1880,y:890}, hitbox:{width:45,height:40}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"貼住倒塌石柱 — tucked at the lower end of the leaning fallen column (Zone 2's column, by camel 2)" },
+      { id:"obj_O8", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O08_fox_ear_knit_hat_jagged_rock.png", position:{x:1955,y:600}, hitbox:{width:40,height:40}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"掛喺尖角岩石凸出處 — hung on the shoulder of the small jagged spire at the formation's left" },
+      { id:"obj_O9", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O09_fox_wind_chime_signpost.png", position:{x:630,y:515}, hitbox:{width:30,height:90}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"掛喺木製路標柱 — hanging from the signpost's left arm (the lantern already hangs on the right arm); its own ring is the connector" },
+      { id:"obj_O10", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O10_ruppells_fox_field_guide_book.png", position:{x:2130,y:1050}, hitbox:{width:50,height:45}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"半掩喺陶器碎片之間 — beside the lying pot and shards of the Zone 3 pottery" },
+      { id:"obj_O11", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O11_fox_pattern_scarf_archway.png", position:{x:1560,y:790}, hitbox:{width:60,height:40}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"搭喺石拱門底座 — draped over the base of the arch's right pillar" },
+      { id:"obj_O12", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O12_fox_pincushion_coiled_rope.png", position:{x:750,y:975}, hitbox:{width:80,height:70}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"塞入盤好嘅繩圈 — its own rope coil laid over the real coiled rope by the saddle bags" },
+      { id:"obj_O13", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O13_ruppells_fox_preserve_jar.png", position:{x:2130,y:1130}, hitbox:{width:30,height:50}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"塞入散落石堆之間 — between the scattered stones below the pottery" },
+      { id:"obj_O14", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "O14_fox_shaped_kite_archway.png", position:{x:1420,y:445}, hitbox:{width:45,height:70}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"纏喺拱門頂部 — tangled on the top blocks of the arch (the arch top is the support)" },
+      // ---- Tier B: 6 desert-only objects ----
+      { id:"obj_N1", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "N01_brass_oil_lantern_fox_cutout.png", position:{x:28,y:1075}, hitbox:{width:30,height:50}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"直接放喺營火邊 — on the sand at the left of the fire ring, beside the tripod" },
+      { id:"obj_N2", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "N02_fox_etched_amphora.png", position:{x:1700,y:760}, hitbox:{width:40,height:70}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"靠住石拱門牆身 — leaning against the right ruin wall of the archway" },
+      { id:"obj_N3", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "N03_camel_saddle_fox_charm.png", position:{x:420,y:920}, hitbox:{width:34,height:48}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"直接掛喺休息嗰隻駱駝嘅挽具 — hanging from camel 1's saddle strap (clear of its head box); its own loop is the connector" },
+      { id:"obj_N4", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "N04_bedouin_shawl_fox_pattern.png", position:{x:2280,y:665}, hitbox:{width:80,height:55}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"搭喺尖角岩石上 — draped over the flat boulder at the foot of the jagged formation" },
+      { id:"obj_N5", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "N05_fox_constellation_astrolabe.png", position:{x:1060,y:800}, hitbox:{width:40,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"半埋喺廢墟旁邊嘅沙地 — in the mound sand below the left ruin wall" },
+      { id:"obj_N6", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "N06_fox_spice_jar_second_fire.png", position:{x:2200,y:1170}, hitbox:{width:30,height:45}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺平石面近第二個火堆 — on the flat stone left of the ember fire" },
+      // ---- Tier C: partial clues (7) ----
+      { id:"clue_C1", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C01_fox_pawprints_campfire_sand.png", position:{x:380,y:1200}, hitbox:{width:150,height:100}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅細沙 — dust patch with prints on the sand right of father's boots (the sand directly under the fire ring is rock)" },
+      { id:"clue_C2", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C02_black_white_tail_tip_archway.png", position:{x:1612,y:745}, hitbox:{width:40,height:45}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"石拱門背後 — tail tip out at the outer edge of the arch's right pillar" },
+      { id:"clue_C3", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C03_fox_shadow_jagged_rock.png", position:{x:2130,y:640}, hitbox:{width:110,height:130}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"尖角岩石表面 — the sprite's own jagged rock (with the moon shadow) set at the foot of the rock formation" },
+      { id:"clue_C4", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C04_fox_ears_ruins_crack.png", position:{x:1660,y:620}, hitbox:{width:36,height:20}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"廢墟牆身裂縫 — ears out of a crack in the right ruin wall" },
+      { id:"clue_C5", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C05_fox_nose_whiskers_saddlebags.png", position:{x:805,y:945}, hitbox:{width:100,height:95}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"疊起嘅鞍袋背後 — the sprite's own stacked bags overlaid on the real saddle-bag stack, nose out at its left edge" },
+      { id:"clue_C6", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C06_fox_pawprints_rock_crevice.png", position:{x:2000,y:690}, hitbox:{width:80,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"岩石罅隙 — prints on the slope leading into the gap at the formation's base" },
+      { id:"clue_C7", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C07_glowing_fox_eyes_fallen_columns.png", position:{x:1800,y:845}, hitbox:{width:100,height:70}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"倒塌石柱之間嘅暗隙 — the sprite's own column pieces laid at the lower end of the leaning fallen column, eyes in the gap" }
+    ]
+  };
+
+  /* =========================================================
      Level 8 — 布氏狐 Blanford's Fox／峭壁岩地黃昏
      Source: find-the-fox-level8-asset-prompts-v3.md (2026-09-02) +
      find-the-fox-level8-assets/.../asset_manifest.csv (PM anchors).
@@ -1194,9 +1272,9 @@
     ]
   };
 
-  // Levels 6 and 7 are not built yet, so Level 8 currently occupies slot 6 in
-  // the unlock chain / level select — reorder once L6/L7 land.
-  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_8];
+  // Level 6 is not built yet, so Levels 7 and 8 currently occupy slots 6 and 7
+  // in the unlock chain / level select — insert L6 here once it lands.
+  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_7, LEVEL_8];
   var currentLevelIndex = 0;
   var manifest = LEVELS[currentLevelIndex];
   /* Camera: scale = fitScale * zoom. fitScale is "fit the panorama's height

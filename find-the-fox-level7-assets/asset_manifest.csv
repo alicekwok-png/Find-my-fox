@@ -1,0 +1,28 @@
+id,tier,filename,zone,difficulty,anchor,description
+O1,B,tier-b/O01_fox_face_mug.png,Zone 1,明處,營火邊平沙石上的魯氏狐面杯
+O2,B,tier-b/O02_fox_pattern_blanket_saddlebag.png,Zone 1,半遮,搭喺鞍袋上的魯氏狐紋毛毯
+O3,B,tier-b/O03_black_white_fox_tail_keychain.png,Zone 1,半遮,掛喺鞍袋帶上的黑白狐尾鎖匙扣
+O4,B,tier-b/O04_fox_shaped_cookie_embers.png,Zone 1,明處,熄炭火旁布上的狐形曲奇
+O5,B,tier-b/O05_knitted_ruppells_fox_plush.png,Zone 2,明處,石拱門座腳旁織冷魯氏狐公仔
+O6,B,tier-b/O06_fox_pattern_thermos_ruins.png,Zone 2,明處,廢墟碎石中的魯氏狐紋 thermos
+O7,B,tier-b/O07_fox_shaped_salt_pepper_shakers.png,Zone 2,半遮,倒塌石柱旁狐形鹽椒樽
+O8,B,tier-b/O08_fox_ear_knit_hat_jagged_rock.png,Zone 3,半遮,尖角岩石凸出處的狐耳冷帽
+O9,B,tier-b/O09_fox_wind_chime_signpost.png,Zone 3,明處,木製路標柱上的狐形風鈴
+O10,B,tier-b/O10_ruppells_fox_field_guide_book.png,Zone 3,半遮,陶器碎片旁的魯氏狐圖鑑書
+O11,B,tier-b/O11_fox_pattern_scarf_archway.png,Zone 2,半遮,石拱門底座上的狐紋圍巾
+O12,B,tier-b/O12_fox_pincushion_coiled_rope.png,Zone 1,全藏,盤好繩圈中的狐形針插
+O13,B,tier-b/O13_ruppells_fox_preserve_jar.png,Zone 3,半遮,散落石堆中的果醬樽狐紋
+O14,B,tier-b/O14_fox_shaped_kite_archway.png,Zone 2,半遮,纏喺拱門頂部的狐形風箏
+N1,B,tier-b/N01_brass_oil_lantern_fox_cutout.png,Zone 1,明處,營火邊的黃銅油燈狐紋
+N2,B,tier-b/N02_fox_etched_amphora.png,Zone 2,半遮,靠住石拱門牆身的陶罐雕刻狐紋
+N3,B,tier-b/N03_camel_saddle_fox_charm.png,Zone 1,半遮,駱駝挽具上的駱駝鞍飾
+N4,B,tier-b/N04_bedouin_shawl_fox_pattern.png,Zone 3,半遮,尖角岩石上的貝都因披肩狐紋
+N5,B,tier-b/N05_fox_constellation_astrolabe.png,Zone 2,全藏,廢墟旁半埋沙地的星盤狐座
+N6,B,tier-b/N06_fox_spice_jar_second_fire.png,Zone 3,明處,第二個火堆附近平石面的香料罐狐紋
+C1,C,tier-c/C01_fox_pawprints_campfire_sand.png,Zone 1,全藏,營火周圍細沙上的狐爪印
+C2,C,tier-c/C02_black_white_tail_tip_archway.png,Zone 2,全藏,石拱門背後的黑白狐尾尖
+C3,C,tier-c/C03_fox_shadow_jagged_rock.png,Zone 3,全藏,尖角岩石表面的月光狐影
+C4,C,tier-c/C04_fox_ears_ruins_crack.png,Zone 2,全藏,廢墟牆身裂縫中的狐耳
+C5,C,tier-c/C05_fox_nose_whiskers_saddlebags.png,Zone 1,全藏,疊起鞍袋背後的狐鼻及鬍鬚
+C6,C,tier-c/C06_fox_pawprints_rock_crevice.png,Zone 3,全藏,通往岩石罅隙的狐爪印
+C7,C,tier-c/C07_glowing_fox_eyes_fallen_columns.png,Zone 2,全藏,倒塌石柱暗隙中的發光狐眼
