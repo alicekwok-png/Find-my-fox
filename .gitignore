@@ -40,3 +40,12 @@ level5_assets_v3_all/_grid/
 find-the-fox-level3-generated-assets/find-the-fox-level3-C*.png
 find-the-fox-level3-generated-assets/find-the-fox-level3-N*.png
 find-the-fox-level3-generated-assets/find-the-fox-level3-O*.png
+
+# Level 8 raw Tier A/B/C exports carry a baked white/grey checkerboard
+# (only the grey squares were transparent) — superseded by
+# find-the-fox-level8-assets/find-the-fox-level8-assets/clean/ (keyed +
+# trimmed), which index.html loads. previews/ is the vendor's contact sheets.
+find-the-fox-level8-assets/find-the-fox-level8-assets/tier-a/
+find-the-fox-level8-assets/find-the-fox-level8-assets/tier-b/
+find-the-fox-level8-assets/find-the-fox-level8-assets/tier-c/
+find-the-fox-level8-assets/find-the-fox-level8-assets/previews/
