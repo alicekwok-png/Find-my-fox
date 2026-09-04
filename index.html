@@ -120,13 +120,21 @@
   }
   #settings-btn img{ width:100%; height:100%; object-fit:contain; }
 
+  #settings-btn{ z-index:2; }
   #settings-panel{
-    position:absolute; top:66px; right:14px; pointer-events:auto;
+    /* below the gear even with a notch (safe-area-inset-top pushes the gear down);
+       PM 2026-09-04: on iPhone the panel used to cover the gear, so it could not be closed */
+    position:absolute; top:calc(max(14px, env(safe-area-inset-top)) + 56px); right:14px; pointer-events:auto;
+    max-height:calc(100vh - max(14px, env(safe-area-inset-top)) - 80px); overflow-y:auto; max-width:calc(100vw - 28px);
     background:var(--ui-bg); color:var(--ui-fg); border-radius:14px; padding:14px 16px;
     box-shadow:0 4px 14px rgba(0,0,0,.35); display:none; min-width:180px;
     backdrop-filter:blur(4px);
   }
   #settings-panel.open{ display:block; }
+  #settings-close{
+    width:100%; margin-top:10px; padding:9px 10px; border:none; border-radius:10px; cursor:pointer;
+    background:#f6a623; color:#4a2a08; font-weight:800; font-size:14px;
+  }
   #settings-panel label{ display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; }
   #settings-panel .note{ margin-top:8px; font-size:11px; opacity:.65; line-height:1.4; }
   #settings-panel .divider{ height:1px; background:rgba(255,255,255,.15); margin:10px 0; }
@@ -324,7 +332,7 @@
   }
   #home-logo[hidden]{ display:none; }
   #home-logo{
-    width:min(80vw, 400px); height:auto; display:block; margin:0 auto;
+    height:clamp(80px, 15vh, 190px); width:auto; max-width:82vw; display:block; margin:0 auto;
     filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));
     animation:logoIn .9s ease-out both;
   }
@@ -338,21 +346,12 @@
   }
   #mascot-btn{
     position:relative; border:none; background:none; padding:0; margin:0; cursor:pointer;
-    width:clamp(200px, 64vw, 340px); align-self:flex-start; margin-left:-5%;
+    height:clamp(150px, 25vh, 300px); width:auto; align-self:flex-start; margin-left:-4%;
     filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));
     animation:mascotBob 2.6s ease-in-out infinite;
   }
-  #mascot-btn.sign{ width:clamp(170px, 46vw, 260px); align-self:center; margin-left:0; }
   #mascot-btn:active{ transform:scale(.96); }
-  #mascot-btn img{ width:100%; height:auto; display:block; }
-  #level-sign-text{
-    /* 木牌fallback：牌內側淺色版面係圖片51.5%–68%高度（用PIL逐行掃描量出） */
-    position:absolute; left:8%; right:8%; top:51.5%; height:16.5%;
-    display:none; align-items:center; justify-content:center;
-    font-size:clamp(16px, 4.6vw, 22px); font-weight:800; color:#5a3410;
-    text-shadow:0 1px 0 rgba(255,255,255,.35);
-  }
-  #mascot-btn.sign #level-sign-text{ display:flex; }
+  #mascot-btn img{ height:100%; width:auto; display:block; }
   /* 右側：VIP／移除廣告 ＋ 抽獎轉盤 */
   #home-side{
     position:absolute; right:0; top:50%; transform:translateY(-50%);
@@ -394,15 +393,24 @@
   .hint-chip img{ width:24px; height:24px; object-fit:contain; }
   .hint-chip .emoji{ font-size:18px; line-height:24px; }
 
-  /* 底部主CTA：「第X關」大掣 ＋ 揀關卡 link */
+  /* 底部主CTA（PM 2026-09-04）：木牌狐狸放喺呢個位，牌面寫「第 N 關」；撳落去續玩 */
   #home-play-btn{
-    margin-top:12px; cursor:pointer; padding:14px 18px; border-radius:22px;
-    font-size:clamp(22px, 6.4vw, 30px); font-weight:900; letter-spacing:1px; color:#4a2a08;
-    background:linear-gradient(#ffe08a,#f6a623); border:4px solid #8a4a12;
-    box-shadow:0 6px 0 #6d3609, 0 12px 22px rgba(0,0,0,.4), inset 0 3px 0 rgba(255,255,255,.55);
+    position:relative; border:none; background:none; padding:0; margin:10px auto 0; cursor:pointer;
+    width:clamp(200px, 56vw, 300px); display:block;
+    filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));
+    animation:mascotBob 2.6s ease-in-out infinite;
   }
-  #home-play-btn small{ display:block; font-size:13px; font-weight:700; letter-spacing:0; opacity:.8; margin-top:2px; }
-  #home-play-btn:active{ transform:translateY(4px); box-shadow:0 2px 0 #6d3609, 0 6px 12px rgba(0,0,0,.4); }
+  #home-play-btn:active{ transform:scale(.96); }
+  #home-play-btn img{ width:100%; height:auto; display:block; }
+  #level-sign-text{
+    /* home-sign.png = 未命名設計 (17).png cropped to its alpha bbox (767x561) so the
+       transparent padding stops eating vertical space; the plaque's cream face
+       measured via PIL on the cropped image: rows 59.2%–89.9%, cols 15.5%–83.6% */
+    position:absolute; left:15.5%; right:16.4%; top:59.2%; height:30.7%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:clamp(20px, 6vw, 28px); font-weight:800; color:#5a3410;
+    text-shadow:0 1px 0 rgba(255,255,255,.35);
+  }
   #level-select-link{
     margin:6px auto 0; padding:6px 14px; border:none; background:none; display:block;
     color:#f4d9b4; font-size:13px; text-decoration:underline; cursor:pointer;
@@ -541,9 +549,7 @@
          onerror="this.hidden=true; document.getElementById('home-title').hidden=false;">
     <h1 id="home-title" hidden>Find The Fox</h1>
     <button id="mascot-btn" title="開始遊戲">
-      <img id="home-mascot" src="home-mascot.png" alt=""
-           onerror="this.onerror=null; this.src='未命名設計 (17).png'; this.parentNode.classList.add('sign');">
-      <span id="level-sign-text">Find The Fox</span>
+      <img id="home-mascot" src="home-mascot.png" alt="">
     </button>
     <div id="home-side">
       <button class="home-icon-btn" id="vip-btn" title="VIP／移除廣告"><span class="flat-badge">👑</span><span class="side-label">移除廣告</span></button>
@@ -563,7 +569,10 @@
     <span class="hint-chip" title="提示（第二種，待定）"><span class="emoji">💡</span>∞</span>
   </div>
 
-  <button id="home-play-btn" class="home-col">第 1 關<small>開始遊戲 ▶</small></button>
+  <button id="home-play-btn" title="開始遊戲">
+    <img src="home-sign.png" alt="">
+    <span id="level-sign-text">第 1 關</span>
+  </button>
   <button id="level-select-link">揀關卡 ▸</button>
 
   <div id="home-toast"></div>
@@ -600,6 +609,7 @@
   <button id="settings-btn" title="設定"><img src="icon_2.png" alt=""></button>
   <div id="settings-panel">
     <label><input type="checkbox" id="mute-toggle"> 靜音音效</label>
+    <button id="settings-close">✕ 閂設定</button>
     <div class="note">⚠️ 待確認項目：提示次數規則（見技術方案第12節）。本MVP之提示＝無限次＋鏡頭自動移動。插頁廣告已拍板為每關完成後強制一次；本MVP用placeholder卡片模擬，真實Ad SDK／fill-rate fallback／skip秒數都待IT揀。</div>
 
     <div class="divider"></div>
@@ -888,7 +898,7 @@
       { id:"obj_N4", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-N4-sand-timer.png", position:{x:300,y:610}, hitbox:{width:30,height:48}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"塞入行李袋背後嘅罅隙 — in the gap between the rolled tent and the barrel pack, behind the packs" },
 
       // ---- Tier C (3) — anchors PM-fixed in prompts-v3 (2) §C ----
-      { id:"clue_C1", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C1-fox-pawprints.png", position:{x:640,y:1180}, hitbox:{width:130,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅沙地 — trail on the sand right-front of the campfire" },
+      { id:"clue_C1", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C1-fox-pawprints.png", position:{x:660,y:1190}, hitbox:{width:200,height:140}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅沙地 — trail on the sand right-front of the campfire" },
       { id:"clue_C2", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C2-fox-ear-tips.png", position:{x:1120,y:610}, hitbox:{width:50,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"棕櫚樹幹背後 — ears at the big palm trunk's left edge, above mother's head (the trunk base is occupied by mother and child, §2.7)" },
       { id:"clue_C3", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C3-fox-tail-tip.png", position:{x:2270,y:1330}, hitbox:{width:45,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"破爛木頭車輪底部 — under the fallen wheel's lower-left rim where it meets the sand" }
     ]
@@ -1173,12 +1183,12 @@
       { id:"obj_N6", target_type:"fox_object", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "N06_climbing_backpack_fox_charm.png", position:{x:555,y:1145}, hitbox:{width:64,height:90}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"靠住物資木箱 — leaning on the right side of the right-hand supply crate" },
       { id:"obj_N7", target_type:"fox_object", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "N07_twilight_bell_fox_etching.png", position:{x:2215,y:265}, hitbox:{width:34,height:50}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"掛喺石拱下面 — hanging from the arch's inner curve right of the chime; its own ring is the connector" },
       // ---- Tier C: partial clues (8) ----
-      { id:"clue_C1", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C01_fox_pawprints_campfire_dust.png", position:{x:150,y:1170}, hitbox:{width:110,height:70}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅塵土地 — dust patch with prints on the ground right of the fire ring" },
+      { id:"clue_C1", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C01_fox_pawprints_campfire_dust.png", position:{x:140,y:1185}, hitbox:{width:170,height:110}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅塵土地 — dust patch with prints on the ground right of the fire ring" },
       { id:"clue_C2", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C02_long_fox_tail_tip_ledge.png", position:{x:1440,y:1210}, hitbox:{width:45,height:52}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"岩台邊沿背後 — tail tip against the foot of the ledge's right-front face — the fox is behind/under the ledge lip" },
       { id:"clue_C3", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C03_fox_shadow_cliff_face.png", position:{x:1960,y:620}, hitbox:{width:90,height:110}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"崖壁表面 — twilight shadow cast on the plateau's cliff wall right of the carving" },
       { id:"clue_C4", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C04_fox_ears_crevice.png", position:{x:1165,y:600}, hitbox:{width:40,height:22}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"窄岩縫 — ears poking out of the crack at the top of the central cliff block" },
       { id:"clue_C5", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C05_fox_nose_whiskers_crate.png", position:{x:955,y:940}, hitbox:{width:40,height:35}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"物資木箱背後 — nose out at the right edge of the crate with the blue can (sprite is cut on its left, so the crate is on its left)" },
-      { id:"clue_C6", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C06_fox_pawprints_plateau_edge.png", position:{x:1980,y:500}, hitbox:{width:100,height:60}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"崖頂平台邊緣 — prints along the cliff-top platform's front edge below the arch" },
+      { id:"clue_C6", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C06_fox_pawprints_plateau_edge.png", position:{x:2040,y:515}, hitbox:{width:150,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"崖頂平台邊緣 — prints along the cliff-top platform's front edge below the arch" },
       { id:"clue_C7", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C07_glowing_fox_eyes_rock_gap.png", position:{x:1490,y:1175}, hitbox:{width:45,height:28}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"岩石之間嘅暗隙 — glowing eyes in the dark gap at the ledge's right-front corner" },
       { id:"clue_C8", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C08_fox_tail_tip_folded_tent.png", position:{x:700,y:995}, hitbox:{width:60,height:35}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"摺好嘅帳篷底下 — tail tip out from under the bottom edge of the leaning folded tent" }
     ]
@@ -1637,6 +1647,9 @@
   }
 
   function loadLevel(idx, onReady, deferStart){
+    // never carry the home-screen settings state into a level
+    document.getElementById("settings-panel").classList.remove("open");
+    document.getElementById("ui").classList.remove("over-home");
     currentLevelIndex = idx;
     manifest = LEVELS[idx];
     foundIds = {};
@@ -1796,9 +1809,22 @@
   /* ---- UI wiring ---- */
   document.getElementById("hint-btn").addEventListener("click", doHint);
   document.getElementById("continue-btn").addEventListener("click", continueAfterLevel);
-  document.getElementById("settings-btn").addEventListener("click", function(){
+  document.getElementById("settings-btn").addEventListener("click", function(e){
+    e.stopPropagation();
     document.getElementById("settings-panel").classList.toggle("open");
   });
+  document.getElementById("settings-close").addEventListener("click", function(){
+    document.getElementById("settings-panel").classList.remove("open");
+    document.getElementById("ui").classList.remove("over-home");
+  });
+  // Tap anywhere outside the panel closes it (phones: the gear can sit under the notch)
+  document.addEventListener("click", function(e){
+    var panel = document.getElementById("settings-panel");
+    if (!panel.classList.contains("open")) return;
+    if (e.target.closest("#settings-panel") || e.target.closest("#settings-btn") || e.target.closest("#home-settings-btn")) return;
+    panel.classList.remove("open");
+    document.getElementById("ui").classList.remove("over-home");
+  }, true);
   document.getElementById("mute-toggle").addEventListener("change", function(e){
     muted = e.target.checked;
   });
@@ -1886,7 +1912,7 @@
     var idx = nextLevelIndex();
     var done = progress.completed.length;
     // §C 底部主CTA：「第X關」（X = 目前進度嘅下一關）；吉祥物係同一個掣
-    document.getElementById("home-play-btn").innerHTML = "第 " + (idx + 1) + " 關<small>開始遊戲 ▶</small>";
+    document.getElementById("level-sign-text").textContent = "第 " + (idx + 1) + " 關";
     // 「扮靚狐狸」進度圓點1-5：暫時＝已通關數（換裝功能V1.1+，先做UI外殼）
     var dots = document.querySelectorAll("#dressup-dots i");
     for (var i = 0; i < dots.length; i++) dots[i].className = i < done ? "on" : "";
