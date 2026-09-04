@@ -58,6 +58,12 @@
   .target.tier-exposed{ opacity:1; }
   .target.tier-partial{ opacity:.93; filter:saturate(.85) contrast(.96) drop-shadow(0 4px 6px rgba(0,0,0,.35)); }
   .target.tier-hidden{ opacity:.82; filter:saturate(.6) brightness(.94) drop-shadow(0 4px 6px rgba(0,0,0,.35)); transform:translate(-50%,-50%) scale(.88); }
+  /* render:"imprint" (PM 2026-09-04 「腳印要融入地面」): pawprint trails are pressed
+     into the ground, not pasted on it — the sprite keeps only the dark impressions
+     (imprint.py drops the light ground patch) and is multiplied onto the terrain;
+     no drop-shadow, no hidden-tier shrink, so nothing reads as a floating patch. */
+  .target.imprint{ filter:none; transform:translate(-50%,-50%); opacity:.95; }
+  .target.imprint img{ mix-blend-mode:multiply; }
   .target.found{ pointer-events:none; }
 
   /* §1.2 (已拍板): found feedback = gold glow + star burst (~0.3-0.5s),
@@ -610,6 +616,7 @@
   <div id="settings-panel">
     <label><input type="checkbox" id="mute-toggle"> 靜音音效</label>
     <button id="settings-close">✕ 閂設定</button>
+    <button class="panel-btn" id="home-return-btn">🏠 返回主畫面</button>
     <div class="note">⚠️ 待確認項目：提示次數規則（見技術方案第12節）。本MVP之提示＝無限次＋鏡頭自動移動。插頁廣告已拍板為每關完成後強制一次；本MVP用placeholder卡片模擬，真實Ad SDK／fill-rate fallback／skip秒數都待IT揀。</div>
 
     <div class="divider"></div>
@@ -898,7 +905,7 @@
       { id:"obj_N4", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-N4-sand-timer.png", position:{x:300,y:610}, hitbox:{width:30,height:48}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"塞入行李袋背後嘅罅隙 — in the gap between the rolled tent and the barrel pack, behind the packs" },
 
       // ---- Tier C (3) — anchors PM-fixed in prompts-v3 (2) §C ----
-      { id:"clue_C1", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C1-fox-pawprints.png", position:{x:660,y:1190}, hitbox:{width:200,height:140}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅沙地 — trail on the sand right-front of the campfire" },
+      { id:"clue_C1", render:"imprint", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C1-fox-pawprints_imprint.png", position:{x:660,y:1190}, hitbox:{width:200,height:140}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅沙地 — trail on the sand right-front of the campfire" },
       { id:"clue_C2", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C2-fox-ear-tips.png", position:{x:1120,y:610}, hitbox:{width:50,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"棕櫚樹幹背後 — ears at the big palm trunk's left edge, above mother's head (the trunk base is occupied by mother and child, §2.7)" },
       { id:"clue_C3", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C3-fox-tail-tip.png", position:{x:2270,y:1330}, hitbox:{width:45,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"破爛木頭車輪底部 — under the fallen wheel's lower-left rim where it meets the sand" }
     ]
@@ -1006,7 +1013,7 @@
       { id:"obj_N5", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "N5_herder_teapot_fox_pattern (2).png", position:{x:420,y:520}, hitbox:{width:120,height:120}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"on the open camp ground right of father — NOTE: the revised sprite bakes in its own fire and stones, so it reads as a second brazier rather than sitting on the real fire (PM to confirm, §2.10)", intended_scale_ref:"kettle on a stone ring, ~60cm overall" },
 
       // ---- Tier C: partial_clue, all tibetan_sand_fox (4) ----
-      { id:"clue_C1", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C1_fox_paw_footprints (2).png", position:{x:545,y:620}, hitbox:{width:110,height:150}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"trail crossing the open dirt between the camp and the stream", intended_scale_ref:"three prints running about a metre of ground; sprite is portrait, so the box is too" },
+      { id:"clue_C1", render:"imprint", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C1_fox_paw_footprints (2)_imprint.png", position:{x:545,y:620}, hitbox:{width:110,height:150}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"trail crossing the open dirt between the camp and the stream", intended_scale_ref:"three prints running about a metre of ground; sprite is portrait, so the box is too" },
       { id:"clue_C2", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C2_fox_tail_tip_flags (2).png", position:{x:900,y:300}, hitbox:{width:95,height:110}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"the sprite carries its own rope, laid along the real prayer-flag line in front of the shrine so the two ropes read as one (§2.3 connector)" },
       { id:"clue_C3", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C3_fox_shadow_hut_wall (3).png", position:{x:1290,y:320}, hitbox:{width:150,height:180}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"its own wall slice laid onto the hut's real stone wall left of the door, base rocks landing on the real ground line; kept clear of the boy (§2.7)", intended_scale_ref:"a wall patch about the boy's height" },
       { id:"clue_C4", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C4_fox_ears_fog (3).png", position:{x:1300,y:790}, hitbox:{width:240,height:170}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"ears breaking the surface of the real fog bank rolling across the lower-right foreground", intended_scale_ref:"ears ~15cm, so the whole fog patch runs about 1.5m wide" }
@@ -1096,7 +1103,7 @@
       { id:"obj_N6", target_type:"fox_object", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "N6_felt_fox_doll.png", position:{x:960,y:985}, hitbox:{width:55,height:55}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"塞入氈毯嘅摺痕 — in the rumpled left fringe of the rug" },
 
       // ---- Tier C (5) — anchors PM-fixed in prompts-v3 §C ----
-      { id:"clue_C1", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C1_fox_pawprints.png", position:{x:760,y:810}, hitbox:{width:130,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"蒙古包門口嘅泥地 — on the dirt directly below the door step" },
+      { id:"clue_C1", render:"imprint", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C1_fox_pawprints_imprint.png", position:{x:760,y:810}, hitbox:{width:130,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"蒙古包門口嘅泥地 — on the dirt directly below the door step" },
       { id:"clue_C2", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C2_fox_tail_tip.png", position:{x:935,y:1010}, hitbox:{width:60,height:50}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"氈毯邊沿底下 — under the rug's left fringe" },
       { id:"clue_C3", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C3_fox_ears_behind_rock.png", position:{x:2320,y:700}, hitbox:{width:55,height:50}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"石頭背後 — ears above the top edge of the outcrop's left base boulder" },
       { id:"clue_C4", target_type:"partial_clue", species:"corsac_fox", sprite_asset: ASSET_DIR5 + "C4_fox_shadow.png", position:{x:880,y:620}, hitbox:{width:90,height:120}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"蒙古包氈牆表面 — on the felt wall to the RIGHT of the door; the left wall is blocked by father's and the horse's heads (§2.7)" },
@@ -1112,6 +1119,85 @@
   var totalCountEl = document.querySelector("#counter .total-count");
   var completeScreen = document.getElementById("complete-screen");
   var hintToast = document.getElementById("hint-toast");
+
+  /* =========================================================
+     Level 6 — 蒼狐 Pale Fox／非洲薩赫爾草原
+     Source: find-the-fox-level6-asset-prompts-v3.md (background + Tier B/C
+     PM anchors, 2026-09-02) + find-the-fox-level6-asset-prompts.md (v2 Tier A,
+     no PM anchors — placed by each prompt's described spot).
+     §2.4 QA gate: background measured via PIL = 2560x1440 = 1.78:1.
+     Tier A arrived as opaque RGB on a grey backdrop with baked checker
+     patches, Tier B/C with white checker squares + enclosed checker pockets —
+     keyed by border/transparent flood + a checker-signature pocket pass
+     (key_l6.py, key_pockets.py) and trimmed to content; clean/ is what loads.
+     Background comes from the v3 delivery folder "(1)"; the older v2
+     background-panorama.png (no family) is not used.
+     Scale: father kneeling ≈340px ≈ 110cm → 1cm ≈ 3.1px.
+     §2.7 face no-go boxes: father (150-265,740-805), donkey head
+     (290-400,700-900), mother (1090-1185,800-885), child (1195-1265,875-945),
+     goat 1 head (1500-1600,900-1000), sibling (2130-2215,800-875), goat 2 head
+     (2195-2295,838-925).
+     NOTE: the vendor's N4 is a woven shawl, not the PM's clay water jar.
+     ========================================================= */
+  var ASSET_DIR6 = "find-the-fox-level6-assets/";
+  var ASSET_DIR6_CLEAN = ASSET_DIR6 + "clean/";
+
+  var LEVEL_6 = {
+    level_id: "pale_fox_sahel_06",
+    level_name: "薩赫爾草原黃昏",
+    theme: "pale_fox_sahel_savanna",
+    background_asset: ASSET_DIR6 + "background/level6_sahel_savanna_golden_hour_panorama.png",
+    background_size: { width: 2560, height: 1440 },
+    viewport_size: { width: 1080, height: 1920 },
+    initial_camera_position: { x: 0, y: 0 },
+    target_count_total: 39, // 15 Tier A (11 pale-fox hero + 3 Rüppell's cameo + 1 Cape-fox teaser) + 18 Tier B (12 reskin + 6 Sahel-only) + 6 Tier C
+    targets: [
+      // ---- Tier A: pale fox hero (11) — [PM未指定] placed per the v2 prompt's spot; most sprites carry their own prop ----
+      { id:"fox_01", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-01-pale-ivory.png", position:{x:560,y:640}, hitbox:{width:160,height:150}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] sitting under an acacia tree — the sprite carries its own small acacia, set on the open plain right of the big acacia as one more mid-ground tree" },
+      { id:"fox_02", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-02-darker-grass.png", position:{x:1240,y:720}, hitbox:{width:110,height:90}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] peeking out from tall savanna grass — its own grass laid over the golden grass patch on the baobab mound" },
+      { id:"fox_03", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-03-chest-patch-burrow.png", position:{x:1960,y:780}, hitbox:{width:110,height:100}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] curled in a burrow near a termite mound, only ears — its own small mound at the foot of the real termite-mound slope" },
+      { id:"fox_04", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-04-notched-ear.png", position:{x:1690,y:1120}, hitbox:{width:120,height:100}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] standing at the edge of the watering hole — its own puddle merged into the right end of the real watering hole" },
+      { id:"fox_05", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-05-juvenile-root.png", position:{x:1250,y:600}, hitbox:{width:110,height:110}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] juvenile peeking from behind an exposed baobab root — its own root set against the left side of the real baobab roots" },
+      { id:"fox_06", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-06-older-crevice.png", position:{x:960,y:1330}, hitbox:{width:110,height:80}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] hiding in a crevice of the cracked mud — its own mud hollow on the cracked ground left-below the watering hole" },
+      { id:"fox_07", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-07-bushy-tail-pounce.png", position:{x:530,y:1000}, hitbox:{width:120,height:90}, difficulty_tier:"partial", placement_class:"airborne_action", anchor_ref:"[PM未指定] mid-pounce through savanna grass — leaping over the dry grass tufts in front of the donkey" },
+      { id:"fox_08", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-08-bead-anklet-termite.png", position:{x:2500,y:705}, hitbox:{width:100,height:110}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] standing alert atop a termite mound — its own small mound beside the real mounds' right foot" },
+      { id:"fox_09", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-09-back-stripe-root.png", position:{x:1470,y:640}, hitbox:{width:100,height:80}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] hiding inside a hollow baobab root — its own hollow root set at the front-centre of the real roots" },
+      { id:"fox_10", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-10-golden-grass.png", position:{x:2420,y:815}, hitbox:{width:90,height:80}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] peeking from behind a dry grass tuft — its own tuft on the real tuft cluster below the small right mound" },
+      { id:"fox_11", target_type:"hero_fox", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-11-wide-eyed-beetle.png", position:{x:1820,y:1200}, hitbox:{width:120,height:90}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] pouncing at a beetle — open red earth between the watering hole and the tall grass" },
+      // ---- Tier A cameo: Rüppell's fox (3) + Cape fox teaser (1) ----
+      { id:"fox_12", target_type:"cameo_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-12-rueppells-tail.png", position:{x:700,y:1290}, hitbox:{width:80,height:95}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"[PM未指定] sitting with its black-and-white tail visible — open foreground earth right of the grass tufts" },
+      { id:"fox_13", target_type:"cameo_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-13-rueppells-throat.png", position:{x:80,y:850}, hitbox:{width:90,height:110}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] peeking from behind an acacia trunk — its own trunk aligned on the big acacia's trunk base, fox at the left, clear of father's face box" },
+      { id:"fox_14", target_type:"cameo_fox", species:"ruppells_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-14-rueppells-stripe.png", position:{x:2125,y:745}, hitbox:{width:110,height:80}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"[PM未指定] camouflaged near a termite mound — its own low mound at the main mound's left foot, above the sibling" },
+      { id:"fox_15", target_type:"cameo_fox", species:"cape_fox", sprite_asset: ASSET_DIR6_CLEAN + "fox-15-cape-grass.png", position:{x:2100,y:1180}, hitbox:{width:100,height:90}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"[PM未指定] Cape fox glimpse from tall grass — its own grass on the foreground tall-grass cluster below the sibling" },
+      // ---- Tier B: 12 reskin fox objects — PM anchors (Section B) ----
+      { id:"obj_O1", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O01_pale_fox_face_mug.png", position:{x:300,y:1150}, hitbox:{width:34,height:34}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺籃攤木枱面 — NOTE: the painting's stall is a big basket on a mat, no wooden table; on the mat beside father's knee (PM to confirm)" },
+      { id:"obj_O2", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O02_pale_fox_pattern_blanket_clay_jar.png", position:{x:910,y:805}, hitbox:{width:90,height:55}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"搭喺陶罐上面 — folded on the tallest clay jar of the stack by the cart wheel" },
+      { id:"obj_O3", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O03_fox_tail_keychain_donkey_saddle.png", position:{x:565,y:850}, hitbox:{width:30,height:70}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"掛喺驢仔嘅鞍袋 — hanging from the rear edge of the donkey's saddle bag; its own clip is the §2.3 connector" },
+      { id:"obj_O4", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O04_pale_fox_shaped_cookie_waterhole.png", position:{x:1080,y:1215}, hitbox:{width:30,height:32}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺水塘邊嘅布上 — NOTE: no cloth at the water; on the pale mud at the hole's left edge (PM to confirm)" },
+      { id:"obj_O5", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O05_knitted_pale_fox_plush.png", position:{x:1400,y:1265}, hitbox:{width:60,height:70}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"坐喺水塘邊嘅乾裂泥地 — on the cracked mud below the water" },
+      { id:"obj_O6", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O06_pale_fox_pattern_thermos.png", position:{x:1060,y:1150}, hitbox:{width:30,height:78}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"企喺水邊 — standing at the hole's left rim" },
+      { id:"obj_O7", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O07_pale_fox_salt_pepper_shakers_cracked_mud.png", position:{x:950,y:1240}, hitbox:{width:60,height:50}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"塞入乾裂泥地嘅裂縫 — on the cracked mud left of the watering hole" },
+      { id:"obj_O8", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O08_fox_ear_knit_hat_termite_mound.png", position:{x:2350,y:620}, hitbox:{width:70,height:60}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"掛喺白蟻丘邊緣 — resting on the right spire's shoulder of the termite mound" },
+      { id:"obj_O9", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O09_fox_wind_chime_acacia_branch.png", position:{x:2250,y:260}, hitbox:{width:40,height:110}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"掛喺低垂嘅金合歡樹枝 — hanging from the overhead acacia branch between two seed pods; its own hook is the connector" },
+      { id:"obj_O10", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O10_pale_fox_field_guide_book_grain_basket.png", position:{x:2470,y:1140}, hitbox:{width:60,height:55}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"半掩喺穀物籐籃隔籬 — at the front base of the grain basket" },
+      { id:"obj_O11", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O11_pale_fox_pattern_scarf_basket_stall.png", position:{x:60,y:1030}, hitbox:{width:90,height:60}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"搭喺籃攤枱邊 — draped over the rim of the stall's big basket" },
+      { id:"obj_O12", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "O12_fox_pincushion_grain_basket.png", position:{x:2500,y:960}, hitbox:{width:90,height:80}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"塞入穀物籐籃入面 — the sprite's own basket laid over the top of the real grain basket" },
+      // ---- Tier B: 6 Sahel-only objects ----
+      { id:"obj_N1", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "N01_woven_basket_fox_rim.png", position:{x:200,y:1130}, hitbox:{width:80,height:60}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"直接放喺攤檔枱面 — on the stall mat between the big basket and father" },
+      { id:"obj_N2", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "N02_carved_fox_gourd_container.png", position:{x:1000,y:1120}, hitbox:{width:60,height:60}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"放喺水塘邊嘅泥地 — on the mud at the hole's left rim" },
+      { id:"obj_N3", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "N03_tribal_necklace_fox_pendant.png", position:{x:215,y:1050}, hitbox:{width:50,height:70}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"掛喺攤檔枱邊 — draped over the right edge of the stall's big basket" },
+      { id:"obj_N4", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "N04_savanna_shawl_fox_pattern.png", position:{x:1300,y:1235}, hitbox:{width:110,height:60}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"企喺水塘邊 — NOTE: vendor delivered a shawl instead of the PM's clay jar; draped over the stone rim at the hole's front edge (PM to confirm / regenerate)" },
+      { id:"obj_N5", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "N05_fox_ear_feather_headdress_termite_mound.png", position:{x:2070,y:690}, hitbox:{width:80,height:60}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"塞入白蟻丘背後 — at the left foot of the main mound, tucked against its base" },
+      { id:"obj_N6", target_type:"fox_object", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "N06_wooden_drum_fox_pattern_baobab_roots.png", position:{x:1690,y:655}, hitbox:{width:70,height:80}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"靠住猴麵包樹根 — leaning on the right-hand baobab root" },
+      // ---- Tier C: partial clues (6) ----
+      { id:"clue_C1", render:"imprint", target_type:"fox_clue", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "C01_fox_pawprints_red_earth_imprint.png", position:{x:420,y:1250}, hitbox:{width:150,height:100}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"攤檔周圍嘅紅土地 — dust patch with prints on the earth below the grass tufts, right of the stall" },
+      { id:"clue_C2", target_type:"fox_clue", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "C02_oversized_fox_ears_tall_grass.png", position:{x:1640,y:700}, hitbox:{width:110,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"高身金黃草叢 — its own grass on the tall golden grass behind goat 1" },
+      { id:"clue_C3", target_type:"fox_clue", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "C03_fox_tail_tip_termite_mound.png", position:{x:2230,y:700}, hitbox:{width:80,height:80}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"白蟻丘表面罅隙 — its own crevice set on the main mound's lower face" },
+      { id:"clue_C4", target_type:"fox_clue", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "C04_fox_shadow_cracked_mud.png", position:{x:1550,y:1290}, hitbox:{width:110,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"乾裂泥地表面 — shadow on the cracked mud below the water" },
+      { id:"clue_C5", target_type:"fox_clue", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "C05_fox_nose_whiskers_stall.png", position:{x:130,y:1195}, hitbox:{width:90,height:60}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"攤檔枱底 — nose out from under the big basket's bottom edge, its own weave strip on the basket base" },
+      { id:"clue_C6", target_type:"fox_clue", species:"pale_fox", sprite_asset: ASSET_DIR6_CLEAN + "C06_fox_pawprints_baobab_root_crevice.png", position:{x:1580,y:660}, hitbox:{width:90,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"猴麵包樹根罅隙 — its own root crevice set between the real roots, prints leading in" }
+    ]
+  };
 
   /* =========================================================
      Level 7 — 魯氏狐 Rüppell's Fox／中東沙漠夜景
@@ -1181,12 +1267,12 @@
       { id:"obj_N5", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "N05_fox_constellation_astrolabe.png", position:{x:1060,y:800}, hitbox:{width:40,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"半埋喺廢墟旁邊嘅沙地 — in the mound sand below the left ruin wall" },
       { id:"obj_N6", target_type:"fox_object", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "N06_fox_spice_jar_second_fire.png", position:{x:2200,y:1170}, hitbox:{width:30,height:45}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"放喺平石面近第二個火堆 — on the flat stone left of the ember fire" },
       // ---- Tier C: partial clues (7) ----
-      { id:"clue_C1", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C01_fox_pawprints_campfire_sand.png", position:{x:380,y:1200}, hitbox:{width:150,height:100}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅細沙 — dust patch with prints on the sand right of father's boots (the sand directly under the fire ring is rock)" },
+      { id:"clue_C1", render:"imprint", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C01_fox_pawprints_campfire_sand_imprint.png", position:{x:380,y:1200}, hitbox:{width:150,height:100}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅細沙 — dust patch with prints on the sand right of father's boots (the sand directly under the fire ring is rock)" },
       { id:"clue_C2", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C02_black_white_tail_tip_archway.png", position:{x:1612,y:745}, hitbox:{width:40,height:45}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"石拱門背後 — tail tip out at the outer edge of the arch's right pillar" },
       { id:"clue_C3", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C03_fox_shadow_jagged_rock.png", position:{x:2130,y:640}, hitbox:{width:110,height:130}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"尖角岩石表面 — the sprite's own jagged rock (with the moon shadow) set at the foot of the rock formation" },
       { id:"clue_C4", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C04_fox_ears_ruins_crack.png", position:{x:1660,y:620}, hitbox:{width:36,height:20}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"廢墟牆身裂縫 — ears out of a crack in the right ruin wall" },
       { id:"clue_C5", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C05_fox_nose_whiskers_saddlebags.png", position:{x:805,y:945}, hitbox:{width:100,height:95}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"疊起嘅鞍袋背後 — the sprite's own stacked bags overlaid on the real saddle-bag stack, nose out at its left edge" },
-      { id:"clue_C6", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C06_fox_pawprints_rock_crevice.png", position:{x:2000,y:690}, hitbox:{width:80,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"岩石罅隙 — prints on the slope leading into the gap at the formation's base" },
+      { id:"clue_C6", render:"imprint", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C06_fox_pawprints_rock_crevice_imprint.png", position:{x:2000,y:690}, hitbox:{width:80,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"岩石罅隙 — prints on the slope leading into the gap at the formation's base" },
       { id:"clue_C7", target_type:"fox_clue", species:"ruppells_fox", sprite_asset: ASSET_DIR7_CLEAN + "C07_glowing_fox_eyes_fallen_columns.png", position:{x:1800,y:845}, hitbox:{width:100,height:70}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"倒塌石柱之間嘅暗隙 — the sprite's own column pieces laid at the lower end of the leaning fallen column, eyes in the gap" }
     ]
   };
@@ -1261,20 +1347,18 @@
       { id:"obj_N6", target_type:"fox_object", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "N06_climbing_backpack_fox_charm.png", position:{x:555,y:1145}, hitbox:{width:64,height:90}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"靠住物資木箱 — leaning on the right side of the right-hand supply crate" },
       { id:"obj_N7", target_type:"fox_object", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "N07_twilight_bell_fox_etching.png", position:{x:2215,y:265}, hitbox:{width:34,height:50}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"掛喺石拱下面 — hanging from the arch's inner curve right of the chime; its own ring is the connector" },
       // ---- Tier C: partial clues (8) ----
-      { id:"clue_C1", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C01_fox_pawprints_campfire_dust.png", position:{x:140,y:1185}, hitbox:{width:170,height:110}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅塵土地 — dust patch with prints on the ground right of the fire ring" },
+      { id:"clue_C1", render:"imprint", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C01_fox_pawprints_campfire_dust_imprint.png", position:{x:140,y:1185}, hitbox:{width:170,height:110}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅塵土地 — dust patch with prints on the ground right of the fire ring" },
       { id:"clue_C2", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C02_long_fox_tail_tip_ledge.png", position:{x:1440,y:1210}, hitbox:{width:45,height:52}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"岩台邊沿背後 — tail tip against the foot of the ledge's right-front face — the fox is behind/under the ledge lip" },
       { id:"clue_C3", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C03_fox_shadow_cliff_face.png", position:{x:1960,y:620}, hitbox:{width:90,height:110}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"崖壁表面 — twilight shadow cast on the plateau's cliff wall right of the carving" },
       { id:"clue_C4", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C04_fox_ears_crevice.png", position:{x:1165,y:600}, hitbox:{width:40,height:22}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"窄岩縫 — ears poking out of the crack at the top of the central cliff block" },
       { id:"clue_C5", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C05_fox_nose_whiskers_crate.png", position:{x:955,y:940}, hitbox:{width:40,height:35}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"物資木箱背後 — nose out at the right edge of the crate with the blue can (sprite is cut on its left, so the crate is on its left)" },
-      { id:"clue_C6", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C06_fox_pawprints_plateau_edge.png", position:{x:2040,y:515}, hitbox:{width:150,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"崖頂平台邊緣 — prints along the cliff-top platform's front edge below the arch" },
+      { id:"clue_C6", render:"imprint", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C06_fox_pawprints_plateau_edge_imprint.png", position:{x:2040,y:515}, hitbox:{width:150,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"崖頂平台邊緣 — prints along the cliff-top platform's front edge below the arch" },
       { id:"clue_C7", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C07_glowing_fox_eyes_rock_gap.png", position:{x:1490,y:1175}, hitbox:{width:45,height:28}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"岩石之間嘅暗隙 — glowing eyes in the dark gap at the ledge's right-front corner" },
       { id:"clue_C8", target_type:"fox_clue", species:"blanfords_fox", sprite_asset: ASSET_DIR8_CLEAN + "C08_fox_tail_tip_folded_tent.png", position:{x:700,y:995}, hitbox:{width:60,height:35}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"摺好嘅帳篷底下 — tail tip out from under the bottom edge of the leaning folded tent" }
     ]
   };
 
-  // Level 6 is not built yet, so Levels 7 and 8 currently occupy slots 6 and 7
-  // in the unlock chain / level select — insert L6 here once it lands.
-  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_7, LEVEL_8];
+  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8];
   var currentLevelIndex = 0;
   var manifest = LEVELS[currentLevelIndex];
   /* Camera: scale = fitScale * zoom. fitScale is "fit the panorama's height
@@ -1336,7 +1420,7 @@
 
     manifest.targets.forEach(function(t){
       var el = document.createElement("div");
-      el.className = "target tier-" + t.difficulty_tier;
+      el.className = "target tier-" + t.difficulty_tier + (t.render ? " " + t.render : "");
       el.dataset.id = t.id;
       el.style.left = t.position.x + "px";
       el.style.top = t.position.y + "px";
@@ -1890,6 +1974,16 @@
   document.getElementById("settings-btn").addEventListener("click", function(e){
     e.stopPropagation();
     document.getElementById("settings-panel").classList.toggle("open");
+  });
+  // PM 2026-09-04: there was no way back to the home screen from inside a level
+  document.getElementById("home-return-btn").addEventListener("click", function(){
+    document.getElementById("settings-panel").classList.remove("open");
+    document.getElementById("ui").classList.remove("over-home");
+    if (homeScreen.classList.contains("hidden")){
+      trackEvent("level_quit_to_home", { level_id: manifest.level_id, found: foundCount });
+      completeScreen.classList.remove("show");
+      showHome();
+    }
   });
   document.getElementById("settings-close").addEventListener("click", function(){
     document.getElementById("settings-panel").classList.remove("open");
