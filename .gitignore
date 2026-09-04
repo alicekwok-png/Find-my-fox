@@ -76,3 +76,12 @@ find-the-fox-level6-assets (1)/
 # pockets — superseded by find-the-fox-explorer-gear/clean/, which index.html
 # loads (shared across levels).
 find-the-fox-explorer-gear/gear/
+
+# Level 2 v3 pack: raw 1920x1920 exports in the folder root are superseded by
+# "find-the-fox-level2-assets new/clean/" (trimmed), which index.html loads.
+# The old v2 folder is no longer referenced.
+find-the-fox-level2-assets new/A*.png
+find-the-fox-level2-assets new/O*.png
+find-the-fox-level2-assets new/N*.png
+find-the-fox-level2-assets new/C*.png
+find-the-fox-level2-assets/

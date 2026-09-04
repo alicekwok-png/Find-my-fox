@@ -744,81 +744,70 @@
 
 
   /* =========================================================
-     Level 2 — "極光冰原" (Arctic Fox / Aurora Ice Field).
-     Background is the family campsite panorama (father unpacking a
-     chest, mother+child under a blanket by the campfire, a girl
-     coiling rope beside a husky, an ice cave, a signpost with a
-     lantern, sled dogs) under an aurora sky.
-     §2.4 QA gate: background measured directly off the source PNG via
-     PIL (im.size) — 1774x887 = 2.00, inside the required ~1.7:1–2:1
-     panorama ratio, no outpaint needed.
-     Placement (§2.3–§2.9): every position AND size below was checked
-     against a rendered composite of this exact background + sprites —
-     reviewed for floating sprites, face overlap, station clustering,
-     unused hiding interfaces (chest/cave/crates/harness/rope bag/
-     snowshoes/signpost rock), missing attachment structure on hung
-     elevated_ok items, and — per §2.9 — hitbox scale checked against
-     this panorama's own father/husky/crate reference sizes rather than
-     assumed. Every one of the 27 targets was re-walked against that
-     full checklist after the §2.9 pass, not just the item (obj_09)
-     the plan called out by name.
+     Level 2 — 北極狐 Arctic Fox／雪地・極光夜空 (v3 rebuild, 2026-09-05)
+     Source: find-the-fox-level2-asset-prompts-v3.md (background with the
+     family + huskies, Tier A/B/C anchors live inside each prompt) + the
+     vendor pack "find-the-fox-level2-assets new" (real-alpha PNGs, trimmed
+     to content in clean/).
+     §2.4 QA gate: background measured via PIL = 2560x1440 = 1.78:1.
+     Scale: father kneeling ≈315px ≈ 110cm → 1cm ≈ 2.9px; huskies ≈230px
+     long. N3 totem post is an adult-height marker (§2.9) → 420px.
+     §2.7 face no-go boxes: father (295-385,585-685), husky 1 (175-295,855-975),
+     husky 2 (275-385,1125-1255), husky 3 (325-465,1155-1285), mother
+     (855-985,655-795), child (995-1115,765-865), husky 4 (1395-1525,915-1065),
+     husky 5 (1515-1645,935-1065), sibling (2015-2115,735-855), husky 6
+     (2175-2265,835-955).
+     Hiding interfaces used (§2.5): husky 5's harness (N2), father's open supply
+     crate (O1, N4), the cave-mouth crates (O9, fox_10), mother's fur blanket (O7).
      ========================================================= */
-  var ASSET_DIR2 = "find-the-fox-level2-assets/";
+  var ASSET_DIR2 = "find-the-fox-level2-assets new/";
+  var ASSET_DIR2_CLEAN = ASSET_DIR2 + "clean/";
 
   var LEVEL_2 = {
-    level_id: "aurora_ice_field_01",
-    level_name: "極光冰原",
+    level_id: "arctic_aurora_02",
+    level_name: "雪地極光夜空",
     theme: "arctic_fox_aurora",
-    background_asset: ASSET_DIR2 + "Codex 圖片 2026年9月2日 上午02_16_30.png",
-    background_size: { width: 1774, height: 887 },
+    background_asset: ASSET_DIR2 + "background_level2_arctic_aurora.png",
+    background_size: { width: 2560, height: 1440 },
     viewport_size: { width: 1080, height: 1920 },
     initial_camera_position: { x: 0, y: 0 },
-    target_count_total: 27, // 15 Tier A (11 arctic-fox hero incl. summer-coat variants + 3 red-fox cameo + 1 fennec-fox teaser) + 10 Tier B + 2 Tier C
+    target_count_total: 27, // 15 Tier A (11 arctic-fox hero + 3 red-fox cameo + 1 fennec teaser) + 10 Tier B (6 reskin + 4 snow-only) + 2 Tier C
     targets: [
-      // ---- Tier A: hero_fox arctic_fox (11, incl. 2 summer-coat "彩蛋") ----
-      // §2.9: hitboxes below are sized off each sprite's own non-transparent content
-      // bbox aspect ratio (measured via PIL getbbox()), not picked independently per
-      // axis — most of these character vignettes are ~1:1 square compositions, so an
-      // earlier pass that used mismatched width/height was silently under-sizing the
-      // rendered art to whichever axis was smaller (object-fit:contain doesn't distort,
-      // but it does letterbox down to the tighter dimension).
-      { id:"fox_01", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-01.png", position:{x:1051,y:815}, hitbox:{width:130,height:130}, difficulty_tier:"partial", placement_class:"ground_only" }, // sitting in the open snow between the lake shore and the family camp
-      { id:"fox_02", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-02.png", position:{x:260,y:195}, hitbox:{width:155,height:155}, difficulty_tier:"exposed", placement_class:"elevated_ok" }, // resting directly on its own snowy pine branch (sitting on a real support, not hung by a cord — no §2.3 connector needed), perched at the cabin roofline
-      { id:"fox_03", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-03.png", position:{x:987,y:670}, hitbox:{width:135,height:135}, difficulty_tier:"hidden", placement_class:"ground_only" }, // buried in its own snow mound, just above the sleeping sled-dog pair
-      { id:"fox_04", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-04.png", position:{x:1080,y:460}, hitbox:{width:125,height:125}, difficulty_tier:"exposed", placement_class:"ground_only" }, // standing on its own cracked ice floe, set directly over the real frozen lake
-      { id:"fox_05", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-05.png", position:{x:1400,y:475}, hitbox:{width:105,height:105}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"left side of the ice cave mouth" },
-      { id:"fox_06", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-06.png", position:{x:1670,y:250}, hitbox:{width:140,height:140}, difficulty_tier:"hidden", placement_class:"elevated_ok" }, // peeking from directly behind its own icicle column (resting against real rock, not hung — no connector needed), tucked beside the real icy rock formation top-right
-      { id:"fox_07", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-07.png", position:{x:1220,y:814}, hitbox:{width:128,height:128}, difficulty_tier:"partial", placement_class:"ground_only" }, // mid-dive into a snow pile, open foreground snow
-      { id:"fox_08", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-08.png", position:{x:901,y:812}, hitbox:{width:145,height:145}, difficulty_tier:"exposed", placement_class:"ground_only" }, // standing, reaching up into its own aurora-ribbon effect, open foreground beneath the real aurora
-      { id:"fox_09", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-09.png", position:{x:606,y:700}, hitbox:{width:175,height:175}, difficulty_tier:"partial", placement_class:"ground_only", intended_scale_ref:"a full sled — sized clearly bigger than the sleeping huskies beside it, per §2.9's own sled/husky example" }, // asleep curled in its own sled prop, open snow left of the campfire group. §2.9 fix: was rendering at ~105px (smaller than the ~155px sleeping huskies next to it, backwards); now ~175px
-      { id:"fox_10", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-10.png", position:{x:1560,y:816}, hitbox:{width:125,height:125}, difficulty_tier:"exposed", placement_class:"ground_only" }, // summer-coat variant, peeking over its own mossy rock mound near the crates
-      { id:"fox_11", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-11.png", position:{x:176,y:820}, hitbox:{width:115,height:115}, difficulty_tier:"hidden", placement_class:"ground_only" }, // summer-coat variant, camouflaged in its own dry grass/snow tuft beside the sleeping husky
-
-      // ---- Tier A: cameo_fox red_fox, returning from Level 1 (3) ----
-      { id:"fox_12", target_type:"cameo_fox", species:"red_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-12.png", position:{x:1136,y:673}, hitbox:{width:135,height:135}, difficulty_tier:"exposed", placement_class:"ground_only" }, // sitting on its own lantern-lit rock, beside the two sleeping sled dogs
-      { id:"fox_13", target_type:"cameo_fox", species:"red_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-13.png", position:{x:1706,y:810}, hitbox:{width:135,height:135}, difficulty_tier:"partial", placement_class:"ground_only" }, // shaking off snow, open foreground right of the crates
-      { id:"fox_14", target_type:"cameo_fox", species:"red_fox", sprite_asset: ASSET_DIR2 + "fox-14-marbled-snowbank.png", position:{x:761,y:823}, hitbox:{width:110,height:110}, difficulty_tier:"partial", placement_class:"ground_only" }, // marble-coat variant, curled asleep directly on the open snow near the campfire
-
-      // ---- Tier A: cameo_fox fennec_fox teaser for a future level (1) ----
-      { id:"fox_15", target_type:"cameo_fox", species:"fennec_fox", sprite_asset: ASSET_DIR2 + "find-the-fox-level2-fox-15.png", position:{x:1343,y:777}, hitbox:{width:90,height:90}, difficulty_tier:"hidden", placement_class:"ground_only" }, // just the ears, poking out of their own snow mound between the paw-print trail and the girl's supplies — deliberately the smallest Tier A render, matching how little of it is actually shown
-
-      // ---- Tier B: fox_object (10) ----
-      { id:"obj_01", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "object-o1-arctic-mug.png", position:{x:643,y:839}, hitbox:{width:78,height:78}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"loose enamel mug in the snow beside the blanket" },
-      { id:"obj_02", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "object-o3-arctic-cookie.png", position:{x:555,y:842}, hitbox:{width:72,height:72}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"dropped in the snow near the campfire stove" },
-      { id:"obj_03", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "object-o7-knitted-plush.png", position:{x:235,y:555}, hitbox:{width:90,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"father's open supply chest" },
-      { id:"obj_04", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "object-o8-arctic-thermos.png", position:{x:478,y:550}, hitbox:{width:85,height:85}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"propped beside the snowshoes on the cabin wall" },
-      { id:"obj_05", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "object-o9-field-guide.png", position:{x:1444,y:810}, hitbox:{width:88,height:88}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"tucked beside the girl's rope bag" },
-      { id:"obj_06", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "O10.png", position:{x:925,y:490}, hitbox:{width:160,height:170}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"draped over the rock at the signpost's base", intended_scale_ref:"a real trailside boulder, roughly waist-to-chest high — not a hand-sized item" }, // §2.9 fix: was 88x88 (read as a small sticker); now sized as an actual rock outcrop next to the signpost
-      { id:"obj_07", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "N1.png", position:{x:1520,y:500}, hitbox:{width:95,height:100}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"set down just inside the ice cave mouth" }, // §2.3 v2.9 fix: originally described as "hung" mid-air with no visible hook into the real cave rock; lowered so it reads as resting on the cave floor just inside the entrance instead (its own carried rope loop is on the sprite, not implying a background attachment)
-      { id:"obj_08", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "N2.png", position:{x:1625,y:705}, hitbox:{width:86,height:82}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"clipped onto the sled dog's harness" },
-      { id:"obj_09", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "N3.png", position:{x:380,y:735}, hitbox:{width:253,height:260}, difficulty_tier:"exposed", placement_class:"ground_only", intended_scale_ref:"driven upright into the snow, roughly a standing adult's height (matched against father's on-screen height in this same panorama)" }, // its own paw-carved trail-marker post, planted in the open snow. §2.9 fix (explicitly flagged): was 85x130, rendering like a small sticker instead of a human-height planted post; now ~father's measured on-screen height (~260px)
-      { id:"obj_10", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "N4.png", position:{x:1660,y:505}, hitbox:{width:100,height:100}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"resting atop the supply crates by the ice cave", intended_scale_ref:"its own baked-in crate should read at the same scale as the real supply crates it's resting on (~knee-high)" },
-
-      // ---- Tier C: partial_clue (2) ----
-      { id:"clue_01", target_type:"partial_clue", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "C1_trail_only.png", position:{x:1310,y:650}, hitbox:{width:190,height:138}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"paw-print trail across the open snow toward the ice cave" }, // cropped to drop the source asset's own small embedded ice-cave glyph, which duplicated the real cave and read as a stray portal
-      { id:"clue_02", target_type:"partial_clue", species:"arctic_fox", sprite_asset: ASSET_DIR2 + "C2.png", position:{x:54,y:790}, hitbox:{width:100,height:100}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"snowdrift at the base of the cabin wall" }
+      // ---- Tier A: arctic fox hero (11) — anchors from the v3 prompts ----
+      { id:"fox_01", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A01_arcticfox_white_snowdrift.png", position:{x:1330,y:690}, hitbox:{width:100,height:110}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"sitting atop a snowdrift under the aurora — on the left top of the snowy mound at the signpost's foot, silhouetted against the aurora", intended_scale_ref:"≈38cm，及膝以下" },
+      { id:"fox_02", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A02_arcticfox_blue_morph_ice.png", position:{x:1830,y:900}, hitbox:{width:110,height:120}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"peeking from behind a jagged ice formation (own ice shard) — on the snow between the lake shore and the harness pile, left of the sibling", intended_scale_ref:"≈41cm，及膝以下" },
+      { id:"fox_03", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A03_arcticfox_grey_patch_sleeping.png", position:{x:1200,y:1300}, hitbox:{width:120,height:80}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"curled asleep buried in snow (own snow mound) — open snowfield below the mother's blanket", intended_scale_ref:"≈41cm，及膝以下" },
+      { id:"fox_04", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A04_arcticfox_notched_ear_cabin.png", position:{x:150,y:790}, hitbox:{width:100,height:95}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"standing alert near the cabin door sniffing the air — on the snow mound left of the open door (father kneels in front of it)", intended_scale_ref:"≈34cm，及膝以下" },
+      { id:"fox_05", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A05_arcticfox_juvenile_sled.png", position:{x:570,y:1015}, hitbox:{width:170,height:130}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"juvenile peeking from behind a loaded sled (own sled) — on the snow below father's crate, beside the leaning snowshoes", intended_scale_ref:"≈59cm，及膝以下（雪橇連狐）" },
+      { id:"fox_06", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A06_arcticfox_older_camouflage.png", position:{x:1500,y:1380}, hitbox:{width:130,height:110}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"older fox camouflaged against the snow — open foreground snow below the harness pile", intended_scale_ref:"≈45cm，及膝以下" },
+      { id:"fox_07", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A07_arcticfox_longtail_pounce.png", position:{x:1150,y:1220}, hitbox:{width:140,height:100}, difficulty_tier:"partial", placement_class:"airborne_action", anchor_ref:"mid-pounce diving headfirst into the snow (own snow spray) — the snowfield right of the camp stove", intended_scale_ref:"≈48cm，及膝以下" },
+      { id:"fox_08", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A08_arcticfox_scarf_guardian.png", position:{x:1200,y:800}, hitbox:{width:100,height:110}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"guardian statue near the frozen lake edge — standing on the shore ice right of the child, clear of the child's face box", intended_scale_ref:"≈38cm，及膝以下" },
+      { id:"fox_09", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A09_arcticfox_crevice_tail.png", position:{x:2100,y:700}, hitbox:{width:120,height:130}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"hiding inside a narrow ice crevice, only the tail (own crevice) — set on the jagged ice ridge left of the ice cave", intended_scale_ref:"≈45cm，及膝以下" },
+      { id:"fox_10", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A10_arcticfox_creamy_crates.png", position:{x:2450,y:815}, hitbox:{width:140,height:140}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"creamy fox peeking from behind stacked supply crates (own crates) — laid over the right crate stack at the ice-cave mouth", intended_scale_ref:"≈48cm，及膝以下" },
+      { id:"fox_11", target_type:"hero_fox", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "A11_arcticfox_wideeyed_rolling.png", position:{x:2300,y:1330}, hitbox:{width:140,height:110}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"rolling joyfully in fresh snow (own snow spray) — open snow below the family's bag", intended_scale_ref:"≈48cm，及膝以下" },
+      // ---- Tier A cameo: red fox (3) + fennec teaser (1) ----
+      { id:"fox_12", target_type:"cameo_fox", species:"red_fox", sprite_asset: ASSET_DIR2_CLEAN + "A12_redfox_shivering.png", position:{x:900,y:1260}, hitbox:{width:90,height:120}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"shivering red fox out of place in the snow — on the snow below the camp stove", intended_scale_ref:"≈41cm，及膝以下" },
+      { id:"fox_13", target_type:"cameo_fox", species:"red_fox", sprite_asset: ASSET_DIR2_CLEAN + "A13_redfox_crossfox_ice.png", position:{x:1900,y:1250}, hitbox:{width:120,height:130}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"cross fox peeking from behind a block of ice (own block) — on the snow below the sibling's knees, right of the harness pile", intended_scale_ref:"≈45cm，及膝以下" },
+      { id:"fox_14", target_type:"cameo_fox", species:"red_fox", sprite_asset: ASSET_DIR2_CLEAN + "A14_redfox_marbled_tail.png", position:{x:600,y:1395}, hitbox:{width:120,height:80}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"marbled fox burrowed into a snowbank, tail out (own bank) — foreground snow below the snowshoes", intended_scale_ref:"≈41cm，及膝以下" },
+      { id:"fox_15", target_type:"cameo_fox", species:"fennec_fox", sprite_asset: ASSET_DIR2_CLEAN + "A15_fennec_teaser_snow.png", position:{x:1650,y:1400}, hitbox:{width:110,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"fennec ears poking from a snow pile (own pile) — foreground snow below the harness pile", intended_scale_ref:"≈38cm，及膝以下" },
+      // ---- Tier B: 6 reskin objects — anchors from the v3 prompts ----
+      { id:"obj_O1", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "O01_arcticfox_mug.png", position:{x:560,y:770}, hitbox:{width:36,height:36}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"on a stack of supply crates near the cabin — on the right rim of father's open supply crate (the painting has one crate at the cabin, not a stack)", intended_scale_ref:"≈12cm，手掌至前臂長" },
+      { id:"obj_O3", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "O03_arcticfox_cookie.png", position:{x:1040,y:1160}, hitbox:{width:36,height:36}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"on a tin plate near the camp stove — the sprite carries its own plate; on the snow right of the stove tank, below the blanket fringe", intended_scale_ref:"≈12cm，手掌至前臂長" },
+      { id:"obj_O7", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "O07_knitted_arcticfox_plush.png", position:{x:1240,y:1080}, hitbox:{width:55,height:65}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"sitting on a fur blanket near the camp stove — on the right end of the mother's fur blanket", intended_scale_ref:"≈22cm，手掌至前臂長" },
+      { id:"obj_O8", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "O08_arcticfox_thermos.png", position:{x:700,y:1060}, hitbox:{width:34,height:80}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"standing upright in the snow beside the family — on the snow left of the metal mug at the blanket's edge", intended_scale_ref:"≈28cm，手掌至前臂長" },
+      { id:"obj_O9", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "O09_arcticfox_fieldguide.png", position:{x:2345,y:792}, hitbox:{width:55,height:45}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"half-open on a supply crate near the ice cave — on top of the left crate at the cave mouth", intended_scale_ref:"≈19cm，手掌至前臂長" },
+      { id:"obj_O10", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "O10_arcticfox_scarf.png", position:{x:2060,y:590}, hitbox:{width:80,height:60}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"draped over a jagged ice rock — over the top edge of the jagged ice ridge's left arm", intended_scale_ref:"≈28cm，手掌至前臂長" },
+      // ---- Tier B: 4 snow-only objects ----
+      { id:"obj_N1", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "N01_ice_sculpture_lantern.png", position:{x:60,y:840}, hitbox:{width:44,height:60}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"ice lantern near the cabin entrance — at the cabin wall's base left of the snow mound, below the lit window", intended_scale_ref:"≈21cm，手掌至前臂長" },
+      { id:"obj_N2", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "N02_fox_brass_sled_bell.png", position:{x:1640,y:1095}, hitbox:{width:44,height:44}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"bell charm on a husky's harness strap — its own strap piece laid on husky 5's chest harness, below the face box; the strap is the §2.3 connector", intended_scale_ref:"≈15cm，手掌至前臂長" },
+      { id:"obj_N3", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "N03_fox_totem_post.png", position:{x:2240,y:600}, hitbox:{width:110,height:420}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"totem post driven upright into the snow near the ice cave entrance — on the snow slope in front of the cave, behind husky 6 (base y≈810, above its face box); adult-height per §2.9", intended_scale_ref:"≈145cm，跟人物身高相若" },
+      { id:"obj_N4", target_type:"fox_object", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "N04_fox_compass.png", position:{x:500,y:775}, hitbox:{width:40,height:34}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"lying open on top of a supply crate — on the rim of father's open supply crate, left of the mug", intended_scale_ref:"≈14cm，手掌至前臂長" },
+      // ---- Tier C: partial clues (2) ----
+      { id:"clue_C1", render:"imprint", target_type:"partial_clue", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "C01_fox_pawprints_trail_imprint.png", position:{x:2470,y:950}, hitbox:{width:140,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"pawprint trail leading toward the ice cave entrance — pressed into the snow between the family's bag and the cave-mouth crates, running up-right to the cave", intended_scale_ref:"≈48cm，及膝以下" },
+      { id:"clue_C2", target_type:"partial_clue", species:"arctic_fox", sprite_asset: ASSET_DIR2_CLEAN + "C02_white_fox_tail_tip.png", position:{x:630,y:860}, hitbox:{width:90,height:60}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"tail tip beneath a snowdrift near the cabin wall (own drift) — at the cabin's right wall base, right of father's crate under the firewood", intended_scale_ref:"≈31cm，及膝以下" }
     ]
   };
+
 
   /* §2.2.1 探險家裝備 Bank (find-the-fox-explorer-gear-bank.md): 8 cross-level
      Tier B fillers for low-density spots; keyed + trimmed in clean/ (the raw
