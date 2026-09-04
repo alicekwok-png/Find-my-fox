@@ -71,3 +71,8 @@ find-the-fox-level6-assets/C0*.png
 find-the-fox-level6-assets/background-panorama.png
 find-the-fox-level6-assets/pale-fox-reference.png
 find-the-fox-level6-assets (1)/
+
+# Explorer gear bank (§2.2.1): raw gear/ exports carry the white checker +
+# pockets — superseded by find-the-fox-explorer-gear/clean/, which index.html
+# loads (shared across levels).
+find-the-fox-explorer-gear/gear/

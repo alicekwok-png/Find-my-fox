@@ -820,6 +820,11 @@
     ]
   };
 
+  /* §2.2.1 探險家裝備 Bank (find-the-fox-explorer-gear-bank.md): 8 cross-level
+     Tier B fillers for low-density spots; keyed + trimmed in clean/ (the raw
+     exports carry the usual white checker + pockets). */
+  var ASSET_DIR_GEAR = "find-the-fox-explorer-gear/clean/";
+
   /* =========================================================
      LEVEL 3 — 耳廓狐 Fennec Fox／沙漠星空・綠洲 (v3 background + v3 Tier B/C)
      Tier A (15) reuses the v2 sprites in level3_desert_fox_assets/clean/
@@ -864,7 +869,7 @@
     background_size: { width: 2560, height: 1440 },
     viewport_size: { width: 1080, height: 1920 },
     initial_camera_position: { x: 0, y: 0 },
-    target_count_total: 31, // 15 Tier A (11 fennec hero + 3 corsac cameo + 1 arctic-fox cameo, an L2 callback) + 13 Tier B (9 reskin + 4 desert-only) + 3 Tier C
+    target_count_total: 33, // 15 Tier A (11 fennec hero + 3 corsac cameo + 1 arctic-fox cameo, an L2 callback) + 13 Tier B (9 reskin + 4 desert-only) + 3 Tier C + 2 explorer-gear fillers (§2.2.1)
     targets: [
       // ---- Tier A: hero_fox fennec_fox (11) — anchor = the prop each v2 sprite carries ----
       { id:"fox_01", target_type:"hero_fox", species:"fennec_fox", sprite_asset: ASSET_DIR3 + "level3_fennec_01.png", position:{x:700,y:785}, hitbox:{width:100,height:95}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"sitting atop a dune (own dune) — the open mid-ground dune right of father, Zone 1", intended_scale_ref:"≈30cm，及膝以下" },
@@ -905,6 +910,9 @@
       { id:"obj_N4", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-N4-sand-timer.png", position:{x:300,y:610}, hitbox:{width:30,height:48}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"塞入行李袋背後嘅罅隙 — in the gap between the rolled tent and the barrel pack, behind the packs", intended_scale_ref:"≈15cm，手掌至前臂長" },
 
       // ---- Tier C (3) — anchors PM-fixed in prompts-v3 (2) §C ----
+      // ---- §2.2.1 explorer gear fillers — the PM-flagged low-density spot (rock outcrop, Zone 1) ----
+      { id:"obj_E1", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR_GEAR + "E01_fox_emblem_magnifying_glass.png", position:{x:355,y:590}, hitbox:{width:34,height:30}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"E1 放喺補給箱頂（岩石尖峰旁）— on the top of the big barrel pack under the rock outcrop, right of the rolled tent (first try at y558 sat on the rock face above the pack)", intended_scale_ref:"≈10cm，細過人物手掌" },
+      { id:"obj_E3", target_type:"fox_object", species:"fennec_fox", sprite_asset: ASSET_DIR_GEAR + "E03_open_field_sketchbook_fox.png", position:{x:470,y:690}, hitbox:{width:55,height:40}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"E3 靠住繩圈（岩石尖峰底）— NOTE: no coiled rope in the v3 painting; lying on the sand at the outcrop's foot beside the small barrel pack (PM to confirm)", intended_scale_ref:"≈17cm，手掌至前臂長" },
       { id:"clue_C1", render:"imprint", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C1-fox-pawprints_imprint.png", position:{x:660,y:1190}, hitbox:{width:200,height:140}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"營火周圍嘅沙地 — trail on the sand right-front of the campfire", intended_scale_ref:"≈61cm，及腰" },
       { id:"clue_C2", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C2-fox-ear-tips.png", position:{x:1120,y:610}, hitbox:{width:50,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"棕櫚樹幹背後 — ears at the big palm trunk's left edge, above mother's head (the trunk base is occupied by mother and child, §2.7)", intended_scale_ref:"≈15cm，手掌至前臂長" },
       { id:"clue_C3", target_type:"partial_clue", species:"fennec_fox", sprite_asset: ASSET_DIR3_V3_CLEAN + "find-the-fox-level3-C3-fox-tail-tip.png", position:{x:2270,y:1330}, hitbox:{width:45,height:40}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"破爛木頭車輪底部 — under the fallen wheel's lower-left rim where it meets the sand", intended_scale_ref:"≈14cm，手掌至前臂長" }
@@ -963,7 +971,7 @@
     background_size: { width: 1774, height: 887 },
     viewport_size: { width: 1080, height: 1920 },
     initial_camera_position: { x: 0, y: 0 },
-    target_count_total: 34, // 15 Tier A (11 hero Tibetan sand fox + 3 Blanford's-fox cameo + 1 corsac-fox cameo) + 15 Tier B + 4 Tier C
+    target_count_total: 36, // 15 Tier A (11 hero Tibetan sand fox + 3 Blanford's-fox cameo + 1 corsac-fox cameo) + 15 Tier B + 4 Tier C + 2 explorer-gear fillers (§2.2.1)
     targets: [
       /* Re-placed against the new 1774x887 painting. Scale reference (§2.9):
          the seated father spans y255-470 (~215px ~ 90cm), so 1cm ~ 2.4px —
@@ -1013,6 +1021,9 @@
       { id:"obj_N5", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "N5_herder_teapot_fox_pattern (2).png", position:{x:420,y:520}, hitbox:{width:120,height:120}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"on the open camp ground right of father — NOTE: the revised sprite bakes in its own fire and stones, so it reads as a second brazier rather than sitting on the real fire (PM to confirm, §2.10)", intended_scale_ref:"kettle on a stone ring, ~60cm overall" },
 
       // ---- Tier C: partial_clue, all tibetan_sand_fox (4) ----
+      // ---- §2.2.1 explorer gear fillers — the PM-flagged low-density spot (shrine surroundings, Zone 2) ----
+      { id:"obj_E5", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR_GEAR + "E05_pressed_flower_album_fox_ribbon.png", position:{x:1115,y:425}, hitbox:{width:36,height:40}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"E5 放喺神龕邊 — leaning at the right foot of the stone shrine, on the rocks beside the mani-stone pile", intended_scale_ref:"≈25cm，手掌至前臂長" },
+      { id:"obj_E6", target_type:"fox_object", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR_GEAR + "E06_rolled_map_fox_wax_seal.png", position:{x:1005,y:400}, hitbox:{width:44,height:26}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"E6 放喺岩石平台 — lying on the left end of the shrine's stone base slab, beside the mani-stone pile", intended_scale_ref:"≈27cm，手掌至前臂長" },
       { id:"clue_C1", render:"imprint", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C1_fox_paw_footprints (2)_imprint.png", position:{x:545,y:620}, hitbox:{width:110,height:150}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"trail crossing the open dirt between the camp and the stream", intended_scale_ref:"three prints running about a metre of ground; sprite is portrait, so the box is too" },
       { id:"clue_C2", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C2_fox_tail_tip_flags (2).png", position:{x:900,y:300}, hitbox:{width:95,height:110}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"the sprite carries its own rope, laid along the real prayer-flag line in front of the shrine so the two ropes read as one (§2.3 connector)" },
       { id:"clue_C3", target_type:"partial_clue", species:"tibetan_sand_fox", sprite_asset: ASSET_DIR4 + "C3_fox_shadow_hut_wall (3).png", position:{x:1290,y:320}, hitbox:{width:150,height:180}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"its own wall slice laid onto the hut's real stone wall left of the door, base rocks landing on the real ground line; kept clear of the boy (§2.7)", intended_scale_ref:"a wall patch about the boy's height" },
