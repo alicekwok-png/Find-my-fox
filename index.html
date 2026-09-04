@@ -244,62 +244,181 @@
     to{ opacity:1; transform:scale(1); }
   }
 
-  /* ---------- 主畫面 ---------- */
+  /* ---------- 主畫面 Home Hub（find-the-fox-home-hub-prompts.md §C, 2026-09-04） ----------
+     由上到下：設定齒輪(左)／圖鑑(右) → 每日挑戰卡(藍) → 狐狸窩主視覺＋吉祥物
+     → 「扮靚狐狸」橫額＋進度圓點1-5 → 獎勵進度條＋提示道具x2 → 「第X關」大掣＋揀關卡。
+     右側：VIP/移除廣告＋抽獎轉盤。每日挑戰／扮靚／VIP／轉盤／圖鑑係UI外殼
+     （§C備註：換裝列V1.1+；紀念品機制待確認），撳落去出提示，唔會壞。 */
   #home-screen{
     position:fixed; inset:0; z-index:60; overflow:hidden;
-    background:#1a1410; display:flex; align-items:center; justify-content:center;
+    background:#1a1410; display:flex; flex-direction:column;
+    padding:max(12px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+    box-sizing:border-box; color:#fff3dd;
+    font-variant-numeric:tabular-nums;
   }
   #home-screen.hidden{ display:none; }
   #home-bg{
     position:absolute; inset:0; width:100%; height:100%;
-    object-fit:cover; object-position:center 30%;
+    object-fit:cover; object-position:center 42%; z-index:0;
   }
-  /* the den artwork is bright in the middle, so the text sits on a soft scrim */
+  /* the den artwork is bright in the middle, so the UI sits on soft scrims top and bottom */
   #home-screen::after{
-    content:""; position:absolute; inset:0;
-    background:linear-gradient(to bottom, rgba(20,12,6,.45) 0%, rgba(20,12,6,0) 30%, rgba(20,12,6,.55) 72%, rgba(20,12,6,.9) 100%);
+    content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:linear-gradient(to bottom, rgba(20,12,6,.5) 0%, rgba(20,12,6,0) 22%, rgba(20,12,6,0) 52%, rgba(20,12,6,.72) 80%, rgba(20,12,6,.92) 100%);
   }
-  #home-inner{
-    position:relative; z-index:1; text-align:center;
-    display:flex; flex-direction:column; align-items:center;
-    padding:0 24px; width:100%; max-width:520px;
-    margin-top:auto; margin-bottom:6vh;
+  #home-screen > *:not(#home-bg){ position:relative; z-index:1; }
+  .home-col{ width:100%; max-width:520px; margin-left:auto; margin-right:auto; box-sizing:border-box; }
+
+  /* 頂部：設定齒輪(左) / 圖鑑book(右) */
+  #home-topbar{ display:flex; justify-content:space-between; align-items:center; }
+  .home-icon-btn{
+    width:48px; height:48px; border:none; padding:0; background:none; cursor:pointer;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.4)); display:flex; align-items:center; justify-content:center;
+    color:#fff3dd;
+  }
+  .home-icon-btn img{ width:100%; height:100%; object-fit:contain; }
+  .home-icon-btn:active{ transform:scale(.94); }
+  .flat-badge{
+    width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center;
+    font-size:24px; background:linear-gradient(#ffd27a,#f28a1f); border:3px solid #8a4a12;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.45); box-sizing:border-box;
+  }
+
+  /* 每日挑戰卡（藍） */
+  #daily-card{
+    margin-top:10px; display:flex; align-items:center; gap:12px;
+    padding:10px 12px; border-radius:18px;
+    background:linear-gradient(135deg,#3a7bd5,#2452a8); border:3px solid #17346e;
+    box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.25);
+  }
+  /* §D 每日挑戰卡icon仲未生成 → 先用CSS砌個「日曆＋爪印＋紅點」placeholder，
+     出咗圖直接換做<img>就得 */
+  #daily-icon{
+    position:relative; width:52px; height:52px; flex:none; border-radius:12px;
+    background:#fff6e6; border:2px solid #17346e; overflow:visible;
+    display:flex; align-items:flex-end; justify-content:center; font-size:26px; line-height:1;
+  }
+  #daily-icon::before{ content:""; position:absolute; top:0; left:0; right:0; height:14px; background:#e8552f; border-radius:10px 10px 0 0; }
+  #daily-icon::after{
+    content:""; position:absolute; top:-6px; right:-6px; width:14px; height:14px; border-radius:50%;
+    background:#ff2e2e; border:2px solid #fff;
+  }
+  #daily-icon span{ position:relative; padding-bottom:4px; }
+  #daily-text{ flex:1; min-width:0; }
+  #daily-text b{ display:block; font-size:18px; letter-spacing:.5px; text-shadow:0 2px 4px rgba(0,0,0,.4); }
+  #daily-text small{ display:block; font-size:12px; opacity:.85; margin-top:2px; }
+  .pill-btn{
+    cursor:pointer; padding:9px 18px; border-radius:999px; font-weight:800; font-size:16px;
+    color:#4a2a08; background:linear-gradient(#ffe08a,#f6a623); border:3px solid #8a4a12;
+    box-shadow:0 4px 0 #6d3609, inset 0 2px 0 rgba(255,255,255,.5);
+  }
+  .pill-btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #6d3609; }
+
+  /* 中間主視覺（PM 2026-09-04 final 素材）：上＝「Find The Fox」標題logo（home-logo.png），
+     下＝企喺自己樹洞口揮手嘅吉祥物（home-mascot.png，§B）。吉祥物靠左，蓋住背景畫
+     入面嗰個樹洞，畫面先唔會有兩個洞。兩個檔案未放入project時自動fallback：
+     logo → 文字標題；吉祥物 → 舊木牌狐狸。 */
+  #home-hero{
+    flex:1; min-height:160px; display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+    position:relative; padding-top:6px;
+  }
+  #home-logo[hidden]{ display:none; }
+  #home-logo{
+    width:min(80vw, 400px); height:auto; display:block; margin:0 auto;
+    filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));
+    animation:logoIn .9s ease-out both;
   }
   #home-title{
-    margin:0; font-size:clamp(30px, 8vw, 46px); font-weight:800; letter-spacing:.5px;
+    margin:6px 0 0; font-size:clamp(30px, 8vw, 46px); font-weight:800; letter-spacing:.5px;
     color:#fff3dd; text-shadow:0 3px 10px rgba(0,0,0,.6), 0 0 26px rgba(255,150,60,.35);
-  }
-  #home-sub{
-    margin:6px 0 0; font-size:clamp(13px, 3.4vw, 16px); color:#f4d9b4;
-    text-shadow:0 2px 6px rgba(0,0,0,.6);
   }
   @keyframes mascotBob{
     0%,100%{ transform:translateY(0) rotate(-1deg); }
     50%{ transform:translateY(-9px) rotate(1.5deg); }
   }
-  /* 主畫面主要CTA：狐狸叼住個木牌，牌面寫返玩家目前進度到第幾關；
-     撳落去直接續玩嗰一關（同揀關畫面撳個卡係同一條路） */
-  #level-sign-btn{
-    position:relative; border:none; background:none; padding:0; margin:8px 0 2px; cursor:pointer;
-    width:clamp(190px, 56vw, 300px);
+  #mascot-btn{
+    position:relative; border:none; background:none; padding:0; margin:0; cursor:pointer;
+    width:clamp(200px, 64vw, 340px); align-self:flex-start; margin-left:-5%;
     filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));
     animation:mascotBob 2.6s ease-in-out infinite;
   }
-  #level-sign-btn:active{ transform:scale(.96); }
-  #level-sign-btn img{ width:100%; height:auto; display:block; }
+  #mascot-btn.sign{ width:clamp(170px, 46vw, 260px); align-self:center; margin-left:0; }
+  #mascot-btn:active{ transform:scale(.96); }
+  #mascot-btn img{ width:100%; height:auto; display:block; }
   #level-sign-text{
-    /* 木牌內側嘅淺色版面實際係圖片51.5%–68%高度（用PIL逐行掃描透明度/顏色量出，
-       唔係肉眼估），對正返先至喺牌正中央，唔會睇落沉咗去牌底 */
+    /* 木牌fallback：牌內側淺色版面係圖片51.5%–68%高度（用PIL逐行掃描量出） */
     position:absolute; left:8%; right:8%; top:51.5%; height:16.5%;
-    display:flex; align-items:center; justify-content:center;
-    font-size:clamp(17px, 5.4vw, 25px); font-weight:800; color:#5a3410;
+    display:none; align-items:center; justify-content:center;
+    font-size:clamp(16px, 4.6vw, 22px); font-weight:800; color:#5a3410;
     text-shadow:0 1px 0 rgba(255,255,255,.35);
   }
+  #mascot-btn.sign #level-sign-text{ display:flex; }
+  /* 右側：VIP／移除廣告 ＋ 抽獎轉盤 */
+  #home-side{
+    position:absolute; right:0; top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; gap:12px; align-items:center;
+  }
+  #home-side .home-icon-btn{ width:auto; height:auto; flex-direction:column; gap:2px; }
+  #home-side .side-label{ font-size:11px; color:#fff3dd; text-shadow:0 1px 3px rgba(0,0,0,.8); }
+
+  /* 「扮靚狐狸」橫額＋進度圓點 */
+  #dressup-banner{
+    margin-top:8px; cursor:pointer; text-align:left;
+    display:flex; align-items:center; gap:12px; padding:9px 14px; border-radius:16px;
+    background:linear-gradient(#c96a2a,#8f3f12); border:3px solid #5a2608; color:#fff3dd;
+    box-shadow:0 6px 14px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.25);
+  }
+  #dressup-banner b{ font-size:17px; flex:1; text-shadow:0 2px 4px rgba(0,0,0,.4); }
+  #dressup-dots{ display:flex; gap:6px; }
+  #dressup-dots i{
+    width:12px; height:12px; border-radius:50%; background:rgba(0,0,0,.35); border:2px solid #ffd27a; display:block;
+  }
+  #dressup-dots i.on{ background:#ffd27a; box-shadow:0 0 6px #ffd27a; }
+  #dressup-banner small{ font-size:11px; opacity:.85; }
+
+  /* 獎勵進度條＋提示道具x2 */
+  #reward-row{ margin-top:8px; display:flex; align-items:center; gap:10px; }
+  #reward-bar{
+    flex:1; position:relative; height:26px; border-radius:999px; overflow:hidden;
+    background:rgba(0,0,0,.5); border:2px solid #ffd27a;
+  }
+  #reward-fill{ position:absolute; inset:0; width:0; background:linear-gradient(#ffe08a,#f28a1f); transition:width .5s ease; }
+  #reward-label{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:800; color:#fff3dd; text-shadow:0 1px 3px rgba(0,0,0,.8);
+  }
+  .hint-chip{
+    display:flex; align-items:center; gap:4px; padding:3px 8px 3px 4px; border-radius:999px;
+    background:rgba(0,0,0,.5); border:2px solid #ffd27a; font-size:13px; font-weight:800; color:#fff3dd;
+  }
+  .hint-chip img{ width:24px; height:24px; object-fit:contain; }
+  .hint-chip .emoji{ font-size:18px; line-height:24px; }
+
+  /* 底部主CTA：「第X關」大掣 ＋ 揀關卡 link */
+  #home-play-btn{
+    margin-top:12px; cursor:pointer; padding:14px 18px; border-radius:22px;
+    font-size:clamp(22px, 6.4vw, 30px); font-weight:900; letter-spacing:1px; color:#4a2a08;
+    background:linear-gradient(#ffe08a,#f6a623); border:4px solid #8a4a12;
+    box-shadow:0 6px 0 #6d3609, 0 12px 22px rgba(0,0,0,.4), inset 0 3px 0 rgba(255,255,255,.55);
+  }
+  #home-play-btn small{ display:block; font-size:13px; font-weight:700; letter-spacing:0; opacity:.8; margin-top:2px; }
+  #home-play-btn:active{ transform:translateY(4px); box-shadow:0 2px 0 #6d3609, 0 6px 12px rgba(0,0,0,.4); }
   #level-select-link{
-    margin-top:4px; padding:6px 14px; border:none; background:none;
+    margin:6px auto 0; padding:6px 14px; border:none; background:none; display:block;
     color:#f4d9b4; font-size:13px; text-decoration:underline; cursor:pointer;
     text-shadow:0 2px 6px rgba(0,0,0,.7);
   }
+  /* 主畫面自己嘅toast（#hint-toast喺#ui入面，z-index低過主畫面） */
+  #home-toast{
+    position:absolute; left:50%; top:18%; transform:translate(-50%,-8px); z-index:2;
+    background:rgba(20,12,6,.9); color:#fff3dd; padding:10px 16px; border-radius:12px; font-size:14px;
+    opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; max-width:86%; text-align:center;
+  }
+  #home-toast.show{ opacity:1; transform:translate(-50%,0); }
+  /* 主畫面撳齒輪時，借用遊戲HUD嘅設定面板（#ui z-index:20 < 主畫面60），
+     期間淨係顯示面板，其餘HUD收埋 */
+  #ui.over-home{ z-index:70; }
+  #ui.over-home #counter, #ui.over-home #action-buttons, #ui.over-home #hint-toast, #ui.over-home #settings-btn{ visibility:hidden; }
 
   /* ---------- 選關 ---------- */
   #level-select-screen{
@@ -405,15 +524,49 @@
 
 <div id="home-screen">
   <img id="home-bg" src="Codex 圖片 2026年9月2日 下午08_12_56.png" alt="">
-  <div id="home-inner">
-    <h1 id="home-title">Find The Fox</h1>
-    <p id="home-sub">揾出匿埋咗嘅狐狸</p>
-    <button id="level-sign-btn">
-      <img src="未命名設計 (17).png" alt="">
-      <span id="level-sign-text"></span>
-    </button>
-    <button id="level-select-link">揀關卡 ▸</button>
+
+  <div id="home-topbar" class="home-col">
+    <button class="home-icon-btn" id="home-settings-btn" title="設定" aria-label="設定"><img src="icon_2.png" alt=""></button>
+    <button class="home-icon-btn" id="home-book-btn" title="圖鑑／成就" aria-label="圖鑑／成就"><span class="flat-badge">📖</span></button>
   </div>
+
+  <div id="daily-card" class="home-col">
+    <div id="daily-icon"><span>🐾</span></div>
+    <div id="daily-text"><b>每日挑戰</b><small id="daily-sub">今日一關 · 限時挑戰</small></div>
+    <button class="pill-btn" id="daily-play-btn">玩</button>
+  </div>
+
+  <div id="home-hero" class="home-col">
+    <img id="home-logo" src="home-logo.png" alt="Find The Fox"
+         onerror="this.hidden=true; document.getElementById('home-title').hidden=false;">
+    <h1 id="home-title" hidden>Find The Fox</h1>
+    <button id="mascot-btn" title="開始遊戲">
+      <img id="home-mascot" src="home-mascot.png" alt=""
+           onerror="this.onerror=null; this.src='未命名設計 (17).png'; this.parentNode.classList.add('sign');">
+      <span id="level-sign-text">Find The Fox</span>
+    </button>
+    <div id="home-side">
+      <button class="home-icon-btn" id="vip-btn" title="VIP／移除廣告"><span class="flat-badge">👑</span><span class="side-label">移除廣告</span></button>
+      <button class="home-icon-btn" id="wheel-btn" title="抽獎轉盤"><span class="flat-badge">🎡</span><span class="side-label">轉盤</span></button>
+    </div>
+  </div>
+
+  <button id="dressup-banner" class="home-col">
+    <b>扮靚狐狸</b>
+    <span id="dressup-dots"><i></i><i></i><i></i><i></i><i></i></span>
+    <small>即將推出</small>
+  </button>
+
+  <div id="reward-row" class="home-col">
+    <div id="reward-bar"><div id="reward-fill"></div><div id="reward-label">獎勵進度 0/0</div></div>
+    <span class="hint-chip" title="提示"><img src="icon_4.png" alt="">∞</span>
+    <span class="hint-chip" title="提示（第二種，待定）"><span class="emoji">💡</span>∞</span>
+  </div>
+
+  <button id="home-play-btn" class="home-col">第 1 關<small>開始遊戲 ▶</small></button>
+  <button id="level-select-link">揀關卡 ▸</button>
+
+  <div id="home-toast"></div>
 </div>
 
 <!-- 選關（跟住通關解鎖） -->
@@ -1648,8 +1801,23 @@
 
   function showHome(){
     var idx = nextLevelIndex();
-    document.getElementById("level-sign-text").textContent = "第 " + (idx + 1) + " 關";
+    var done = progress.completed.length;
+    // §C 底部主CTA：「第X關」（X = 目前進度嘅下一關）；吉祥物係同一個掣
+    document.getElementById("home-play-btn").innerHTML = "第 " + (idx + 1) + " 關<small>開始遊戲 ▶</small>";
+    // 「扮靚狐狸」進度圓點1-5：暫時＝已通關數（換裝功能V1.1+，先做UI外殼）
+    var dots = document.querySelectorAll("#dressup-dots i");
+    for (var i = 0; i < dots.length; i++) dots[i].className = i < done ? "on" : "";
+    // 獎勵進度條：暫時＝已通關 / 總關數（真正獎勵規則待PM定）
+    document.getElementById("reward-fill").style.width = Math.round(100 * done / LEVELS.length) + "%";
+    document.getElementById("reward-label").textContent = "獎勵進度 " + done + "/" + LEVELS.length;
     homeScreen.classList.remove("hidden");
+  }
+  var homeToastTimer = 0;
+  function homeToast(msg){
+    var el = document.getElementById("home-toast");
+    el.textContent = msg; el.classList.add("show");
+    window.clearTimeout(homeToastTimer);
+    homeToastTimer = window.setTimeout(function(){ el.classList.remove("show"); }, 2200);
   }
 
   /* ---- 進度／選關（跟住通關解鎖） ----
@@ -1749,16 +1917,45 @@
     homeScreen.classList.add("hidden");
     loadLevel(0, null, true);          // preload level 1 behind the sequence, don't start its clock
     showLogoThen(function(){ playIntroThen(showHome); });
-    // 木牌CTA：直接續玩目前進度嗰一關
-    document.getElementById("level-sign-btn").addEventListener("click", function(){
+    // 主CTA「第X關」＋吉祥物：直接續玩目前進度嗰一關
+    var uiEl = document.getElementById("ui"), settingsPanel = document.getElementById("settings-panel");
+    function closeHomeSettings(){ settingsPanel.classList.remove("open"); uiEl.classList.remove("over-home"); }
+    function homePlay(){
       var idx = nextLevelIndex();
       trackEvent("home_play_tapped", { level_id: LEVELS[idx].level_id });
+      closeHomeSettings();
       homeScreen.classList.add("hidden");
       loadLevel(idx); // beginLevel() fires once its own assets are ready
+    }
+    document.getElementById("home-play-btn").addEventListener("click", homePlay);
+    document.getElementById("mascot-btn").addEventListener("click", homePlay);
+    // 齒輪：借用HUD嘅設定面板（靜音／加入主畫面／錢包），面板浮上主畫面之上
+    document.getElementById("home-settings-btn").addEventListener("click", function(e){
+      e.stopPropagation();
+      var open = !settingsPanel.classList.contains("open");
+      settingsPanel.classList.toggle("open", open);
+      uiEl.classList.toggle("over-home", open);
+      trackEvent("home_settings_tapped", { open: open });
     });
+    // 撳主畫面其他地方 → 收起面板
+    homeScreen.addEventListener("click", function(){
+      if (uiEl.classList.contains("over-home")) closeHomeSettings();
+    });
+    // §C UI外殼：每日挑戰／圖鑑／扮靚／VIP／轉盤 — 功能未拍板，撳落去出提示同埋埋點
+    function shell(id, evt, msg){
+      document.getElementById(id).addEventListener("click", function(){
+        trackEvent(evt, {}); homeToast(msg);
+      });
+    }
+    shell("daily-play-btn", "home_daily_tapped", "每日挑戰 即將推出（規則待定）");
+    shell("home-book-btn", "home_book_tapped", "圖鑑／成就 即將推出");
+    shell("dressup-banner", "home_dressup_tapped", "扮靚狐狸（換裝）V1.1 推出");
+    shell("vip-btn", "home_vip_tapped", "移除廣告（IAP）即將推出");
+    shell("wheel-btn", "home_wheel_tapped", "抽獎轉盤 即將推出");
     // 細字連結：想揀第二關（已解鎖）先用
     document.getElementById("level-select-link").addEventListener("click", function(){
       trackEvent("home_level_select_tapped", {});
+      closeHomeSettings();
       homeScreen.classList.add("hidden");
       showLevelSelect();
     });
