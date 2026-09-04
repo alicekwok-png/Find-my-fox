@@ -64,7 +64,10 @@ find-the-fox-level7-assets/tier-c/
 # by find-the-fox-level6-assets/clean/ + background/ (v3 panorama), which
 # index.html loads. The v3 delivery folder "(1)" holds the raw checker exports.
 find-the-fox-level6-assets/fox-*.png
-find-the-fox-level6-assets/[ONC][0-9][0-9]_*.png
+find-the-fox-level6-assets/O0*.png
+find-the-fox-level6-assets/O1*.png
+find-the-fox-level6-assets/N0*.png
+find-the-fox-level6-assets/C0*.png
 find-the-fox-level6-assets/background-panorama.png
 find-the-fox-level6-assets/pale-fox-reference.png
 find-the-fox-level6-assets (1)/
