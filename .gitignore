@@ -85,3 +85,15 @@ find-the-fox-level2-assets new/O*.png
 find-the-fox-level2-assets new/N*.png
 find-the-fox-level2-assets new/C*.png
 find-the-fox-level2-assets/
+
+# Levels 17-19 pack: raw 1920² exports (characters/objects/clues) are
+# superseded by level17/clean/ (trimmed / sub-cropped / keyed), which
+# index.html loads; the 2688x1152 vendor panorama is replaced by the
+# 3264x1920 extension. Levels 18/19 are not built yet.
+find-my-fox-level17-19-assets/level17/characters/
+find-my-fox-level17-19-assets/level17/objects/
+find-my-fox-level17-19-assets/level17/clues/
+find-my-fox-level17-19-assets/level17/background/L17_background_panorama.png
+find-my-fox-level17-19-assets/level17/background/L17_outpaint_*
+find-my-fox-level17-19-assets/level18/
+find-my-fox-level17-19-assets/level19/

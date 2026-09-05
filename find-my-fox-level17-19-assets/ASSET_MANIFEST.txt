@@ -1,0 +1,7 @@
+find-my-fox asset output
+Levels: 17, 18, 19
+Backgrounds: 3
+Characters: 45
+Objects: 62
+Clues: 17
+Total final image files planned: 127
