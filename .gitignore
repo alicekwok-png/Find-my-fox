@@ -100,3 +100,7 @@ find-my-fox-level17-19-assets/level18/objects/
 find-my-fox-level17-19-assets/level18/clues/
 find-my-fox-level17-19-assets/level18/background/L18_background_panorama.png
 find-my-fox-level17-19-assets/level19/
+
+# v5 background release: 5504x3072 JPEG masters (~10MB each) stay local;
+# backgrounds-v5/ holds the 3440x1920 game-ready exports that ship.
+new background/
