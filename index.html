@@ -1446,6 +1446,80 @@
   };
 
   /* =========================================================
+     Level 12 — 庫爾佩奧狐 Culpeo／安地斯高山
+     Background: find-the-fox-level12-background-culpeo-andes (5504x3072 =
+     1.792:1, §2.4 gate passed) exported to 3440x1920. NOTE: the sprite pack
+     ships its own 2560x1440 panorama; per PM it is wrong and is not used.
+     Sprites: level12_game_assets (15 foxes + 19 objects + 5 clues), real
+     alpha, trimmed to the largest solid component in clean/.
+     Scale: father kneeling 370px = 120cm -> 3.1 px/cm at the blanket; mother
+     sitting 470px = 95cm -> 4.9 on the boulder; boy kneeling 340px -> 2.8.
+     Readability floor applied: a hero fox draws ~180-230px.
+     §2.7 face no-go boxes: father (330-410,940-1030), llama (560-660,960-1090),
+     mother (1620-1700,1150-1230), child (1720-1780,1240-1310), alpaca
+     (1180-1300,1080-1180), boy (2830-2900,1150-1230), dog (2620-2740,1230-1330).
+     Hiding interfaces used (§2.5): striped rug, llama, cairns, boulders, agave
+     clumps, twisted tree, waterfall rocks, backpack, dirt path.
+     ========================================================= */
+  var ASSET_DIR12 = "level12_game_assets/level12/";
+  var ASSET_DIR12_CLEAN = ASSET_DIR12 + "clean/";
+
+  var LEVEL_12 = {
+    level_id: "culpeo_andes_12",
+    level_name: "安地斯高山",
+    theme: "culpeo_andes_altiplano",
+    background_asset: ASSET_DIR12 + "background/L12_background_3440x1920.jpg",
+    background_size: { width: 3440, height: 1920 },
+    viewport_size: { width: 1080, height: 1920 },
+    initial_camera_position: { x: 0, y: 0 },
+    target_count_total: 39, // 15 Tier A + 19 Tier B (13 reskin + 4 andes-only + 2 explorer gear) + 5 Tier C
+    targets: [
+      // ---- Tier A: culpeo foxes (15) ----
+      { id:"fox_01", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_01.png", position:{x:800,y:1500}, hitbox:{width:210,height:190}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"營地毯右邊草地 — standing on the tussock grass right of the striped rug" },
+      { id:"fox_02", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_02.png", position:{x:1050,y:1300}, hitbox:{width:180,height:210}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"龍舌蘭叢後面 — sitting behind the big agave clump, only the head and shoulders clear" },
+      { id:"fox_03", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_03.png", position:{x:300,y:1780}, hitbox:{width:230,height:170}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"石堆下方泥路 — stretching on the dirt path below the stone cairn" },
+      { id:"fox_04", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_04.png", position:{x:400,y:800}, hitbox:{width:180,height:220}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"營地上方草坡 — standing alert on the grassy slope above the camp, left of the twisted tree" },
+      { id:"fox_05", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_05.png", position:{x:1350,y:1750}, hitbox:{width:230,height:160}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"大石前面草地 — lying on the grass in front of the family's boulder" },
+      { id:"fox_06", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_06.png", position:{x:2500,y:900}, hitbox:{width:200,height:190}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"岩石之間 — peeking over its own rock among the boulders below the falls" },
+      { id:"fox_07", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_07.png", position:{x:480,y:1560}, hitbox:{width:200,height:200}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"營地毯下方泥地 — standing on the dirt below the rug, left of the path" },
+      { id:"fox_08", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_08.png", position:{x:1400,y:800}, hitbox:{width:180,height:200}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"草坡上坐低 — sitting on the grassy slope right of the grazing alpaca" },
+      { id:"fox_09", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_09.png", position:{x:2050,y:1450}, hitbox:{width:220,height:180}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"溪邊石上 — stretching on the rocks at the stream's near bank" },
+      { id:"fox_10", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_10.png", position:{x:900,y:1780}, hitbox:{width:230,height:170}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"前景泥路 — curled asleep on the dirt path in the foreground" },
+      { id:"fox_11", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_11.png", position:{x:1750,y:950}, hitbox:{width:180,height:220}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"石堆之間立起 — up on hind legs among the three stone cairns" },
+      { id:"fox_12", target_type:"cameo_fox", species:"andean_red", sprite_asset: ASSET_DIR12_CLEAN + "fox_12.png", position:{x:3100,y:1700}, hitbox:{width:180,height:210}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"背囊旁邊 — sitting on the dirt beside the family's backpack" },
+      { id:"fox_13", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_13.png", position:{x:2600,y:1650}, hitbox:{width:220,height:170}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"自帶石叢後面 — lying behind its own rocks and scrub at the path's edge" },
+      { id:"fox_14", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_14.png", position:{x:2300,y:1250}, hitbox:{width:230,height:170}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"瀑布下方岩坡 — trotting across the rock shelf below the waterfall" },
+      { id:"fox_15", target_type:"hero_fox", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "fox_15.png", position:{x:3250,y:1200}, hitbox:{width:190,height:200}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"自帶織毯後面 — peeking over its own woven blanket by the yucca clump" },
+      // ---- Tier B: fox-marked objects (19) ----
+      { id:"obj_O1", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O01_fox_face_mug.png", position:{x:560,y:1300}, hitbox:{width:90,height:80}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"營地毯上 — fox-face mug standing on the striped rug's right end" },
+      { id:"obj_O2", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O02_fox_pattern_blanket.png", position:{x:200,y:1290}, hitbox:{width:150,height:110}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"營地毯左角 — folded fox blanket on the rug's left corner" },
+      { id:"obj_O3", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O03_fox_cookie.png", position:{x:420,y:1330}, hitbox:{width:90,height:90}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"營地毯中間 — fox cookie on the rug between father and the llama" },
+      { id:"obj_O4", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O04_knitted_fox_plush.png", position:{x:1560,y:1500}, hitbox:{width:120,height:130}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"大石上 — knitted plush sitting on the family's boulder, left of the mother" },
+      { id:"obj_O5", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O05_fox_pattern_thermos.png", position:{x:1420,y:1380}, hitbox:{width:70,height:160}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"大石腳下 — thermos standing on the ground at the boulder's foot" },
+      { id:"obj_O6", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O06_fox_salt_pepper_shakers.png", position:{x:600,y:1400}, hitbox:{width:130,height:100}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"營地毯右邊 — salt and pepper pair on the rug's right edge" },
+      { id:"obj_O7", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O07_fox_tail_keychain.png", position:{x:3000,y:1250}, hitbox:{width:70,height:150}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"背囊拉鏈 — keychain hanging from the backpack's zip pull; its ring is the connector" },
+      { id:"obj_O8", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O08_fox_ear_hat.png", position:{x:1650,y:1300}, hitbox:{width:130,height:120}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"大石頂 — ear hat left on the boulder's top, right of the cairns" },
+      { id:"obj_O9", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O09_fox_wind_chime.png", position:{x:1080,y:780}, hitbox:{width:100,height:190}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"扭曲樹枝 — wind chime hanging from the twisted tree's low branch; its hook is the connector" },
+      { id:"obj_O10", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O10_fox_field_guide_book.png", position:{x:2900,y:1620}, hitbox:{width:140,height:120}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"背囊腳下 — field guide lying open on the ground at the backpack's foot" },
+      { id:"obj_O11", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O11_fox_pattern_scarf.png", position:{x:1900,y:1230}, hitbox:{width:160,height:130}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"石堆頂 — fox scarf draped over the tallest stone cairn" },
+      { id:"obj_O12", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O12_fox_pincushion.png", position:{x:150,y:1420}, hitbox:{width:120,height:110}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"石堆頂 — pincushion resting on the stone cairn's top stone" },
+      { id:"obj_O13", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "O13_fox_preserve_jar.png", position:{x:900,y:1250}, hitbox:{width:90,height:120}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"毯邊草地 — preserve jar standing in the grass at the rug's right edge" },
+      { id:"obj_N1", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "N01_llama_wool_fox_wrap.png", position:{x:480,y:1180}, hitbox:{width:150,height:150}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"駱馬背上 — llama-wool wrap laid across the resting llama's back, clear of its head" },
+      { id:"obj_N2", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "N02_fox_paw_cairn_carving.png", position:{x:90,y:1620}, hitbox:{width:150,height:130}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"石堆底石 — paw-carved stone at the cairn's base" },
+      { id:"obj_N3", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "N03_agave_fox_carving.png", position:{x:760,y:1180}, hitbox:{width:150,height:110}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"龍舌蘭葉 — fox carved into an agave leaf on the big clump's left side" },
+      { id:"obj_N4", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "N04_llama_bell_fox_charm.png", position:{x:600,y:1180}, hitbox:{width:80,height:150}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"駱馬頸鈴 — bell and charm on a cord round the llama's neck, below its jaw" },
+      { id:"obj_E1", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "E01_fox_magnifying_glass.png", position:{x:2650,y:1480}, hitbox:{width:150,height:100}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"男孩身邊地面 — magnifying glass lying on the dirt beside the boy" },
+      { id:"obj_E2", target_type:"fox_object", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "E02_brass_measuring_tape.png", position:{x:3180,y:1420}, hitbox:{width:120,height:110}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"背囊右邊石上 — brass tape measure on the rock right of the backpack" },
+      // ---- Tier C: partial clues (5) ----
+      { id:"clue_C1", render:"imprint", target_type:"partial_clue", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "C01_fox_paw_footprints.png", position:{x:1250,y:1560}, hitbox:{width:200,height:170}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"泥路上腳印 — print trail pressed into the dirt path below the camp" },
+      { id:"clue_C2", target_type:"partial_clue", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "C02_fox_tail_tip.png", position:{x:1230,y:1380}, hitbox:{width:130,height:150}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"大石左邊露尾 — tail tip showing at the boulder's left edge" },
+      { id:"clue_C3", target_type:"partial_clue", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "C03_fox_ears.png", position:{x:2400,y:1600}, hitbox:{width:150,height:90}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"矮叢之間露耳 — ear tips above the scrub at the path's left edge" },
+      { id:"clue_C4", render:"imprint", target_type:"partial_clue", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "C04_fox_shadow.png", position:{x:1750,y:1780}, hitbox:{width:200,height:150}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"前景泥地影 — fox shadow cast on the open dirt in the foreground" },
+      { id:"clue_C5", target_type:"partial_clue", species:"culpeo", sprite_asset: ASSET_DIR12_CLEAN + "C05_fox_nose_whiskers.png", position:{x:2700,y:1150}, hitbox:{width:160,height:130}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"岩罅露鼻 — nose and whiskers in the gap between the rocks below the falls" }
+    ]
+  };
+
+  /* =========================================================
      Level 17 — 銀狐 Silver Fox／針葉林雪夜・伐木小屋遺跡
      Source: find-the-fox-level17-asset-prompts-v3.md (2026-09-02) + pack
      find-my-fox-level17-19-assets/level17 (real-alpha 1920² PNGs, trimmed to
@@ -1705,7 +1779,7 @@
   // Levels 9, 10 and 12-16 are not built yet, so Level 11 currently occupies slot 9, Level 17 slot 10,
   // Level 18 slot 11 and Level 19 slot 12 in the
   // unlock chain / level select — insert them here as they land.
-  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_11, LEVEL_17, LEVEL_18, LEVEL_19];
+  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_11, LEVEL_12, LEVEL_17, LEVEL_18, LEVEL_19];
   var currentLevelIndex = 0;
   var manifest = LEVELS[currentLevelIndex];
   /* Camera: scale = fitScale * zoom. fitScale is "fit the panorama's height
