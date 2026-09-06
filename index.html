@@ -1362,6 +1362,90 @@
   };
 
   /* =========================================================
+     Level 11 — 灰狐 Grey Fox／河谷小鎮秋日
+     Background: find-the-fox-level11-background-greyfox-rivertown-populated
+     (5504x3072 = 1.792:1, §2.4 gate passed) exported to 3440x1920.
+     Sprites: find-my-fox-level11-final-assets (41 supplied + 4 added P1-P4);
+     all arrived with real alpha, trimmed to the largest solid component in
+     clean/. characters/80.png is fully transparent and is not used.
+     Scale: father kneeling 480px = 120cm -> 4.0 px/cm at the store; fisherman
+     standing 590px = 175cm -> 3.4; carpenter 320px -> 1.8 at the far cabin.
+     Readability floor applied: a hero fox draws ~180-230px.
+     §2.7 face no-go boxes: shopkeeper (830-890,940-1010), father (540-620,
+     1290-1380), dog 1 (630-760,1440-1560), grandmother (1930-1990,770-840),
+     mother (1245-1320,1310-1390), child (1380-1430,1400-1470), carpenter
+     (2720-2790,1020-1090), fisherman (2450-2520,1200-1280), boy (2840-2900,
+     1430-1500), dog 2 (3010-3100,1550-1660), two chickens.
+     Hiding interfaces used (§2.5): store awning + porch + produce crates,
+     firewood stack, wheelbarrow, bench, maple boughs, house wall, arch bridge
+     railing, lamp post, rowboat, cabin trusses + scaffolding, plank stacks,
+     toolbox, log stack, birches.
+     ========================================================= */
+  var ASSET_DIR11 = "find-my-fox-level11-final-assets/final_assets/level11/";
+  var ASSET_DIR11_CLEAN = ASSET_DIR11 + "clean/";
+
+  var LEVEL_11 = {
+    level_id: "grey_fox_rivertown_11",
+    level_name: "河谷小鎮秋日",
+    theme: "grey_fox_rivertown_autumn",
+    background_asset: ASSET_DIR11 + "background/L11_background_3440x1920.jpg",
+    background_size: { width: 3440, height: 1920 },
+    viewport_size: { width: 1080, height: 1920 },
+    initial_camera_position: { x: 0, y: 0 },
+    target_count_total: 45, // 15 Tier A (13 grey-fox hero + 2 red-fox cameo) + 24 Tier B (20 supplied + 4 added) + 6 Tier C
+    targets: [
+      // ---- Tier A: hero foxes (15) — each sprite carries its own perch ----
+      { id:"fox_01", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "65.png", position:{x:3120,y:1000}, hitbox:{width:150,height:230}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"攀住白樺樹幹 — climbing its own birch trunk alongside the real birches at the cabin site", intended_scale_ref:"≈55cm，及膝以下（連樹幹）" },
+      { id:"fox_02", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "66.png", position:{x:1620,y:1290}, hitbox:{width:180,height:200}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"木板屋牆邊 — sitting against its own clapboard wall at the foot of the riverside house", intended_scale_ref:"≈50cm，及膝以下" },
+      { id:"fox_03", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "67.png", position:{x:700,y:1850}, hitbox:{width:200,height:140}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"落葉窩入面 — curled in its own leaf nest on the foreground path", intended_scale_ref:"≈48cm，及膝以下" },
+      { id:"fox_04", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "68.png", position:{x:300,y:1180}, hitbox:{width:190,height:180}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"蘋果木箱後 — peeking from behind its own apple crate at the store's produce row", intended_scale_ref:"≈50cm，及膝以下（連箱）" },
+      { id:"fox_05", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "69.png", position:{x:1150,y:700}, hitbox:{width:210,height:150}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"瓦頂上 — standing on its own shingle patch on the neighbouring roof right of the store", intended_scale_ref:"≈52cm，及膝以下" },
+      { id:"fox_06", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "70.png", position:{x:1350,y:250}, hitbox:{width:210,height:180}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"楓樹枝上 — sitting on its own maple branch among the real boughs overhead", intended_scale_ref:"≈50cm，及膝以下（連樹枝）" },
+      { id:"fox_07", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "71.png", position:{x:250,y:700}, hitbox:{width:200,height:170}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"帳篷雨篷上探頭 — peeking over its own striped awning at the store awning's left end", intended_scale_ref:"≈48cm，及膝以下" },
+      { id:"fox_08", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "72.png", position:{x:120,y:1400}, hitbox:{width:190,height:200}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"柴堆入面 — hidden in its own log stack against the store's firewood pile", intended_scale_ref:"≈50cm，及膝以下（連木頭）" },
+      { id:"fox_09", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "73.png", position:{x:500,y:1780}, hitbox:{width:200,height:180}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"落葉堆剩返條尾 — only the tail out of its own leaf pile on the foreground path", intended_scale_ref:"≈45cm，及膝以下" },
+      { id:"fox_10", target_type:"cameo_fox", species:"red_fox", sprite_asset: ASSET_DIR11_CLEAN + "74.png", position:{x:1150,y:1750}, hitbox:{width:180,height:210}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"門廊木級上 — red fox sitting on its own porch steps at the path's right edge", intended_scale_ref:"≈52cm，及膝以下（連梯級）" },
+      { id:"fox_11", target_type:"cameo_fox", species:"red_fox", sprite_asset: ASSET_DIR11_CLEAN + "75.png", position:{x:1700,y:1720}, hitbox:{width:200,height:170}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"木桶入面探頭 — red fox peeking out of its own barrel on the river bank beside the rowboat", intended_scale_ref:"≈50cm，及膝以下（連桶）" },
+      { id:"fox_12", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "76.png", position:{x:1600,y:200}, hitbox:{width:230,height:160}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"樹枝上奔跑 — running along its own branch among the maple boughs overhead", intended_scale_ref:"≈55cm，及膝以下（連樹枝）" },
+      { id:"fox_13", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "77.png", position:{x:2170,y:1080}, hitbox:{width:130,height:230}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"街燈柱後 — peeking round its own lamp post beside the real lamp at the bridge's end", intended_scale_ref:"≈50cm，及膝以下（連柱）" },
+      { id:"fox_14", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "78.png", position:{x:2280,y:1300}, hitbox:{width:170,height:210}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"圍欄柱頂 — scarfed fox sitting on its own fence post at the river bank", intended_scale_ref:"≈52cm，及膝以下（連柱）" },
+      { id:"fox_15", target_type:"hero_fox", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "79.png", position:{x:2530,y:1050}, hitbox:{width:220,height:160}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"木架橫樑上 — lying along its own timber frame beside the cabin's scaffolding", intended_scale_ref:"≈55cm，及膝以下（連木架）" },
+      // ---- Tier B: fox-marked objects (24) ----
+      { id:"obj_39", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "39.png", position:{x:2600,y:560}, hitbox:{width:190,height:160}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"屋頂脊 — fox weathervane on its own roof ridge at the cabin's truss peak", intended_scale_ref:"≈60cm，及膝以下（連屋脊）" },
+      { id:"obj_40", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "40.png", position:{x:2900,y:700}, hitbox:{width:160,height:130}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"橫樑上 — knitted ear hat left on its own beam among the cabin trusses", intended_scale_ref:"≈30cm，手掌至前臂長" },
+      { id:"obj_41", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "41.png", position:{x:700,y:1300}, hitbox:{width:90,height:80}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"門廊木板上 — fox-face mug on the store's porch deck", intended_scale_ref:"≈12cm，手掌長" },
+      { id:"obj_42", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "42.png", position:{x:1030,y:1000}, hitbox:{width:90,height:130}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"門廊柱 — fox lantern hanging from the porch post's hook; its ring is the connector", intended_scale_ref:"≈35cm，及膝以下" },
+      { id:"obj_43", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "43.png", position:{x:1450,y:1120}, hitbox:{width:110,height:150}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"屋前地面 — fox mailbox standing on the ground in front of the riverside house", intended_scale_ref:"≈45cm，及膝以下" },
+      { id:"obj_44", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "44.png", position:{x:120,y:480}, hitbox:{width:190,height:150}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"店舖磚牆 — fox shop sign hanging from its own bracket on the store's brick wall", intended_scale_ref:"≈50cm，及膝以下（連支架）" },
+      { id:"obj_45", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "45.png", position:{x:3000,y:1450}, hitbox:{width:190,height:150}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"工地地面 — fox-emblem tool roll on the ground beside the cabin's plank stack", intended_scale_ref:"≈45cm，及膝以下" },
+      { id:"obj_46", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "46.png", position:{x:1850,y:1420}, hitbox:{width:190,height:160}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"划艇座板 — sketchbook open on its own table board across the rowboat's seat", intended_scale_ref:"≈40cm，及膝以下" },
+      { id:"obj_47", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "47.png", position:{x:3200,y:1300}, hitbox:{width:160,height:150}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"工地工具箱 — toolbox with a fox-tail keychain on the ground beside the carpenter's box", intended_scale_ref:"≈40cm，及膝以下" },
+      { id:"obj_48", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "48.png", position:{x:770,y:1170}, hitbox:{width:190,height:160}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"南瓜木箱 — salt and pepper pair in their own crate at the store's pumpkin display", intended_scale_ref:"≈45cm，及膝以下（連箱）" },
+      { id:"obj_49", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "49.png", position:{x:1050,y:1480}, hitbox:{width:190,height:160}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"長凳上 — knitted plush sitting on its own bench at the path's right edge", intended_scale_ref:"≈45cm，及膝以下（連凳）" },
+      { id:"obj_50", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "50.png", position:{x:2560,y:1720}, hitbox:{width:70,height:160}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"釣魚佬水桶旁 — fox-pattern thermos standing beside the fisherman's bucket", intended_scale_ref:"≈30cm，手掌至前臂長" },
+      { id:"obj_51", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "51.png", position:{x:1150,y:500}, hitbox:{width:170,height:200}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"楓樹枝 — fox kite tangled on its own maple branch among the boughs", intended_scale_ref:"≈50cm，及膝以下（連樹枝）" },
+      { id:"obj_52", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "52.png", position:{x:1600,y:990}, hitbox:{width:190,height:150}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"石橋欄杆 — fox-pattern blanket draped over its own railing on the bridge's near rail", intended_scale_ref:"≈55cm，及膝以下" },
+      { id:"obj_53", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "53.png", position:{x:380,y:1620}, hitbox:{width:90,height:80}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"南瓜旁地面 — fox-shaped cookie on the path beside the foreground pumpkins", intended_scale_ref:"≈12cm，手掌長" },
+      { id:"obj_54", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "54.png", position:{x:3300,y:1450}, hitbox:{width:190,height:150}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"木頭堆 — fox scarf laid over its own log stack beside the real cut logs", intended_scale_ref:"≈50cm，及膝以下（連木頭）" },
+      { id:"obj_55", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "55.png", position:{x:880,y:1680}, hitbox:{width:220,height:170}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"手推車 — fox plush riding its own wheelbarrow of pumpkins on the path", intended_scale_ref:"≈60cm，及膝以下（連車）" },
+      { id:"obj_56", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "56.png", position:{x:480,y:1180}, hitbox:{width:90,height:110}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"貨箱面 — fox preserve jar on the produce crate's edge", intended_scale_ref:"≈18cm，手掌長" },
+      { id:"obj_57", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "57.png", position:{x:2320,y:800}, hitbox:{width:130,height:210}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"街燈橫臂 — fox wind chime hanging from its own lamp arm beside the real street lamp", intended_scale_ref:"≈45cm，及膝以下" },
+      { id:"obj_58", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "58.png", position:{x:2820,y:1200}, hitbox:{width:150,height:150}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"木板堆旁 — fox field guide leaning on its own planks beside the cabin's timber", intended_scale_ref:"≈35cm，及膝以下" },
+      { id:"obj_P1", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "P1_fox_pattern_broom_charm.png", position:{x:940,y:1120}, hitbox:{width:80,height:170}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"掃把柄 — fox-tail charm tied to the shopkeeper's broom handle; the loop is the connector", intended_scale_ref:"≈28cm，手掌至前臂長" },
+      { id:"obj_P2", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "P2_fox_fishing_float.png", position:{x:2720,y:1620}, hitbox:{width:150,height:140}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"釣魚佬水桶 — fox fishing float in its own bucket beside the fisherman", intended_scale_ref:"≈35cm，及膝以下（連桶）" },
+      { id:"obj_P3", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "P3_fox_try_square.png", position:{x:2700,y:1400}, hitbox:{width:170,height:120}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"工地木板上 — carpenter's fox try-square lying on the cabin's plank stack", intended_scale_ref:"≈35cm，及膝以下" },
+      { id:"obj_P4", target_type:"fox_object", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "P4_fox_pattern_shopping_basket_cloth.png", position:{x:2030,y:1000}, hitbox:{width:130,height:120}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"婆婆嘅菜籃 — fox-pattern cloth over the grandmother's shopping basket on the bridge", intended_scale_ref:"≈30cm，手掌至前臂長" },
+      // ---- Tier C: partial clues (6) ----
+      { id:"clue_59", render:"imprint", target_type:"partial_clue", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "59.png", position:{x:350,y:1000}, hitbox:{width:180,height:150}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"店舖牆面 — fox shadow cast on the store's brick wall below the awning", intended_scale_ref:"≈45cm 影" },
+      { id:"clue_60", target_type:"partial_clue", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "60.png", position:{x:1900,y:1650}, hitbox:{width:160,height:110}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"木桶蓋底 — nose and whiskers out from under its own barrel lid on the river bank", intended_scale_ref:"≈30cm，手掌至前臂長" },
+      { id:"clue_61", target_type:"partial_clue", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "61.png", position:{x:3330,y:1080}, hitbox:{width:190,height:160}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"白樺木之間 — ears showing between its own birch logs at the cabin's log pile", intended_scale_ref:"≈40cm，及膝以下" },
+      { id:"clue_62", render:"imprint", target_type:"partial_clue", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "62.png", position:{x:1450,y:1830}, hitbox:{width:190,height:150}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"石板路 — paw prints pressed along the stone path at the river bank", intended_scale_ref:"≈55cm 軌跡" },
+      { id:"clue_63", target_type:"partial_clue", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "63.png", position:{x:1350,y:1620}, hitbox:{width:170,height:130}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"長凳底下 — tail out from under its own bench at the path's edge", intended_scale_ref:"≈35cm，及膝以下" },
+      { id:"clue_64", target_type:"partial_clue", species:"grey_fox", sprite_asset: ASSET_DIR11_CLEAN + "64.png", position:{x:2750,y:850}, hitbox:{width:190,height:160}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"木構橫樑後 — ears behind its own truss beam among the cabin's roof frame", intended_scale_ref:"≈40cm，及膝以下" }
+    ]
+  };
+
+  /* =========================================================
      Level 17 — 銀狐 Silver Fox／針葉林雪夜・伐木小屋遺跡
      Source: find-the-fox-level17-asset-prompts-v3.md (2026-09-02) + pack
      find-my-fox-level17-19-assets/level17 (real-alpha 1920² PNGs, trimmed to
@@ -1534,9 +1618,9 @@
     ]
   };
 
-  // Levels 9-16 are not built yet, so Level 17 currently occupies slot 9 and Level 18 slot 10 in the
+  // Levels 9-16 are not built yet, so Level 11 currently occupies slot 9, Level 17 slot 10 and Level 18 slot 11 in the
   // unlock chain / level select — insert them here as they land.
-  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_17, LEVEL_18];
+  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_11, LEVEL_17, LEVEL_18];
   var currentLevelIndex = 0;
   var manifest = LEVELS[currentLevelIndex];
   /* Camera: scale = fitScale * zoom. fitScale is "fit the panorama's height
