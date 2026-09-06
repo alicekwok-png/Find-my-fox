@@ -1520,6 +1520,94 @@
   };
 
   /* =========================================================
+     Level 16 — 迅狐 Swift Fox／大平原農場黃昏
+     Background: find-the-fox-level16-background-swiftfox-prairie-populated
+     (5504x3072 = 1.792:1, §2.4 gate passed) exported to 3440x1920. NOTE: the
+     sprite pack ships its own panorama; per PM it is the wrong image and is
+     not used.
+     Sprites: find-the-fox-level16-assets — 42 PNGs that arrived flattened onto
+     a baked white/grey checkerboard (RGB, no alpha). Keyed in key_l16.py
+     (border flood + enclosed-pocket pass), then dechecker_l16.py cleared the
+     leftover pockets using the board's 38px period, then a component pass
+     dropped the remaining haze. Trimmed to the largest solid component in
+     clean/.
+     Scale: standing farmer 330px = 175cm -> 1.9 px/cm at the hay; kneeling
+     farmer 320px = 120cm -> 2.7; mother sitting 290px = 95cm -> 3.05.
+     Readability floor applied: a hero fox draws ~180-230px, and the sprites
+     that carry their own prop (burrow, trough, wheelbarrow, crates, wagon,
+     barn door, fence post) draw 230-350px.
+     §2.7 face no-go boxes: farmer 1 (840-900,890-960), farmer 2 (660-730,
+     1160-1230), mother (1420-1480,1300-1370), child (1560-1610,1360-1420),
+     woman (1970-2030,1010-1080), rider (2500-2560,790-860), boy (2820-2880,
+     1180-1250), draft horse (330-500,1280-1480), grazing horse (1135-1250,
+     1000-1100), rider's horse (2350-2450,860-960), sheepdog (2900-3000,
+     1210-1300).
+     Hiding interfaces used (§2.5): hay bale stack, water trough, fence rails,
+     picnic blanket + basket, scarecrow, vegetable basket, saddle, coiled
+     lasso, barn doors, crates, pitchfork, lean-to roof, barn roof ridge.
+     ========================================================= */
+  var ASSET_DIR16 = "find-the-fox-level16-assets/";
+  var ASSET_DIR16_CLEAN = ASSET_DIR16 + "clean/";
+
+  var LEVEL_16 = {
+    level_id: "swift_fox_prairie_16",
+    level_name: "大平原農場黃昏",
+    theme: "swift_fox_prairie_dusk",
+    background_asset: ASSET_DIR16 + "L16_background_3440x1920.jpg",
+    background_size: { width: 3440, height: 1920 },
+    viewport_size: { width: 1080, height: 1920 },
+    initial_camera_position: { x: 0, y: 0 },
+    target_count_total: 42, // 15 Tier A (11 swift-fox hero + 3 European-red cameo + 1 silver teaser) + 22 Tier B + 5 Tier C
+    targets: [
+      // ---- Tier A: hero and cameo foxes (15) ----
+      { id:"fox_01", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_01_swift_fox_clear.png", position:{x:1080,y:1350}, hitbox:{width:210,height:250}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"草叢上坐低 — sitting in its own grass tuft on the open yard grass below the hay bales", intended_scale_ref:"≈30cm 坐高" },
+      { id:"fox_02", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_02_warm_peeking_hay.png", position:{x:2500,y:1740}, hitbox:{width:280,height:330}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"自帶乾草捆後 — warm-toned fox peeking round its own hay bale in the foreground", intended_scale_ref:"≈32cm，連草捆" },
+      { id:"fox_03", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_03_burrow_hidden.png", position:{x:220,y:1740}, hitbox:{width:300,height:260}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"自帶洞口 — hidden in its own burrow mound at the yard's left edge", intended_scale_ref:"≈30cm，連土堆" },
+      { id:"fox_04", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_04_notched_ear_trail.png", position:{x:2550,y:1420}, hitbox:{width:280,height:260}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"泥路上 — notched-ear fox standing on the dirt track below the fence", intended_scale_ref:"≈50cm 身長" },
+      { id:"fox_05", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_05_juvenile_trough.png", position:{x:2838,y:1450}, hitbox:{width:280,height:230}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"自帶水槽 — juvenile looking out of its own water trough on the yard", intended_scale_ref:"≈28cm，連水槽" },
+      { id:"fox_06", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_06_older_grass_outline.png", position:{x:184,y:1420}, hitbox:{width:280,height:200}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"自帶草叢 — older fox lying low in its own grass clump, its outline broken by the stalks", intended_scale_ref:"≈50cm 身長" },
+      { id:"fox_07", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_07_mid_sprint.png", position:{x:2150,y:1420}, hitbox:{width:300,height:180}, difficulty_tier:"exposed", placement_class:"airborne_action", anchor_ref:"全速衝刺 — mid-sprint across the open ground right of the picnic blanket", intended_scale_ref:"≈55cm 身長" },
+      { id:"fox_08", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_08_bandana_fencepost.png", position:{x:3106,y:1180}, hitbox:{width:200,height:330}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"自帶柵欄柱頂 — bandana fox sitting on top of its own fence post by the barn", intended_scale_ref:"≈30cm，連柱" },
+      { id:"fox_09", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_09_crates_hidden.png", position:{x:2120,y:1740}, hitbox:{width:320,height:300}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"自帶木箱堆後 — peeking from behind its own crate stack in the foreground", intended_scale_ref:"≈30cm，連木箱" },
+      { id:"fox_10", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_10_warm_wheelbarrow.png", position:{x:980,y:1740}, hitbox:{width:320,height:300}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"自帶手推車 — warm-toned fox riding in its own wheelbarrow of hay", intended_scale_ref:"≈30cm，連車" },
+      { id:"fox_11", target_type:"hero_fox", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_11_grasshopper_pounce.png", position:{x:760,y:1420}, hitbox:{width:300,height:260}, difficulty_tier:"exposed", placement_class:"airborne_action", anchor_ref:"撲蚱蜢 — mid-pounce on a grasshopper in its own grass, left of the picnic basket", intended_scale_ref:"≈50cm 身長" },
+      { id:"fox_12", target_type:"cameo_fox", species:"european_red_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_12_european_red_clear.png", position:{x:1740,y:1740}, hitbox:{width:340,height:300}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"自帶篷車旁 — European red fox sitting beside its own covered wagon in the foreground", intended_scale_ref:"≈40cm 坐高，連車" },
+      { id:"fox_13", target_type:"cameo_fox", species:"european_red_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_13_european_red_barn.png", position:{x:2880,y:1740}, hitbox:{width:260,height:350}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"自帶穀倉門後 — red fox peeking round its own barn door panel below the real barn", intended_scale_ref:"≈40cm，連門板" },
+      { id:"fox_14", target_type:"cameo_fox", species:"european_red_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_14_european_red_tail_grass.png", position:{x:1750,y:1420}, hitbox:{width:260,height:260}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"自帶草叢剩返條尾 — only the tail showing in its own grass clump right of the blanket", intended_scale_ref:"≈35cm 尾" },
+      { id:"fox_15", target_type:"cameo_fox", species:"silver_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_fox_15_silver_teaser.png", position:{x:3320,y:1740}, hitbox:{width:230,height:350}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"自帶樹幹後 — silver teaser peeking round its own tree trunk at the yard's right edge", intended_scale_ref:"≈35cm，連樹幹" },
+      // ---- Tier B: fox-marked objects (22) ----
+      { id:"obj_O1", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o01_swift_fox_mug.png", position:{x:1400,y:975}, hitbox:{width:90,height:80}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"水槽邊 — mug standing on the water trough's rim", intended_scale_ref:"≈12cm，手掌長" },
+      { id:"obj_O2", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o02_fox_blanket_hay.png", position:{x:620,y:890}, hitbox:{width:200,height:140}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"乾草捆頂 — fox blanket folded on top of the hay bale stack", intended_scale_ref:"≈45cm 摺起" },
+      { id:"obj_O3", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o03_fox_cookie.png", position:{x:1293,y:1620}, hitbox:{width:130,height:110}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"野餐格仔布上 — fox cookie on its own checked cloth at the picnic blanket's left edge", intended_scale_ref:"≈12cm，手掌長" },
+      { id:"obj_O4", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o04_knitted_fox_plush.png", position:{x:1450,y:1620}, hitbox:{width:150,height:170}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"野餐毯上 — knitted plush sitting on the picnic blanket, right of the child", intended_scale_ref:"≈25cm，手掌至前臂長" },
+      { id:"obj_O5", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o05_fox_thermos.png", position:{x:1180,y:1650}, hitbox:{width:80,height:180}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"野餐籃旁 — thermos standing on the grass beside the picnic basket", intended_scale_ref:"≈28cm，手掌至前臂長" },
+      { id:"obj_O6", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o06_fox_salt_pepper.png", position:{x:1484,y:1450}, hitbox:{width:140,height:120}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"野餐毯右邊 — salt and pepper on the picnic blanket's right end", intended_scale_ref:"≈14cm，手掌長" },
+      { id:"obj_O7", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o07_fox_tail_keychain.png", position:{x:1300,y:1035}, hitbox:{width:70,height:150}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"柵欄橫木 — keychain hooked over the fence rail beside the trough; its ring is the connector", intended_scale_ref:"≈18cm，手掌長" },
+      { id:"obj_O8", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o08_fox_ear_hat.png", position:{x:1800,y:1010}, hitbox:{width:150,height:130}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"稻草人肩膊 — ear hat resting on the scarecrow's shoulder", intended_scale_ref:"≈24cm，手掌至前臂長" },
+      { id:"obj_O9", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o09_fox_wind_chime.png", position:{x:2800,y:950}, hitbox:{width:90,height:180}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"棚屋簷邊 — wind chime hanging from the lean-to roof's edge; its bracket is the connector", intended_scale_ref:"≈35cm，及膝以下" },
+      { id:"obj_O10", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o10_swift_fox_field_guide.png", position:{x:3323,y:953}, hitbox:{width:150,height:130}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"木箱頂 — field guide lying on the crate stack by the barn door", intended_scale_ref:"≈26cm，手掌至前臂長" },
+      { id:"obj_O11", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o11_fox_scarf_fence.png", position:{x:600,y:1740}, hitbox:{width:300,height:250}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"自帶柵欄 — fox scarf draped over its own fence section in the foreground", intended_scale_ref:"≈50cm，連柵欄" },
+      { id:"obj_O12", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o12_fox_pincushion.png", position:{x:1341,y:1420}, hitbox:{width:130,height:120}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"野餐籃入面 — pincushion tucked in the open picnic basket", intended_scale_ref:"≈16cm，手掌長" },
+      { id:"obj_O13", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_o13_fox_preserve_jar.png", position:{x:3300,y:1467}, hitbox:{width:160,height:180}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"自帶木箱上 — preserve jar standing on its own crate on the barn yard", intended_scale_ref:"≈20cm，連箱" },
+      { id:"obj_P1", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_p01_fox_tail_pitchfork_charm.png", position:{x:2897,y:1080}, hitbox:{width:90,height:200}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"乾草叉柄 — tail charm tied to the pitchfork leaning on the barn wall; the cord is the connector", intended_scale_ref:"≈35cm，連叉柄" },
+      { id:"obj_P2", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_p02_fox_basket_cloth.png", position:{x:2088,y:1250}, hitbox:{width:160,height:140}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"菜籃上 — fox cloth over the woman's vegetable basket", intended_scale_ref:"≈30cm，手掌至前臂長" },
+      { id:"obj_P3", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_p03_fox_saddlebags_buckle.png", position:{x:2531,y:962}, hitbox:{width:150,height:130}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"馬鞍後袋 — saddlebag with a fox buckle behind the rider's saddle, clear of both heads", intended_scale_ref:"≈30cm，手掌至前臂長" },
+      { id:"obj_E1", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_e01_brass_measuring_tape.png", position:{x:2781,y:1109}, hitbox:{width:130,height:110}, difficulty_tier:"exposed", placement_class:"ground_only", anchor_ref:"工具旁地面 — brass tape measure lying on the yard dirt beside the tool roll", intended_scale_ref:"≈12cm，手掌長" },
+      { id:"obj_E2", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_e02_leather_tool_roll.png", position:{x:2700,y:1227}, hitbox:{width:180,height:110}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"穀倉前地面 — leather tool roll lying on the dirt in front of the barn", intended_scale_ref:"≈35cm 捲起" },
+      { id:"obj_N1", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_n01_fox_weathervane.png", position:{x:3200,y:350}, hitbox:{width:190,height:160}, difficulty_tier:"exposed", placement_class:"elevated_ok", anchor_ref:"穀倉屋脊 — fox weathervane mounted on the red barn's roof ridge", intended_scale_ref:"≈60cm，連座" },
+      { id:"obj_N2", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_n02_fox_lasso_buckle.png", position:{x:867,y:1192}, hitbox:{width:200,height:180}, difficulty_tier:"partial", placement_class:"ground_only", anchor_ref:"盤好嘅套索 — fox buckle on its own coiled lasso, laid by the real rope on the ground", intended_scale_ref:"≈40cm，連繩圈" },
+      { id:"obj_N3", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_n03_fox_saddle_charm.png", position:{x:2658,y:1030}, hitbox:{width:100,height:150}, difficulty_tier:"partial", placement_class:"elevated_ok", anchor_ref:"馬鞍帶 — saddle charm hanging from the rider's saddle strap; its loop is the connector", intended_scale_ref:"≈20cm，手掌長" },
+      { id:"obj_N4", target_type:"fox_object", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_obj_n04_scarecrow_fox_badge.png", position:{x:1900,y:1177}, hitbox:{width:200,height:170}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"稻草人腳下 — straw hat badge propped at the scarecrow's post foot", intended_scale_ref:"≈35cm，連帽" },
+      // ---- Tier C: partial clues (5) ----
+      { id:"clue_C1", render:"imprint", target_type:"partial_clue", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_clue_c01_fox_pawprints.png", position:{x:2350,y:1120}, hitbox:{width:200,height:170}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"泥路上腳印 — print trail pressed into the dirt track crossing the yard" },
+      { id:"clue_C2", target_type:"partial_clue", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_clue_c02_black_tail_blanket.png", position:{x:1500,y:1150}, hitbox:{width:240,height:260}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"野餐毯邊 — black-tipped tail out from under its own blanket corner at the picnic edge" },
+      { id:"clue_C3", target_type:"partial_clue", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_clue_c03_fox_ears_crates.png", position:{x:450,y:1150}, hitbox:{width:240,height:200}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"自帶木箱之間露耳 — ear tips showing between its own crates on the yard beside the hay wagon" },
+      { id:"clue_C4", target_type:"partial_clue", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_clue_c04_fox_shadow_barn.png", position:{x:3082,y:892}, hitbox:{width:180,height:230}, difficulty_tier:"hidden", placement_class:"elevated_ok", anchor_ref:"穀倉門板 — fox shadow cast on its own red barn door panel, over the real doors" },
+      { id:"clue_C5", target_type:"partial_clue", species:"swift_fox", sprite_asset: ASSET_DIR16_CLEAN + "l16_clue_c05_fox_nose_grass.png", position:{x:1248,y:1835}, hitbox:{width:200,height:170}, difficulty_tier:"hidden", placement_class:"ground_only", anchor_ref:"草叢露鼻 — nose and whiskers showing in its own grass at the foreground edge" }
+    ]
+  };
+
+  /* =========================================================
      Level 17 — 銀狐 Silver Fox／針葉林雪夜・伐木小屋遺跡
      Source: find-the-fox-level17-asset-prompts-v3.md (2026-09-02) + pack
      find-my-fox-level17-19-assets/level17 (real-alpha 1920² PNGs, trimmed to
@@ -1779,7 +1867,7 @@
   // Levels 9, 10 and 12-16 are not built yet, so Level 11 currently occupies slot 9, Level 17 slot 10,
   // Level 18 slot 11 and Level 19 slot 12 in the
   // unlock chain / level select — insert them here as they land.
-  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_11, LEVEL_12, LEVEL_17, LEVEL_18, LEVEL_19];
+  var LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_11, LEVEL_12, LEVEL_16, LEVEL_17, LEVEL_18, LEVEL_19];
   var currentLevelIndex = 0;
   var manifest = LEVELS[currentLevelIndex];
   /* Camera: scale = fitScale * zoom. fitScale is "fit the panorama's height
