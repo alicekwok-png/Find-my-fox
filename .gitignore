@@ -104,3 +104,8 @@ find-my-fox-level17-19-assets/level19/
 # v5 background release: 5504x3072 JPEG masters (~10MB each) stay local;
 # backgrounds-v5/ holds the 3440x1920 game-ready exports that ship.
 new background/
+
+# L11-L19 background drop: the 5504x3072 masters stay local, the
+# 3440x1920 game-ready exports in backgrounds-v5/ ship.
+backgrounds-L11-L19/
+find-the-fox-L11-L19-backgrounds.zip
